@@ -19,7 +19,16 @@
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "erasableSyntaxOnly": true,
-    "noFallthroughCasesInSwitch": true
+    "noFallthroughCasesInSwitch": true,
+    "paths": {
+      "@/*": ["./src/*"],
+      "@components/*": ["./src/components/*"],
+      "@pages/*": ["./src/pages/*"],
+      "@images/*": ["./src/assets/images/*"],
+      "@store/*": ["./src/store/*"],
+      "@tests/*": ["./src/tests/*"],
+      "@api-services/*": ["./src/api-services/*"]
+    }
   },
   "include": ["src"]
 }
