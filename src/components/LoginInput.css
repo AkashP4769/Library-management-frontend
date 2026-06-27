@@ -1,0 +1,12 @@
+.login-input {
+  width: 100%;
+  height: 48px;
+  padding: 16px;
+  background-color: #f3f4f5;
+  color: #4d4635;
+}
+.login-label {
+  font-size: 12px;
+  display: block;
+  color: #4d4635;
+}
