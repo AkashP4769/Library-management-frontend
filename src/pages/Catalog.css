@@ -1,0 +1,23 @@
+
+*, *::before, *::after {
+  box-sizing: border-box; /* 0.5.19 */
+}
+
+
+.catalog-page{
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    padding: 40px;
+    background-color: var(--color-surface-container);
+    overflow-y: auto;
+}
+
+.catalog-page section{
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    padding: 30px;
+    background-color: var(--color-surface-container);
+}
