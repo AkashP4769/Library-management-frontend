@@ -11,8 +11,22 @@ export default function SignupPage() {
   return (
     <div className="v-screen h-screen">
       <div className="flex flex-row h-[96vh] w-full">
-        <div className="w-1/2 h-full">
-          <img src={bgImage} className="w-full h-full opacity-75" />
+        <div className="relative w-1/2 h-full">
+          <img src={bgImage} className="h-[96vh] w-full object-cover" />
+
+          {/* Center text */}
+          <div className="absolute inset-0 flex flex-col items-center justify-center text-white px-8">
+            <div className="items-left">
+              <h2 className="text-3xl text-[#FFE086] font-bold leading-normal">
+                Lumina Library
+              </h2>
+              <p className="text-xl mt-10 text-white">
+                The future of scholarly management. Join thousands of librarians
+                in a <br /> streamlined ecosystem designed for precision, order,
+                and aesthetic <br /> clarity.
+              </p>
+            </div>
+          </div>
         </div>
         <div className="w-1/2 flex items-center justify-center">
           <div className="w-[448px] flex flex-col gap-[26px]">
