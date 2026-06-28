@@ -3,7 +3,6 @@ import bg_image from "../assets/Hero Image.png";
 import { FaEye, FaLock, FaEyeSlash, FaEnvelope } from "react-icons/fa";
 import "tailwindcss";
 import { useState } from "react";
-import { Link } from "react-router";
 import Footer from "@/components/Footer";
 export default function LoginPage() {
   const [role, setRole] = useState("Employee");
