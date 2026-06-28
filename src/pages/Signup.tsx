@@ -63,7 +63,7 @@ export default function SignupPage() {
                 name="pwd"
                 leftIcon={<FaLock />}
                 rightIcon={password ? <FaEyeSlash /> : <FaEye />}
-                onRightIconClick={() => showPassword(!password)}
+                onRightIconClick={() => { showPassword(!password); return {}; }}
               />
             </div>
             <button

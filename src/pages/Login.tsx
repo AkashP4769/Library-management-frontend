@@ -84,7 +84,7 @@ export default function LoginPage() {
                 name="pwd"
                 leftIcon={<FaLock />}
                 rightIcon={password ? <FaEyeSlash /> : <FaEye />}
-                onRightIconClick={() => showPassword(!password)}
+                onRightIconClick={() => { showPassword(!password); return {}; }}
               />
             </div>
             <button
