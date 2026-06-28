@@ -5,7 +5,7 @@ import './Home.css'
 import BookCard, { SmallBookCard } from "@/Components/BookCard";
 
 export default function HomePage() {
-    const [myBooks, setMyBooks] = useState<Book[]>([...books, ...books]);
+    const [myBooks, setMyBooks] = useState<Book[]>([...books]);
 
     return <div className="home-page">
         <div className="flex justify-between items-center">

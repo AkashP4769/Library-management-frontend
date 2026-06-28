@@ -6,9 +6,12 @@ import "tailwindcss";
 import { useState } from "react";
 import Footer from "@/components/Footer";
 import { Link } from "react-router";
+
 export default function LoginPage() {
+
   const [role, setRole] = useState("Employee");
   const [password, showPassword] = useState(false);
+  
   return (
     <div className="w-screen h-screen">
       <div className="flex flex-row">

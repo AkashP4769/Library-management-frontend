@@ -22,7 +22,7 @@ const sidebarLinks = [
 
 const sidebarFooterLinks = [
     { name: "Settings", href: "/settings", icon: SettingsIcon },
-    { name: "Logout", href: "/logout", icon: LogoutIcon },
+    { name: "Logout", href: "/login", icon: LogoutIcon },
 ];
 
 function SidebarLink({ link, selectedLink, setSelectedLink }: { link: { name: string; href: string; icon: string }; selectedLink: string; setSelectedLink: (linkName: string) => void }) {
@@ -36,7 +36,7 @@ function SidebarLink({ link, selectedLink, setSelectedLink }: { link: { name: st
     )
 }
 
-export function Layout() {
+export default function Layout() {
     const [selectedLink, setSelectedLink] = useState<string>("Home");
 
     return (
