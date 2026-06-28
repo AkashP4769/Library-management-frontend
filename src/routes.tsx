@@ -7,6 +7,7 @@ import { Layout } from "./pages/Layout";
 import HomePage from "./pages/Home";
 import { AdminLayout } from "./pages/AdminLayout";
 import AdminDashboard from "./pages/AdminDashboard";
+import CatalogPage from "./pages/Catalog";
 
 
 const router = createBrowserRouter([
@@ -29,6 +30,7 @@ const router = createBrowserRouter([
         errorElement: <NotFoundPage />,
         children: [
           { index: true, element: <HomePage />},
+          { path: 'catalog', element: <CatalogPage />},
           // { path: 'details/:id', element: <EmployeeDetailsPage />}
         ]
       },

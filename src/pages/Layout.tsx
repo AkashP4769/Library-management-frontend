@@ -3,6 +3,18 @@ import './Layout.css'
 
 import DashboardIcon from "@assets/icons/sidebar_dashboard.svg";
 
+const sidebarLinks = [
+    { name: "Dashboard", href: "/", icon: DashboardIcon },
+    { name: "Catalog", href: "/catalog", icon: DashboardIcon },
+    { name: "Shelves", href: "/shelves", icon: DashboardIcon },
+    { name: "Saved", href: "/saved", icon: DashboardIcon },
+    { name: "Profile", href: "/profile", icon: DashboardIcon },
+];
+
+const sidebarFooterLinks = [
+    { name: "Settings", href: "/settings", icon: DashboardIcon },
+    { name: "Logout", href: "/logout", icon: DashboardIcon },
+];
 
 export function Layout() {
     return (
@@ -11,18 +23,12 @@ export function Layout() {
                 <h2 className="sidebar-title">Library Management</h2>
                 <nav className="sidebar-nav">
                     <ul>
-                        <li>
-                            <img src={DashboardIcon} alt="Dashboard Icon" className="dashboard-icon" />
-                            <a href="/dashboard">Dashboard</a>
-                        </li>
-                        <li>
-                            <img src={DashboardIcon} alt="Dashboard Icon" className="dashboard-icon" />
-                            <a href="/books">Books</a>
-                        </li>
-                        <li>
-                            <img src={DashboardIcon} alt="Dashboard Icon" className="dashboard-icon" />
-                            <a href="/members">Members</a>
-                        </li>
+                        {sidebarLinks.map((link) => (
+                            <li key={link.name}>
+                                <img src={link.icon} alt={`${link.name} Icon`} className="sidebar-icon" />
+                                <a href={link.href}>{link.name}</a>
+                            </li>
+                        ))}
                     </ul>
                     <button className="ask-ai-button">
                         <img src={DashboardIcon} alt="Ask AI Icon" className="ask-ai-icon" />
@@ -31,14 +37,12 @@ export function Layout() {
                 </nav>
                 <nav className="sidebar-footer">
                     <ul>
-                        <li>
-                            <img src={DashboardIcon} alt="Settings Icon" className="settings-icon" />
-                            <a href="/settings">Settings</a>
-                        </li>
-                        <li>
-                            <img src={DashboardIcon} alt="Logout Icon" className="logout-icon" />
-                            <a href="/logout">Logout</a>
-                        </li>
+                        {sidebarFooterLinks.map((link) => (
+                            <li key={link.name}>
+                                <img src={link.icon} alt={`${link.name} Icon`} className="sidebar-icon" />
+                                <a href={link.href}>{link.name}</a>
+                            </li>
+                        ))}
                     </ul>
                 </nav>
             </aside>
