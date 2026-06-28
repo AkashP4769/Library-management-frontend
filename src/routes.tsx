@@ -8,6 +8,7 @@ import HomePage from "./pages/Home";
 import { AdminLayout } from "./pages/AdminLayout";
 import AdminDashboard from "./pages/AdminDashboard";
 import CatalogPage from "./pages/Catalog";
+import ShelvesPage from "./pages/Shelves";
 
 
 const router = createBrowserRouter([
@@ -32,6 +33,7 @@ const router = createBrowserRouter([
           { index: true, element: <HomePage />},
           { path: 'home', element: <HomePage />},
           { path: 'catalog', element: <CatalogPage />},
+          { path: 'shelves', element: <ShelvesPage />},
           // { path: 'details/:id', element: <EmployeeDetailsPage />}
         ]
       },
