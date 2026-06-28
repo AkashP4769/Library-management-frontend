@@ -16,7 +16,7 @@ const sidebarLinks = [
     { name: "Home", href: "/home", icon: DashboardIcon },
     { name: "Catalog", href: "/catalog", icon: CatalogIcon },
     { name: "Shelves", href: "/shelves", icon: ShelvesIcon },
-    { name: "Saved", href: "/saved", icon: SavedIcon },
+    { name: "My Reads", href: "/my-reads", icon: SavedIcon },
     { name: "Profile", href: "/profile", icon: ProfileIcon },
 ];
 

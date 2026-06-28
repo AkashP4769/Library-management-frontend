@@ -9,6 +9,9 @@ import { AdminLayout } from "./pages/AdminLayout";
 import AdminDashboard from "./pages/AdminDashboard";
 import CatalogPage from "./pages/Catalog";
 import ShelvesPage from "./pages/Shelves";
+import BookPage from "./pages/BookPage";
+import ProfilePage from "./pages/Profile";
+import MyReads from "./pages/MyReads";
 
 
 const router = createBrowserRouter([
@@ -33,8 +36,10 @@ const router = createBrowserRouter([
           { index: true, element: <HomePage />},
           { path: 'home', element: <HomePage />},
           { path: 'catalog', element: <CatalogPage />},
+          { path: 'catalog/books/:id', element: <BookPage />},
           { path: 'shelves', element: <ShelvesPage />},
-          // { path: 'details/:id', element: <EmployeeDetailsPage />}
+          { path: 'my-reads', element: <MyReads />},
+          { path: 'profile', element: <ProfilePage />},
         ]
       },
     ]

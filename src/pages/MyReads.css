@@ -1,0 +1,17 @@
+.my-reads-page{
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    padding: 40px;
+    background-color: var(--color-surface-container);
+    overflow-y: auto;
+}
+
+.my-reads-page section{
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    /* padding: 30px; */
+    background-color: var(--color-surface-container);
+}
