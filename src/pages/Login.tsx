@@ -47,19 +47,19 @@ export default function LoginPage() {
             </div>
             <div className="flex w-full bg-gray-100 rounded-lg p-1">
               <button
-                onClick={() => setRole("employee")}
-                className={`flex-1 py-2 h-[24px] rounded-md text-sm font-semibold transition-all ${
-                  role === "employee"
+                onClick={() => setRole("Employee")}
+                className={`flex-1 py-2 h-[40px] rounded-md text-sm font-semibold transition-all ${
+                  role === "Employee"
                     ? "bg-secondary shadow text-[white]"
-                    : "text-white-400"
+                    : "text-gray-400"
                 }`}
               >
                 Employee
               </button>
               <button
-                onClick={() => setRole("admin")}
-                className={`flex-1 py-2 h-[24px] rounded-md text-sm font-semibold transition-all ${
-                  role === "admin"
+                onClick={() => setRole("Admin")}
+                className={`flex-1 py-2 h-[40px] rounded-md text-sm font-semibold transition-all ${
+                  role === "Admin"
                     ? "bg-secondary shadow text-[white]"
                     : "text-gray-400"
                 }`}
@@ -91,10 +91,10 @@ export default function LoginPage() {
               type="submit"
               className="w-full h-[50px] bg-amber-300 text-[#141b2b] rounded font-semibold"
             >
-              Sign In as {role === "admin" ? "Admin" : "Employee"} -{">"}
+              Sign In as {role === "Admin" ? "Admin" : "Employee"} -{">"}
             </button>
             <p className="text-sm text-center">
-              New Librarian? <Link to="/signup">Create your account</Link>
+              New Librarian? <Link to="/signup" className="text-blue-500">Create your account</Link>
             </p>
           </div>
         </div>

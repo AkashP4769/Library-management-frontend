@@ -74,7 +74,7 @@ export default function SignupPage() {
               Create Account{" "}
             </button>
             <p className="text-sm text-center">
-              Already have an account? <Link to="/login">Go to login page</Link>
+              Already have an account? <Link to="/login" className="text-blue-500">Go to login page</Link>
             </p>
           </div>
         </div>
