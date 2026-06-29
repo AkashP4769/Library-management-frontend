@@ -12,7 +12,7 @@ export default function HomePage() {
             <h2 className="text-2xl font-bold">My Books</h2>
             <p className="text-primary font-bold hover:underline cursor-pointer">VIEW ALL</p>
         </div>
-        <div className="grid grid-cols-5 gap-6">
+        <div className="flex flex-wrap gap-6">
             {myBooks.length === 0 ? <p className="text-bold text-primary text-xl">No books found</p> : 
             myBooks.map((book) => (
                 <BookCard key={book.id} {...book} />
