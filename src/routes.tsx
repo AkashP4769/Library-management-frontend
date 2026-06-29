@@ -16,6 +16,7 @@ import AuditPage from "./pages/admin/Audit";
 import InventoryPage from "./pages/admin/Inventory";
 import TrackPage from "./pages/admin/Track";
 import SettingsPage from "./pages/Settings";
+import NewBookPage from "./pages/admin/NewBook";
 
 
 const router = createBrowserRouter([
@@ -62,6 +63,8 @@ const router = createBrowserRouter([
           { path: 'inventory', element: <InventoryPage />},
           { path: 'audit', element: <AuditPage />},
           { path: 'profile', element: <ProfilePage />},
+          { path: 'settings', element: <SettingsPage />},
+          { path: 'inventory/new-book', element: <NewBookPage /> }
         ]
       },
     ]
