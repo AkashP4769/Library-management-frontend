@@ -1,7 +1,7 @@
 import BookCard from "@/Components/BookCard";
 import "./MyReads.css";
 import { books } from "@/models/book";
-import EmptyShelf from "@/models/EmptyShelf";
+import EmptyShelf from "@/Components/EmptyShelf";
 
 // export default function MyReads() {
 //     return (
