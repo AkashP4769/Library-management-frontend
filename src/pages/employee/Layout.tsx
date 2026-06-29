@@ -96,7 +96,7 @@ export default function Layout() {
           </ul>
           <button className="ask-ai-button" onClick={handleChatbotComponent}>
             <img
-              src={DashboardIcon
+              src={DashboardIcon}
               alt="Ask AI Icon"
               className="ask-ai-icon"
             />
