@@ -5,10 +5,49 @@ import { FaEye, FaLock, FaEyeSlash, FaEnvelope } from "react-icons/fa";
 import "tailwindcss";
 import { useState } from "react";
 import Footer from "@/components/Footer";
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
+import { useLoginMutation } from "@/api-service/login/login.api";
+
 export default function LoginPage() {
+
   const [role, setRole] = useState("Employee");
-  const [password, showPassword] = useState(false);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+
+  const [login] = useLoginMutation();
+  const navigate = useNavigate();
+
+  const handleLogin = async () => {
+    if(email.length == 0 || password.length == 0) {
+      alert("Please enter valid email and password");
+      return;
+    }
+
+    const payload = {
+      email: email,
+      password: password
+    };
+
+    try {
+      const response = await login(payload).unwrap();
+      console.log("Login response:", response);
+
+      const access_token = response.access_token;
+      const refresh_token = response.refresh_token;
+
+      if(access_token && refresh_token){
+          console.log("access_token & refresh token", access_token && refresh_token);
+          localStorage.setItem("access_token", access_token);
+          localStorage.setItem("refresh_token", refresh_token);
+          navigate("/", {replace: true});
+      }
+    } catch (error) {
+      console.error("Login failed:", error);
+      alert("Login failed. Please check your credentials.");
+    }
+  };
+  
   return (
     <div className="w-screen h-screen">
       <div className="flex flex-row">
@@ -47,19 +86,19 @@ export default function LoginPage() {
             </div>
             <div className="flex w-full bg-gray-100 rounded-lg p-1">
               <button
-                onClick={() => setRole("employee")}
-                className={`flex-1 py-2 h-[24px] rounded-md text-sm font-semibold transition-all ${
-                  role === "employee"
+                onClick={() => setRole("Employee")}
+                className={`flex-1 py-2 h-[40px] rounded-md text-sm font-semibold transition-all ${
+                  role === "Employee"
                     ? "bg-secondary shadow text-[white]"
-                    : "text-white-400"
+                    : "text-gray-400"
                 }`}
               >
                 Employee
               </button>
               <button
-                onClick={() => setRole("admin")}
-                className={`flex-1 py-2 h-[24px] rounded-md text-sm font-semibold transition-all ${
-                  role === "admin"
+                onClick={() => setRole("Admin")}
+                className={`flex-1 py-2 h-[40px] rounded-md text-sm font-semibold transition-all ${
+                  role === "Admin"
                     ? "bg-secondary shadow text-[white]"
                     : "text-gray-400"
                 }`}
@@ -70,31 +109,36 @@ export default function LoginPage() {
             <div>
               <InputText
                 label="EMAIL ADDRESS"
-                placeholder="librarian@keyvalue.in"
+                placeholder="employee@keyvalue.in"
                 type="email"
                 name="email"
                 leftIcon={<FaEnvelope />}
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
               />
             </div>
             <div>
               <InputText
                 label="PASSWORD"
                 placeholder="password"
-                type={password ? "text" : "password"}
+                type={showPassword ? "text" : "password"}
                 name="pwd"
                 leftIcon={<FaLock />}
-                rightIcon={password ? <FaEyeSlash /> : <FaEye />}
-                onRightIconClick={() => showPassword(!password)}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                rightIcon={showPassword ? <FaEyeSlash /> : <FaEye />}
+                onRightIconClick={() => { setShowPassword(!showPassword); return {}; }}
               />
             </div>
             <button
               type="submit"
               className="w-full h-[50px] bg-amber-300 text-[#141b2b] rounded font-semibold"
+              onClick={() => handleLogin()}
             >
-              Sign In as {role === "admin" ? "Admin" : "Employee"} -{">"}
+              Log In as {role === "Admin" ? "Admin" : "Employee"} -{">"}
             </button>
             <p className="text-sm text-center">
-              New Librarian? <Link to="/signup">Create your account</Link>
+              New Librarian? <Link to="/signup" className="text-blue-500">Create your account</Link>
             </p>
           </div>
         </div>

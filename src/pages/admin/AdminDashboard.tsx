@@ -1,3 +1,4 @@
+import './AdminDashboard.css'
 
 export default function AdminDashboardPage() {
     return <div className="admin-dashboard-page">

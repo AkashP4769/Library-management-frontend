@@ -4,6 +4,7 @@
     height: 100vh;
     display: flex;
     background-color: tomato;
+    overflow: hidden;
 }
 
 .sidebar {
@@ -51,7 +52,7 @@
     gap: 16px;
     margin-bottom: 10px;
     font-size: 18px;
-    color: var(--color-tertiary);
+    /* color: var(--color-tertiary); */
     /* background-color: var(--color-surface-container); */
 }
 
