@@ -4,9 +4,9 @@ export default function BookCard(book: Book) {
   return (
     <div
       key={book.id}
-      className="flex flex-col h-120 items-center rounded-2xl justify-center px-4 py-6 border-2 border-neutral-200 hover:bg-white duration-200"
+      className="flex flex-col h-120 w-70 items-center rounded-2xl justify-center border-2 border-neutral-200 hover:bg-white duration-200"
     >
-      <div className="flex flex-col h-[90%] w-[90%]  items-start justify-between px-4 py-4">
+      <div className="flex flex-col h-[90%] w-[90%]  items-start justify-between">
         <img
           src={book.image}
           alt={book.title}

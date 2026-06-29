@@ -69,14 +69,14 @@ function SidebarLink({
     >
       <li
         key={link.name}
-        className={`${selectedLink === link.name ? "bg-tertiary-container text-secondary" : "text-tertiary hover:bg-surface-container duration-200"}`}
+        className={`h-10 ${selectedLink === link.name ? "bg-tertiary-container text-secondary" : "text-tertiary hover:bg-surface-container duration-200"}`}
       >
         <img
           src={link.icon}
           alt={`${link.name} Icon`}
           className="sidebar-icon"
         />
-        <p>{link.name}</p>
+        <p className="">{link.name}</p>
       </li>
     </Link>
   );
