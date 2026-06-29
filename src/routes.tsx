@@ -17,17 +17,16 @@ import InventoryPage from "./pages/admin/Inventory";
 import TrackPage from "./pages/admin/Track";
 import SettingsPage from "./pages/Settings";
 
-
 const router = createBrowserRouter([
   {
     path: "/login",
     element: <LoginPage />,
-    errorElement: <NotFoundPage />
+    errorElement: <NotFoundPage />,
   },
   {
     path: "/signup",
     element: <SignupPage />,
-    errorElement: <NotFoundPage />
+    errorElement: <NotFoundPage />,
   },
   {
     path: "/",
@@ -35,19 +34,20 @@ const router = createBrowserRouter([
     children: [
       {
         element: <Layout />,
+        path: "/layout",
         errorElement: <NotFoundPage />,
         children: [
-          { index: true, element: <HomePage />},
-          { path: 'home', element: <HomePage />},
-          { path: 'catalog', element: <CatalogPage />},
-          { path: 'catalog/books/:id', element: <BookPage />},
-          { path: 'shelves', element: <ShelvesPage />},
-          { path: 'my-reads', element: <MyReads />},
-          { path: 'profile', element: <ProfilePage />},
-          { path: 'settings', element: <SettingsPage />},
-        ]
+          { index: true, element: <HomePage /> },
+          { path: "home", element: <HomePage /> },
+          { path: "catalog", element: <CatalogPage /> },
+          { path: "catalog/books/:id", element: <BookPage /> },
+          { path: "shelves", element: <ShelvesPage /> },
+          { path: "my-reads", element: <MyReads /> },
+          { path: "profile", element: <ProfilePage /> },
+          { path: "settings", element: <SettingsPage /> },
+        ],
       },
-    ]
+    ],
   },
   {
     path: "/admin",
@@ -57,18 +57,18 @@ const router = createBrowserRouter([
         element: <AdminLayout />,
         errorElement: <NotFoundPage />,
         children: [
-          { index: true, element: <AdminDashboard />},
-          { path: 'track', element: <TrackPage />},
-          { path: 'inventory', element: <InventoryPage />},
-          { path: 'audit', element: <AuditPage />},
-          { path: 'profile', element: <ProfilePage />},
-        ]
+          { index: true, element: <AdminDashboard /> },
+          { path: "track", element: <TrackPage /> },
+          { path: "inventory", element: <InventoryPage /> },
+          { path: "audit", element: <AuditPage /> },
+          { path: "profile", element: <ProfilePage /> },
+        ],
       },
-    ]
+    ],
   },
   {
     path: "*",
-    element: <NotFoundPage />
+    element: <NotFoundPage />,
   },
 ]);
 

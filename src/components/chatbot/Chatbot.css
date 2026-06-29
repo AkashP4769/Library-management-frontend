@@ -1,0 +1,44 @@
+.bot-header {
+  background-color: #fcd34d;
+  height: 50px;
+  display: flex;
+  justify-content: space-between;
+  border-top-right-radius: 16px;
+  border-top-left-radius: 16px;
+  padding: 12px;
+}
+.bot-message-box {
+  flex: 1;
+  background-color: white;
+  padding: 12px;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+.userchat {
+  margin-top: 8px;
+  margin-left: 55px;
+  background-color: #fae7ab;
+  width: 80%;
+  padding: 12px;
+  border-radius: 10px;
+}
+
+.botchat {
+  width: 80%;
+  border-radius: 10px;
+  padding: 12px;
+  background-color: #edeeef;
+  margin-top: 8px;
+}
+
+.bot-input {
+  background-color: white;
+  height: 50px;
+  border-color: grey;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 15px;
+  border-bottom-left-radius: 24px;
+  border-bottom-right-radius: 24px;
+}

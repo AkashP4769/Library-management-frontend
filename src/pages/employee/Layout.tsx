@@ -1,5 +1,5 @@
 import { Outlet } from "react-router";
-import './Layout.css'
+import "./Layout.css";
 
 import { Link } from "react-router";
 import DashboardIcon from "@assets/icons/sidebar_dashboard.svg";
@@ -12,122 +12,158 @@ import BarcodeIcon from "@assets/icons/Barcode.png";
 import SettingsIcon from "@assets/icons/sidebar_setting.svg";
 import LogoutIcon from "@assets/icons/sidebar_logout.svg";
 import { useState } from "react";
+import Chatbot from "@/components/chatbot/Chatbot";
 
 const notifications = [
-    { id: 1, title: "New book arrived", message: "The latest fiction collection is now available." },
-    { id: 2, title: "Return reminder", message: "Two borrowed books are due tomorrow." },
+  {
+    id: 1,
+    title: "New book arrived",
+    message: "The latest fiction collection is now available.",
+  },
+  {
+    id: 2,
+    title: "Return reminder",
+    message: "Two borrowed books are due tomorrow.",
+  },
 ];
 
-
-
 const sidebarLinks = [
-    { name: "Home", href: "/home", icon: DashboardIcon },
-    { name: "Catalog", href: "/catalog", icon: CatalogIcon },
-    { name: "Shelves", href: "/shelves", icon: ShelvesIcon },
-    { name: "My Reads", href: "/my-reads", icon: SavedIcon },
-    { name: "Profile", href: "/profile", icon: ProfileIcon },
+  { name: "Home", href: "/home", icon: DashboardIcon },
+  { name: "Catalog", href: "/catalog", icon: CatalogIcon },
+  { name: "Shelves", href: "/shelves", icon: ShelvesIcon },
+  { name: "My Reads", href: "/my-reads", icon: SavedIcon },
+  { name: "Profile", href: "/profile", icon: ProfileIcon },
 ];
 
 const sidebarFooterLinks = [
-    { name: "Settings", href: "/settings", icon: SettingsIcon },
-    { name: "Logout", href: "/login", icon: LogoutIcon },
+  { name: "Settings", href: "/settings", icon: SettingsIcon },
+  { name: "Logout", href: "/login", icon: LogoutIcon },
 ];
 
-function SidebarLink({ link, selectedLink, setSelectedLink }: { link: { name: string; href: string; icon: string }; selectedLink: string; setSelectedLink: (linkName: string) => void }) {
-    return (
-        <Link to={link.href} className='w-full' key={link.name} onClick={() => setSelectedLink(link.name)}>
-            <li key={link.name} className={`${selectedLink === link.name ? "bg-tertiary-container text-secondary" : "text-tertiary hover:bg-surface-container duration-200"}`}>
-                <img src={link.icon} alt={`${link.name} Icon`} className="sidebar-icon" />
-                <p>{link.name}</p>
-            </li>
-        </Link>
-    )
+function SidebarLink({
+  link,
+  selectedLink,
+  setSelectedLink,
+}: {
+  link: { name: string; href: string; icon: string };
+  selectedLink: string;
+  setSelectedLink: (linkName: string) => void;
+}) {
+  return (
+    <Link
+      to={link.href}
+      className="w-full"
+      key={link.name}
+      onClick={() => setSelectedLink(link.name)}
+    >
+      <li
+        key={link.name}
+        className={`${selectedLink === link.name ? "bg-tertiary-container text-secondary" : "text-tertiary hover:bg-surface-container duration-200"}`}
+      >
+        <img
+          src={link.icon}
+          alt={`${link.name} Icon`}
+          className="sidebar-icon"
+        />
+        <p>{link.name}</p>
+      </li>
+    </Link>
+  );
 }
 
 export default function Layout() {
-    const [selectedLink, setSelectedLink] = useState<string>("Home");
-    const [showNotifications, setShowNotifications] = useState(false);
+  const [selectedLink, setSelectedLink] = useState<string>("Home");
+  const [showNotifications, setShowNotifications] = useState(false);
+  const [openChatbot, setOpenChatbot] = useState(false);
+  function handleChatbotComponent() {
+    setOpenChatbot((prev) => !prev);
+  }
 
-    return (
-        <div className="layout">
-            <aside className="sidebar">
-                <h2 className="sidebar-title">Library Management</h2>
-                <nav className="sidebar-nav">
-                    <ul>
-                        {sidebarLinks.map((link) => (
-                            <SidebarLink
-                                key={link.name}
-                                link={link}
-                                selectedLink={selectedLink}
-                                setSelectedLink={setSelectedLink}
-                            />
-                        ))}
-                    </ul>
-                    <button className="ask-ai-button">
-                        <img src={DashboardIcon} alt="Ask AI Icon" className="ask-ai-icon" />
-                        <p>Ask AI</p>
-                    </button>
-                </nav>
-                <nav className="sidebar-footer">
-                    <ul>
-                        {sidebarFooterLinks.map((link) => (
-                            <SidebarLink
-                                key={link.name}
-                                link={link}
-                                selectedLink={selectedLink}
-                                setSelectedLink={setSelectedLink}
-                            />
-                        ))}
-                    </ul>
-                </nav>
-            </aside>
+  return (
+    <div className="layout">
+      <aside className="sidebar">
+        <h2 className="sidebar-title">Library Management</h2>
+        <nav className="sidebar-nav">
+          <ul>
+            {sidebarLinks.map((link) => (
+              <SidebarLink
+                key={link.name}
+                link={link}
+                selectedLink={selectedLink}
+                setSelectedLink={setSelectedLink}
+              />
+            ))}
+          </ul>
+          <button className="ask-ai-button" onClick={handleChatbotComponent}>
+            <img
+              src={DashboardIcon}
+              alt="Ask AI Icon"
+              className="ask-ai-icon"
+            />
+            <p>Ask AI</p>
+          </button>
+        </nav>
+        <nav className="sidebar-footer">
+          <ul>
+            {sidebarFooterLinks.map((link) => (
+              <SidebarLink
+                key={link.name}
+                link={link}
+                selectedLink={selectedLink}
+                setSelectedLink={setSelectedLink}
+              />
+            ))}
+          </ul>
+        </nav>
+      </aside>
 
-            <div className="main-content">
-                <header className="employee-header">
-                    <div>
-                        <h3 className="header-title">LUMINA &emsp; {">"} &emsp; {selectedLink.toUpperCase()}</h3>
-                       
-                    </div>
+      <div className="main-content">
+        <header className="employee-header">
+          <div>
+            <h3 className="header-title">
+              LUMINA &emsp; {">"} &emsp; {selectedLink.toUpperCase()}
+            </h3>
+          </div>
 
-                    <div className="header-actions">
-                        
-                        <button
-                            className="icon-button"
-                            onClick={() => setShowNotifications((value) => !value)}
-                            aria-label="Toggle notifications"
-                        >
-                            <span className="notification-bell">🔔</span>
-                            <span className="notification-count">2</span>
-                        </button>
-                        <button className="icon-button" aria-label="Scan barcode">
-                            <img src={BarcodeIcon} alt="Barcode" className="header-icon" />
-                        </button>
-                        <button className="icon-button" aria-label="Open profile">
-                            <img src={ProfileIcon} alt="Profile" className="header-icon" />
-                        </button>
+          <div className="header-actions">
+            <button
+              className="icon-button"
+              onClick={() => setShowNotifications((value) => !value)}
+              aria-label="Toggle notifications"
+            >
+              <span className="notification-bell">🔔</span>
+              <span className="notification-count">2</span>
+            </button>
+            <button className="icon-button" aria-label="Scan barcode">
+              <img src={BarcodeIcon} alt="Barcode" className="header-icon" />
+            </button>
+            <button className="icon-button" aria-label="Open profile">
+              <img src={ProfileIcon} alt="Profile" className="header-icon" />
+            </button>
 
-                        {showNotifications && (
-                            <div className="notification-banner">
-                                <div className="notification-banner-header">
-                                    <strong>Notifications</strong>
-                                </div>
-                                <ul>
-                                    {notifications.map((item) => (
-                                        <li key={item.id}>
-                                            <h4>{item.title}</h4>
-                                            <p>{item.message}</p>
-                                        </li>
-                                    ))}
-                                </ul>
-                            </div>
-                        )}
-                    </div>
-                </header>
-
-                <div className="page-content">
-                    <Outlet />
+            {showNotifications && (
+              <div className="notification-banner">
+                <div className="notification-banner-header">
+                  <strong>Notifications</strong>
                 </div>
-            </div>
+                <ul>
+                  {notifications.map((item) => (
+                    <li key={item.id}>
+                      <h4>{item.title}</h4>
+                      <p>{item.message}</p>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+          </div>
+        </header>
+
+        <div className="page-content">
+          <Outlet />
+          {openChatbot && <Chatbot isBotOpen={handleChatbotComponent} />}
         </div>
-    );
+      </div>
+    </div>
+  );
 }
