@@ -34,7 +34,6 @@ const router = createBrowserRouter([
     children: [
       {
         element: <Layout />,
-        path: "/layout",
         errorElement: <NotFoundPage />,
         children: [
           { index: true, element: <HomePage /> },
