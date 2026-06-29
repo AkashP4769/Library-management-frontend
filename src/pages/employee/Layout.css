@@ -108,6 +108,10 @@
     font-size: 14px;
 }
 
+
+#barcode-icon{
+    transform: scale(1.6);
+}
 .header-actions {
     position: relative;
     display: flex;
