@@ -4,9 +4,45 @@ import InputText from "@/components/LoginInput";
 import { FaEye, FaLock, FaEyeSlash, FaEnvelope, FaUser } from "react-icons/fa";
 import { Link, useNavigate } from "react-router";
 import Footer from "@/components/Footer";
+import { useSignupMutation } from "@/api-service/login/login.api";
 
 export default function SignupPage() {
-  const [password, showPassword] = useState(false);
+
+  const [showPassword, setShowPassword] = useState(false);
+
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
+  const [signup] = useSignupMutation();
+
+  async function handleSignup() {
+    // Handle signup logic here
+    console.log("Signup clicked with:", { name, email, password });
+    if(email.length == 0 || password.length == 0) alert("Please enter valid email and password")
+
+    const payload = {
+      name: name,
+      email: email,
+      password: password,
+      role: "employee"
+    };
+
+    const response = await signup(payload).unwrap();
+
+    console.log("Signup response:", response);
+
+    const access_token = response.access_token
+    const refresh_token = response.refresh_token
+
+    if(access_token && refresh_token){
+        console.log("access_token & refresh token", access_token && refresh_token)
+        localStorage.setItem("access_token", access_token);
+        localStorage.setItem("refresh_token", refresh_token);
+        navigate("/", {replace: true})
+    }
+  }
+
   const navigate = useNavigate();
   return (
     <div className="v-screen h-screen">
@@ -43,6 +79,8 @@ export default function SignupPage() {
                 placeholder="Librarian Name"
                 type="text"
                 name="fname"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
                 leftIcon={<FaUser />}
               />
             </div>
@@ -52,6 +90,8 @@ export default function SignupPage() {
                 placeholder="librarian@keyvalue.in"
                 type="email"
                 name="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 leftIcon={<FaEnvelope />}
               />
             </div>
@@ -59,17 +99,19 @@ export default function SignupPage() {
               <InputText
                 label="PASSWORD"
                 placeholder="password"
-                type={password ? "text" : "password"}
+                type={showPassword ? "text" : "password"}
                 name="pwd"
                 leftIcon={<FaLock />}
-                rightIcon={password ? <FaEyeSlash /> : <FaEye />}
-                onRightIconClick={() => { showPassword(!password); return {}; }}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                rightIcon={showPassword ? <FaEyeSlash /> : <FaEye />}
+                onRightIconClick={() => { setShowPassword(!showPassword); return {}; }}
               />
             </div>
             <button
               type="submit"
               className="w-full h-[50px] bg-amber-300 text-[#141b2b] rounded font-semibold"
-              onClick={() => navigate("/login")}
+              onClick={() => handleSignup()}
             >
               Create Account{" "}
             </button>
