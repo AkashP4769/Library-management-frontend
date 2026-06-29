@@ -12,6 +12,7 @@
     padding: 40px;
     background-color: var(--color-surface-container);
     overflow-y: auto;
+    height: 100%;
 }
 
 .catalog-page section{
