@@ -47,7 +47,7 @@ export default function BookPage() {
         <p className="text-lg text-gray-600">
           You can borrow this book from the library.
         </p>
-        <div className="borrow-tab bg-primary/10 border border-primary/40 flex flex-col gap-2">
+        <div className="borrow-tab bg-primary-container/30 border border-primary/40 flex flex-col gap-2">
           <h2 className="text-xl font-semibold">Borrow this Book</h2>
           <div className="mt -6">
             <p className="text-gray-500 mt-2">
@@ -58,35 +58,35 @@ export default function BookPage() {
                     key={shelf.id}
                     shelf={shelf}
                     selected={selectedShelf === shelf.id}
-                    onClick={() => setSelectedShelf(shelf.id)}
+                    onClickShelf={() => setSelectedShelf(shelf.id)}
                   />
                 ))}
               </div>
             </p>
           </div>
-        </div>
 
-        <div className="flex gap-4 mt-10">
-          <button
-            disabled={!selectedShelf || borrowed}
-            onClick={() => setBorrowed(true)}
-            className={`
-    rounded-xl px-6 py-3 text-white transition
+          <div className="flex gap-4 mt-10">
+            <button
+              disabled={!selectedShelf || borrowed}
+              onClick={() => setBorrowed(true)}
+              className={`
+    rounded-xl borrow-button text-grey/70 transition border-primary
 
     ${
       borrowed
-        ? "bg-green-600 cursor-not-allowed"
+        ? "bg-primary-container cursor-not-allowed"
         : selectedShelf
-          ? "bg-primary hover:opacity-90"
-          : "bg-gray-400 cursor-not-allowed"
+          ? "bg-primary/50 hover:opacity-90 border-primary"
+          : "bg-primary-400 cursor-not-allowed border-primary"
     }
   `}
-          >
-            {borrowed ? "Borrowed ✓" : "Borrow"}
-          </button>
-          <button className=" borrow-button border rounded-xl px-6 py-3">
-            Save
-          </button>
+            >
+              {borrowed ? "Borrowed ✓" : "Borrow"}
+            </button>
+            <button className=" borrow-button border rounded-xl px-6 py-3">
+              Save
+            </button>
+          </div>
         </div>
       </section>
 
@@ -99,12 +99,40 @@ export default function BookPage() {
         <p className="text-lg text-gray-600">
           Maybe we can add the whole borrow logic here or make a new page
         </p>
+        <div className="rounded-xl bg-white shadow-sm review-padding overflow-y-auto">
+          <div className="flex justify-between">
+            <div>
+              <h3 className="font-semibold">John Doe</h3>
+
+              <p className="text-sm text-gray-500">2 days ago</p>
+            </div>
+
+            <span>⭐⭐⭐⭐⭐</span>
+          </div>
+
+          <p className="mt-4 text-gray-600">
+            Excellent book for anyone learning software engineering. The
+            examples are practical and easy to understand.
+          </p>
+        </div>
       </section>
 
       {/* similar books section */}
-      <section className="similar-books-section">
+      <section className="similar-books-section mt-14">
         <h2 className="text-2xl font-bold">Similar Books</h2>
-        <p className="text-lg text-gray-600">Check out these similar books.</p>
+
+        <div className="flex justify-between items-center mb-5">
+          <p className="text-lg text-gray-600">
+            Check out these similar books.
+          </p>
+          <button className="text-primary">View All</button>
+        </div>
+
+        <div className="grid grid-cols-5 gap-6">
+          {books.map((book) => (
+            <BookCard key={book.id} {...book} />
+          ))}
+        </div>
       </section>
     </div>
   );

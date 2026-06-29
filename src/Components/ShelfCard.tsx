@@ -26,7 +26,7 @@ export default function ShelfCard(shelf: Shelf) {
 interface SmallShelfCardProps {
   shelf: Shelf;
   selected: boolean;
-  onClick: () => void;
+  onClickShelf: () => void;
 }
 function SmallShelfCard({
   shelf,
@@ -36,17 +36,19 @@ function SmallShelfCard({
   return (
     <button
       onClick={onClickShelf}
-      className={`flex h-20 w-50  justify-center rounded-2xl border bg-white border-neutral-200 ${
-        selected
-          ? "border-primary bg-primary/10 ring-2 ring-primary"
-          : "border-neutral-200 bg-white hover:border-primary"
-      }`}
+      className={`flex h-20 w-50  justify-center rounded-2xl 
+        transition-all border 
+        ${
+          selected
+            ? "border-primary bg-primary/20"
+            : "border-neutral-200 bg-white hover:border-primary"
+        }`}
     >
       <div className="flex justify-between gap-2">
         <img
           src={shelf.image}
           alt={shelf.shelf_code}
-          className=" h-full w-3/5 object-cover rounded-2xl"
+          className=" h-full w-3/5 object-cover rounded-l-2xl"
         />
         <div className="w-[50%]">
           <h3 className="text-lg font-bold mt-2 text-ellipsis">
