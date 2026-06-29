@@ -8,9 +8,17 @@ import ShelvesIcon from "@assets/icons/sidebar_shelves.svg";
 import SavedIcon from "@assets/icons/sidebar_saved.svg";
 import ProfileIcon from "@assets/icons/sidebar_profile.svg";
 import InventoryIcon from "@assets/icons/sidebar_inventory.svg";
+import BarcodeIcon from "@assets/icons/Barcode.png";
 import SettingsIcon from "@assets/icons/sidebar_setting.svg";
 import LogoutIcon from "@assets/icons/sidebar_logout.svg";
 import { useState } from "react";
+
+const notifications = [
+    { id: 1, title: "New book arrived", message: "The latest fiction collection is now available." },
+    { id: 2, title: "Return reminder", message: "Two borrowed books are due tomorrow." },
+];
+
+
 
 const sidebarLinks = [
     { name: "Home", href: "/home", icon: DashboardIcon },
@@ -38,6 +46,7 @@ function SidebarLink({ link, selectedLink, setSelectedLink }: { link: { name: st
 
 export default function Layout() {
     const [selectedLink, setSelectedLink] = useState<string>("Home");
+    const [showNotifications, setShowNotifications] = useState(false);
 
     return (
         <div className="layout">
@@ -72,7 +81,53 @@ export default function Layout() {
                     </ul>
                 </nav>
             </aside>
-            <Outlet />
+
+            <div className="main-content">
+                <header className="employee-header">
+                    <div>
+                        <h3 className="header-title">LUMINA &emsp; {">"} &emsp; {selectedLink.toUpperCase()}</h3>
+                       
+                    </div>
+
+                    <div className="header-actions">
+                        
+                        <button
+                            className="icon-button"
+                            onClick={() => setShowNotifications((value) => !value)}
+                            aria-label="Toggle notifications"
+                        >
+                            <span className="notification-bell">🔔</span>
+                            <span className="notification-count">2</span>
+                        </button>
+                        <button className="icon-button" aria-label="Scan barcode">
+                            <img src={BarcodeIcon} alt="Barcode" className="header-icon" />
+                        </button>
+                        <button className="icon-button" aria-label="Open profile">
+                            <img src={ProfileIcon} alt="Profile" className="header-icon" />
+                        </button>
+
+                        {showNotifications && (
+                            <div className="notification-banner">
+                                <div className="notification-banner-header">
+                                    <strong>Notifications</strong>
+                                </div>
+                                <ul>
+                                    {notifications.map((item) => (
+                                        <li key={item.id}>
+                                            <h4>{item.title}</h4>
+                                            <p>{item.message}</p>
+                                        </li>
+                                    ))}
+                                </ul>
+                            </div>
+                        )}
+                    </div>
+                </header>
+
+                <div className="page-content">
+                    <Outlet />
+                </div>
+            </div>
         </div>
     );
 }
