@@ -8,17 +8,16 @@ import HomePage from "./pages/Home";
 import { AdminLayout } from "./pages/AdminLayout";
 import AdminDashboard from "./pages/AdminDashboard";
 
-
 const router = createBrowserRouter([
   {
     path: "/login",
     element: <LoginPage />,
-    errorElement: <NotFoundPage />
+    errorElement: <NotFoundPage />,
   },
   {
     path: "/signup",
     element: <SignupPage />,
-    errorElement: <NotFoundPage />
+    errorElement: <NotFoundPage />,
   },
   {
     path: "/",
@@ -26,13 +25,14 @@ const router = createBrowserRouter([
     children: [
       {
         element: <Layout />,
+        path: "/layout",
         errorElement: <NotFoundPage />,
         children: [
-          { index: true, element: <HomePage />},
+          { index: true, element: <HomePage /> },
           // { path: 'details/:id', element: <EmployeeDetailsPage />}
-        ]
+        ],
       },
-    ]
+    ],
   },
   {
     path: "/admin",
@@ -42,15 +42,15 @@ const router = createBrowserRouter([
         element: <AdminLayout />,
         errorElement: <NotFoundPage />,
         children: [
-          { index: true, element: <AdminDashboard />},
+          { index: true, element: <AdminDashboard /> },
           // { path: 'details/:id', element: <EmployeeDetailsPage />}
-        ]
+        ],
       },
-    ]
+    ],
   },
   {
     path: "*",
-    element: <NotFoundPage />
+    element: <NotFoundPage />,
   },
 ]);
 
