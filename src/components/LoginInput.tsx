@@ -7,6 +7,8 @@ interface InputProps {
   leftIcon?: React.ReactNode;
   rightIcon?: React.ReactNode;
   onRightIconClick?: () => {};
+  value?: string;
+  onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
 function InputText({
@@ -17,6 +19,8 @@ function InputText({
   leftIcon,
   rightIcon,
   onRightIconClick,
+  value,
+  onChange
 }: InputProps) {
   return (
     <>
@@ -27,6 +31,8 @@ function InputText({
           type={type}
           name={name}
           placeholder={placeholder}
+          value={value}
+          onChange={onChange}
           className="login-input"
           required
         />
