@@ -11,7 +11,7 @@ export default function HomePage() {
 
     useEffect(() => {
         if (fetchedBooks) {
-            setMyBooks(fetchedBooks);
+            setMyBooks([...fetchedBooks, ...fetchedBooks]);
         }
     }, [fetchedBooks]);
 
