@@ -1,7 +1,8 @@
 import BookCard from "@/Components/BookCard";
 import "./MyReads.css";
 import { books } from "@/models/book";
-import EmptyShelf from "@/models/EmptyShelf";
+import { FaUser, FaEnvelope, FaPhoneAlt } from "react-icons/fa";
+import EmptyShelf from "@/Components/EmptyShelf";
 
 // export default function MyReads() {
 //     return (
@@ -33,13 +34,62 @@ import EmptyShelf from "@/models/EmptyShelf";
 export default function MyReads() {
   const borrowedBooks = books.slice(0, 2);
   const requestedBooks = books.slice(2, 3);
-  const savedBooks = books.slice(1, 4);
 
   return (
     <div className="my-reads-page space-y-12">
+      {/* User Profile */}
+      <section>
+        <h1 className="text-4xl font-bold"> My Profile</h1>
+        <div className="gap-6 flex flex-col">
+          <div className="bg-white rounded-2xl shadow-md p-8 flex items-center gap-12">
+            <div className="w-24 h-24 rounded-full bg-primary-container text-white flex items-center justify-center text-3xl font-bold">
+              <FaUser />
+            </div>
+
+            <div>
+              <h2 className="text-2xl font-bold">Aksa George</h2>
+              <p className="text-primary font-medium">Employee</p>
+
+              <div className="mt-4 text-gray-600 flex justify-center gap-5">
+                <p className="flex gap-2 items-center">
+                  <FaPhoneAlt size={18} />
+                  678829027
+                </p>
+                <p className="flex gap-2 items-center">
+                  <FaEnvelope size={18} /> aksa@gmail.com
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Stats */}
+          <div className="grid grid-cols-3 gap-6">
+            <div className="bg-white rounded-2xl shadow p-6 text-center">
+              <p className="text-sm uppercase tracking-wide text-gray-500">
+                Books Read
+              </p>
+              <h2 className="text-5xl font-bold mt-3">5</h2>
+            </div>
+
+            <div className="bg-white rounded-2xl shadow p-6 text-center">
+              <p className="text-sm uppercase tracking-wide text-gray-500">
+                Borrowed
+              </p>
+              <h2 className="text-5xl font-bold mt-3">8</h2>
+            </div>
+
+            <div className="bg-white rounded-2xl shadow p-6 text-center">
+              <p className="text-sm uppercase tracking-wide text-gray-500">
+                Reviews
+              </p>
+              <h2 className="text-5xl font-bold mt-3">12</h2>
+            </div>
+          </div>
+        </div>
+      </section>
       <div>
-        <h1 className="text-4xl font-bold">My Reads</h1>
-        <p className="text-gray-500 mt-2">
+        <h1 className="text-3xl font-bold">My Reads</h1>
+        <p className="text-gray-500">
           Manage your borrowed, requested and saved books.
         </p>
       </div>
@@ -47,7 +97,7 @@ export default function MyReads() {
       {/* Borrowed */}
 
       <section>
-        <div className="flex justify-between items-center mb-6">
+        <div className="flex justify-between items-center mb-5">
           <h2 className="text-2xl font-bold">Currently Borrowed</h2>
 
           <p className="text-primary font-bold cursor-pointer hover:underline">
@@ -84,7 +134,7 @@ export default function MyReads() {
         </div>
       </section>
 
-      {/* Saved */}
+      {/* Saved
 
       <section>
         <div className="flex justify-between items-center mb-6">
@@ -102,7 +152,7 @@ export default function MyReads() {
             <EmptyShelf message="No books added in Wishlist" />
           )}
         </div>
-      </section>
+      </section> */}
     </div>
   );
 }
