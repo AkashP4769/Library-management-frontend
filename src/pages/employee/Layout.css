@@ -289,6 +289,39 @@
   color: #6b7280;
 }
 
+.notification-action-row {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.notification-action-btn {
+  border: none;
+  border-radius: 6px;
+  padding: 6px 10px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.notification-action-btn.accept {
+  background-color: #facc15;
+  color: #111827;
+}
+
+.notification-action-btn.accept:hover {
+  filter: brightness(0.9);
+}
+
+.notification-action-btn.reject {
+  background-color: #e5e7eb;
+  color: #374151;
+}
+
+.notification-action-btn.reject:hover {
+  filter: brightness(0.9);
+}
+
 .page-content {
   flex: 1;
   overflow: auto;

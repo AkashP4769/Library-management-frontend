@@ -15,28 +15,86 @@ import LogoutIcon from "@assets/icons/sidebar_logout.svg";
 import { useEffect, useState } from "react";
 import Chatbot from "@/components/chatbot/Chatbot";
 
-const notifications = [
-  {
+const notifications_sample = [
+{
     id: 1,
-    title: "New book arrived",
-    message: "The latest fiction collection is now available.",
+   receiver_id: 12,
+   sender_id: 14,
+   book_copy_id: 5,
+   message: "sample_message",
+   notification_type:"DUE_DATE_REMINDER",
   },
   {
     id: 2,
-    title: "Return reminder",
-    message: "Two borrowed books are due tomorrow.",
+   receiver_id: 13,
+   sender_id: 14,
+   book_copy_id: 6,
+   message: "sample_message",
+   notification_type:"REQUEST_BOOK",
   },
-  {
+   {
     id: 3,
-    title: "Books Lost",
-    message: "Two borrowed books are not to be found anywhere!",
+   receiver_id: null,
+   sender_id: null,
+   book_copy_id: null,
+   message: "Welcome to the Library",
+   notification_type:"ADMIN_NOTIFICATION",
   },
   {
     id: 4,
-    title: "New book arrived",
-    message: "The latest autobiography collection is now available.",
+   receiver_id: null,
+   sender_id: 3,
+   book_copy_id: 4,
+   message: "string",
+   notification_type:"IN_STOCK_NOTIFICATION",
   },
-];
+
+]
+
+function getNotificationContent(notification: {
+  notification_type: string;
+  book_copy_id?: number | null;
+  sender_id?: number | null;
+  message?: string;
+}) {
+  switch (notification.notification_type) {
+    case "DUE_DATE_REMINDER":
+      return {
+        title: "DUE DATE REMINDER",
+        message: `Your book ${notification.book_copy_id} is due.`,
+        showActions: false,
+        viewBookPath: undefined,
+      };
+    case "ADMIN_NOTIFICATION":
+      return {
+        title: "Admin Notification",
+        message: notification.message || "You have a new admin notification.",
+        showActions: false,
+        viewBookPath: undefined,
+      };
+    case "REQUEST_BOOK":
+      return {
+        title: "Request Book",
+        message: `User ${notification.sender_id} is requesting your book ${notification.book_copy_id}`,
+        showActions: true,
+        viewBookPath: undefined,
+      };
+    case "IN_STOCK_NOTIFICATION":
+      return {
+        title: "In Stock",
+        message: `Your requested book ${notification.book_copy_id} is in stock!`,
+        showActions: false,
+        viewBookPath: `/catalog/books/${notification.book_copy_id}`,
+      };
+    default:
+      return {
+        title: "Notification",
+        message: notification.message || "You have a new notification.",
+        showActions: false,
+        viewBookPath: undefined,
+      };
+  }
+}
 
 const sidebarLinks = [
   { name: "Home", href: "/home", icon: DashboardIcon },
@@ -168,7 +226,7 @@ export default function Layout() {
                 {" "}
                 <img src={Bell} alt="Bell" className="header-icon" />
               </span>
-              <span className="notification-count">{notifications.length}</span>
+              <span className="notification-count">{notifications_sample.length}</span>
             </button>
             <button className="icon-button" aria-label="Scan barcode">
               <img
@@ -217,12 +275,37 @@ export default function Layout() {
                   <strong>Notifications</strong>
                 </div>
                 <ul>
-                  {notifications.map((item) => (
-                    <li key={item.id}>
-                      <h4>{item.title}</h4>
-                      <p>{item.message}</p>
-                    </li>
-                  ))}
+                  {notifications_sample.map((item) => {
+                    const content = getNotificationContent(item);
+
+                    return (
+                      <li key={item.id}>
+                        <h4>{content.title}</h4>
+                        <p>{content.message}</p>
+                        {content.showActions && (
+                          <div className="notification-action-row">
+                            <button className="notification-action-btn accept">
+                              Accept
+                            </button>
+                            <button className="notification-action-btn reject">
+                              Reject
+                            </button>
+                          </div>
+                        )}
+                        {content.viewBookPath && (
+                          <div className="notification-action-row">
+                            <Link
+                              to={content.viewBookPath}
+                              className="notification-action-btn accept"
+                              onClick={() => setShowNotifications(false)}
+                            >
+                              View Book
+                            </Link>
+                          </div>
+                        )}
+                      </li>
+                    );
+                  })}
                 </ul>
               </div>
             )}
