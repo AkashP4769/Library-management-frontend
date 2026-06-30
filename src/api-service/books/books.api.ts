@@ -5,6 +5,7 @@ import type { CreateBookPayload } from "./types";
 export const booksApi = libraryBaseApi.injectEndpoints({
   endpoints: (builder) => ({
     createBook: builder.mutation<{ id: number }, CreateBookPayload>({
+      // encode image before sending it to the backend
       query: (payload) => ({
         url: BASE_URL + "/books",
         method: "POST",
