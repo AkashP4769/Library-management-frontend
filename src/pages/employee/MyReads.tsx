@@ -1,12 +1,50 @@
-import BookCard from "@/Components/BookCard";
+import BookCard, { BorrowedBookCard } from "@/Components/BookCard";
 import "./MyReads.css";
 import { books } from "@/models/book";
 import { FaUser, FaEnvelope, FaPhoneAlt } from "react-icons/fa";
 import EmptyShelf from "@/Components/EmptyShelf";
+import { useState } from "react";
+import { SmallShelfCard } from "@/Components/ShelfCard";
+import { shelves } from "@/models/shelf";
+import type Shelf from "@/models/shelf";
 
 export default function MyReads() {
   const borrowedBooks = books.slice(0, 2);
   const requestedBooks = books.slice(2, 3);
+  const [showReturnPanel, setShowReturnPanel] = useState(false);
+  const [selectedBorrowId, setSelectedBorrowId] = useState<string | null>(null);
+  const [selectedShelfId, setSelectedShelfId] = useState<string | null>(null);
+  const [returnShelves, setReturnShelves] = useState<Shelf[]>([]);
+  const handleReturnClick = async (borrowId: string) => {
+    setSelectedBorrowId(borrowId);
+
+    // TODO: Fetch shelves from backend
+    // const shelves = await getReturnShelves(borrowId);
+
+    // Placeholder
+    setReturnShelves(shelves);
+
+    setSelectedShelfId(null);
+    setShowReturnPanel(true);
+  };
+  const handleConfirmReturn = async () => {
+    if (!selectedBorrowId || !selectedShelfId) return;
+
+    // TODO: Backend call
+    /*
+  await returnBook({
+    borrowId: selectedBorrowId,
+    shelfId: selectedShelfId,
+  });
+  */
+
+    // Close the panel
+    setShowReturnPanel(false);
+    setSelectedBorrowId(null);
+    setSelectedShelfId(null);
+
+    // Optional: refresh borrowed books list
+  };
 
   return (
     <div className="my-reads-page space-y-12">
@@ -65,13 +103,29 @@ export default function MyReads() {
           Manage your borrowed, requested and saved books.
         </p>
       </div>
-      {/* User Profile */}
-      <section>
-        <h1></h1>
-        <div></div>
-      </section>
-
       {/* Borrowed */}
+      <section>
+        <div className="flex justify-between items-center mb-5">
+          <h2 className="text-2xl font-bold">My Reads</h2>
+
+          <p className="text-primary font-bold cursor-pointer hover:underline">
+            VIEW ALL
+          </p>
+        </div>
+
+        <div className="grid grid-cols-5 gap-6">
+          {borrowedBooks.length ? (
+            borrowedBooks.map((book) => (
+              <BookCard
+                key={book.id} //book.borrowid
+                {...book}
+              />
+            ))
+          ) : (
+            <EmptyShelf message="No borrowed books" />
+          )}
+        </div>
+      </section>
 
       <section>
         <div className="flex justify-between items-center mb-5">
@@ -84,11 +138,53 @@ export default function MyReads() {
 
         <div className="grid grid-cols-5 gap-6">
           {borrowedBooks.length ? (
-            borrowedBooks.map((book) => <BookCard key={book.id} {...book} />)
+            borrowedBooks.map((book) => (
+              <BorrowedBookCard
+                book={book}
+                onReturnClick={handleReturnClick}
+                key={book.id} //book.borrowid
+                {...book}
+              />
+            ))
           ) : (
             <EmptyShelf message="No borrowed books" />
           )}
         </div>
+        {showReturnPanel && (
+          <div className="mt-5  rounded-2xl border border-neutral-200 bg-white p-6 shadow-lg">
+            <h2 className="text-xl font-semibold mb-4">
+              Select a shelf to return the book
+            </h2>
+
+            <div className="flex flex-wrap gap-3">
+              {returnShelves.map((shelf) => (
+                <SmallShelfCard
+                  key={shelf.id}
+                  shelf={shelf}
+                  selected={selectedShelfId === shelf.id}
+                  onClickShelf={() => setSelectedShelfId(shelf.id)}
+                />
+              ))}
+            </div>
+
+            <div className="flex justify-end gap-3">
+              <button
+                onClick={() => setShowReturnPanel(false)}
+                className="rounded-lg border border-neutral-300 px-4 py-2 hover:bg-gray-100"
+              >
+                Cancel
+              </button>
+
+              <button
+                disabled={!selectedShelfId}
+                onClick={handleConfirmReturn}
+                className="rounded-lg bg-primary px-4 py-2 text-white disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                Return
+              </button>
+            </div>
+          </div>
+        )}
       </section>
 
       {/* Requested */}
