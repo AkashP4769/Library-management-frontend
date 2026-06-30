@@ -1,6 +1,7 @@
 import type Book from "@/models/book";
 import { useEffect, useState } from "react";
 import './Home.css'
+import { books } from "@/models/book";
 import BookCard, { SmallBookCard } from "@/Components/BookCard";
 import { useGetBooksQuery } from "@/api-service/books/books.api";
 
@@ -17,26 +18,78 @@ export default function HomePage() {
     console.log("Fetched Books:", fetchedBooks);
     console.log("My Books State:", myBooks);
 
-    return <div className="home-page">
-        <div className="flex justify-between items-center">
-            <h2 className="text-2xl font-bold">My Books</h2>
-            <p className="text-primary font-bold hover:underline cursor-pointer">VIEW ALL</p>
-        </div>
-        <div className="flex flex-wrap gap-6">
-            {myBooks.length === 0 ? <p className="text-bold text-primary text-xl">No books found</p> : 
-            myBooks.map((book) => (
-                <BookCard key={book.id} {...book} />
-            ))}
+  const [showMyBooks, setShowMyBooks] = useState(false);
+  const [showAllBooks, setShowAllBooks] = useState(false);
+
+  return (
+    <div className="home-page px-4 sm:px-6 lg:px-8">
+      {/* My Books */}
+      <section>
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-xl sm:text-2xl font-bold">My Books</h2>
+
+          {myBooks.length > 5 && (
+            <button
+              onClick={() => setShowMyBooks(!showMyBooks)}
+              className="text-primary font-semibold hover:underline text-sm sm:text-base"
+            >
+              {showMyBooks ? "SHOW LESS" : "VIEW ALL"}
+            </button>
+          )}
         </div>
 
-        <div className="flex justify-between items-center mt-8">
-            <h2 className="text-2xl font-bold">Most Popular this week</h2>
-            <p className="text-primary font-bold hover:underline cursor-pointer">VIEW ALL</p>
+        <div
+          className={`grid gap-6 transition-all duration-300 overflow-hidden
+        grid-cols-1
+        sm:grid-cols-2
+        md:grid-cols-3
+        lg:grid-cols-4
+        xl:grid-cols-5
+        ${showMyBooks ? "max-h-[5000px]" : "max-h-[500px]"}
+      `}
+        >
+          {myBooks.length === 0 ? (
+            <p className="text-primary text-xl font-semibold">No books found</p>
+          ) : (
+            myBooks.map((book) => <BookCard key={book.id} {...book} />)
+          )}
         </div>
-        <div className="flex flex-wrap gap-x-6 gap-y-4 mt-4">
-            {myBooks.length === 0 ? <p className="text-bold text-primary text-xl">No books found</p> : myBooks.map((book) => (
-                <SmallBookCard key={book.id} {...book} />
-            ))}
+      </section>
+
+      {/* Popular Books */}
+      <section className="mt-12">
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-xl sm:text-2xl font-bold">
+            Most Popular This Week
+          </h2>
+
+          {myBooks.length > 5 && (
+            <button
+              onClick={() => setShowAllBooks(!showAllBooks)}
+              className="text-primary font-semibold hover:underline text-sm sm:text-base"
+            >
+              {showAllBooks ? "SHOW LESS" : "VIEW ALL"}
+            </button>
+          )}
         </div>
+
+        <div
+          className={`grid gap-4 transition-all duration-300 overflow-hidden
+        grid-cols-1
+        sm:grid-cols-1
+        md:grid-cols-2
+        lg:grid-cols-3
+        xl:grid-cols-4
+        ${showAllBooks ? "max-h-[3000px]" : "max-h-[260px]"}
+      `}
+        >
+          {myBooks.length === 0 ? (
+            <p className="text-primary text-xl font-semibold">No books found</p>
+          ) : (
+            myBooks.map((book) => <SmallBookCard key={book.id} {...book} />)
+          )}
+        </div>
+      </section>
     </div>
+  );
 }
