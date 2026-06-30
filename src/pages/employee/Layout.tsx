@@ -16,10 +16,26 @@ import { useState } from "react";
 import Chatbot from "@/components/chatbot/Chatbot";
 
 const notifications = [
-    { id: 1, title: "New book arrived", message: "The latest fiction collection is now available." },
-    { id: 2, title: "Return reminder", message: "Two borrowed books are due tomorrow." },
-    { id: 3, title: "Books Lost", message: "Two borrowed books are not to be found anywhere!" },
-     { id: 4, title: "New book arrived", message: "The latest autobiography collection is now available." },
+  {
+    id: 1,
+    title: "New book arrived",
+    message: "The latest fiction collection is now available.",
+  },
+  {
+    id: 2,
+    title: "Return reminder",
+    message: "Two borrowed books are due tomorrow.",
+  },
+  {
+    id: 3,
+    title: "Books Lost",
+    message: "Two borrowed books are not to be found anywhere!",
+  },
+  {
+    id: 4,
+    title: "New book arrived",
+    message: "The latest autobiography collection is now available.",
+  },
 ];
 
 const sidebarLinks = [
@@ -120,22 +136,29 @@ export default function Layout() {
             </h3>
           </div>
 
-                    <div className="header-actions">
-                        
-                        <button
-                            className="icon-button"
-                            onClick={() => setShowNotifications((value) => !value)}
-                            aria-label="Toggle notifications"
-                        >
-                            <span className="notification-bell"> <img src={Bell} alt="Bell" className="header-icon"  /></span>
-                            <span className="notification-count">{notifications.length}</span>
-                        </button>
-                        <button className="icon-button" aria-label="Scan barcode">
-                            <img src={BarcodeIcon} alt="Barcode" className="header-icon" id="barcode-icon" />
-                        </button>
-                        <button className="icon-button" aria-label="Open profile">
-                            <img src={ProfileIcon} alt="Profile" className="header-icon" />
-                        </button>
+          <div className="header-actions">
+            <button
+              className="icon-button"
+              onClick={() => setShowNotifications((value) => !value)}
+              aria-label="Toggle notifications"
+            >
+              <span className="notification-bell">
+                {" "}
+                <img src={Bell} alt="Bell" className="header-icon" />
+              </span>
+              <span className="notification-count">{notifications.length}</span>
+            </button>
+            <button className="icon-button" aria-label="Scan barcode">
+              <img
+                src={BarcodeIcon}
+                alt="Barcode"
+                className="header-icon"
+                id="barcode-icon"
+              />
+            </button>
+            <button className="icon-button" aria-label="Open profile">
+              <img src={ProfileIcon} alt="Profile" className="header-icon" />
+            </button>
 
             {showNotifications && (
               <div className="notification-banner">
