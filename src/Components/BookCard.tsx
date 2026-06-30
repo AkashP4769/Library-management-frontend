@@ -39,7 +39,7 @@ function SmallBookCard(book: Book) {
   return (
     <div
       key={book.id}
-      className="flex h-60 w-90 items-center rounded-2xl justify-center large-book-card-padding border-2 border-neutral-200 hover:bg-white duration-200"
+      className="flex h-60 w-full items-center rounded-2xl justify-center large-book-card-padding border-2 border-neutral-200 hover:bg-white duration-200"
     >
       <div className="flex h-[90%] w-[90%] items-center justify-between large-book-card-padding">
         <img
