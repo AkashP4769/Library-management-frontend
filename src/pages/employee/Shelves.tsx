@@ -1,14 +1,22 @@
 import ShelfCard from "@/Components/ShelfCard";
 import type Shelf from "@/models/shelf";
-import { shelves as initialShelves } from "@/models/shelf";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import './Shelves.css'
+import { useGetShelvesQuery } from "@/api-service/shelf/shelf.api";
 
 
 
 export default function ShelvesPage() {
-    const [shelves, setShelves] = useState<Shelf[]>(initialShelves);
+    const { data: fetchedShelves } = useGetShelvesQuery();
+    const [shelves, setShelves] = useState<Shelf[]>([]);
+
+    useEffect(() => {
+        if (fetchedShelves) {
+            console.log("Fetched Shelves:", fetchedShelves);
+            setShelves(fetchedShelves);
+        }
+    }, [fetchedShelves]);
 
     return <div className="shelves-page">
         <section className="shelves-section">

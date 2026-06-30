@@ -34,7 +34,7 @@ export function bookResponseToBook(bookResponse: BookResponse): Book {
         publisher: bookResponse.publisher,
         language: bookResponse.language,
         description: bookResponse.description,
-        image_url: bookResponse.image_url.startsWith('/uploads/') ? BASE_URL + bookResponse.image_url : bookResponse.image_url,
+        image_url: bookResponse.image_url ? bookResponse.image_url.startsWith('/uploads/') ? BASE_URL + bookResponse.image_url : bookResponse.image_url : "https://www.forewordreviews.com/books/covers/how-to-start-and-operate-an-internet-used-book-store-without-spending-a-fortune.jpg",
         rating: 0, // Assuming rating is not part of the response, set it to a default value
         createdAt: bookResponse.createdAt,
         updatedAt: bookResponse.updatedAt
