@@ -1,10 +1,11 @@
 type TextInputProps = {
   label: string;
   name: string;
-  value: string;
+  value: string | number;
   placeholder?: string;
   required?: boolean;
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  type?: string;
 };
 
 export function TextInput({
@@ -14,6 +15,7 @@ export function TextInput({
   placeholder,
   required,
   onChange,
+  type
 }: TextInputProps) {
   return (
     <div className="flex flex-col gap-2">
@@ -28,6 +30,7 @@ export function TextInput({
         id={name}
         name={name}
         value={value}
+        type={type}
         onChange={onChange}
         placeholder={placeholder}
         required={required}

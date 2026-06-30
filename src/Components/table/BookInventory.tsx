@@ -29,15 +29,15 @@ type Props = {
 export function BookRow({ item }: Props) {
     const { book, shelf } = item;
 
-    const imageUrl = book.image_url.startsWith('/uploads/') ? BASE_URL + book.image_url : book.image_url;
-    console.log('Image URL:', imageUrl); // Debugging line to check the image URL
+    // const imageUrl = book.image_url.startsWith('/uploads/') ? BASE_URL + book.image_url : book.image_url;
+    // console.log('Image URL:', imageUrl); // Debugging line to check the image URL
 
     return (
         <tr className="border-b border-neutral-300 hover:bg-gray-50">
             <td className="py-3">
                 <div className="flex px-6 items-center gap-4">
                     <img
-                        src={imageUrl}
+                        src={book.image_url}
                         alt={book.title}
                         className="h-24 w-20 rounded object-cover shadow"
                     />

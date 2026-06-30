@@ -1,6 +1,6 @@
 import type Book from "@/models/book";
 import type Shelf from "@/models/shelf";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import {
     Dialog,
@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/dialog";
 import { books } from "@/models/book";
 import { shelves } from "@/models/shelf";
+import { useGetBooksQuery } from "@/api-service/books/books.api";
 
 type BookToShelfRecord = {
     book: Book;
@@ -77,7 +78,7 @@ export function ShelfCard({
             "
         >
             <img
-                src={shelf.image}
+                src={shelf.image_url}
                 className="h-20 w-14 rounded object-cover"
             />
             <div>
@@ -210,6 +211,14 @@ export function ShelfPicker({
 }
 
 export function AddBookToShelfForm() {
+    const { data: fetchedBooks } = useGetBooksQuery();
+    const [inventoryBooks, setInventoryBooks] = useState<Book[]>([]);
+
+    useEffect(() => {
+        if (fetchedBooks) {
+            setInventoryBooks(fetchedBooks);
+        }
+    }, [fetchedBooks]);
 
     const [bookToShelfRecords, setBookToShelfRecords] = useState<
         BookToShelfRecord[]
@@ -281,7 +290,7 @@ export function AddBookToShelfForm() {
         <div className="space-y-6 w-full rounded-xl border border-neutral-100 bg-white p-6 shadow-sm">
             <BookPicker
                 open={bookDialog}
-                books={books}
+                books={inventoryBooks}
                 onClose={() => setBookDialog(false)}
                 onSelect={setSelectedBook}
             />
