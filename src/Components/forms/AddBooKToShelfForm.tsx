@@ -8,8 +8,6 @@ import {
     DialogHeader,
     DialogTitle,
 } from "@/components/ui/dialog";
-import { books } from "@/models/book";
-import { shelves } from "@/models/shelf";
 import { useAddBookToShelfMutation, useGetBooksQuery } from "@/api-service/books/books.api";
 import { useGetShelvesQuery } from "@/api-service/shelf/shelf.api";
 import type { BookToShelfPayload } from "@/api-service/books/types";
