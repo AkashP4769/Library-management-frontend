@@ -14,7 +14,7 @@ export const loginApi = libraryBaseApi.injectEndpoints({
 
     signup: builder.mutation<LoginResponse, SignupPayload>({
       query: (payload) => ({
-        url: BASE_URL + "/auth/register",
+        url: BASE_URL + "/auth/signup",
         method: "POST",
         body: payload
       }),
