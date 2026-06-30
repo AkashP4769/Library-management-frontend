@@ -35,11 +35,19 @@ export default function LoginPage() {
 
       const access_token = response.access_token;
       const refresh_token = response.refresh_token;
+      const userName =
+        response?.user?.name ||
+        response?.user?.username ||
+        response?.name ||
+        response?.username ||
+        (payload.email ? payload.email.split("@")[0] : "User");
 
       if(access_token && refresh_token){
           console.log("access_token & refresh token", access_token && refresh_token);
           localStorage.setItem("access_token", access_token);
           localStorage.setItem("refresh_token", refresh_token);
+          localStorage.setItem("username", userName);
+          localStorage.setItem("email", payload.email);
           navigate("/", {replace: true});
       }
     } catch (error) {

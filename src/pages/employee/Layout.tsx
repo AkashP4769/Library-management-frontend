@@ -12,14 +12,30 @@ import Bell from "@assets/icons/Bell.png";
 import BarcodeIcon from "@assets/icons/Barcode.png";
 import SettingsIcon from "@assets/icons/sidebar_setting.svg";
 import LogoutIcon from "@assets/icons/sidebar_logout.svg";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Chatbot from "@/components/chatbot/Chatbot";
 
 const notifications = [
-    { id: 1, title: "New book arrived", message: "The latest fiction collection is now available." },
-    { id: 2, title: "Return reminder", message: "Two borrowed books are due tomorrow." },
-    { id: 3, title: "Books Lost", message: "Two borrowed books are not to be found anywhere!" },
-     { id: 4, title: "New book arrived", message: "The latest autobiography collection is now available." },
+  {
+    id: 1,
+    title: "New book arrived",
+    message: "The latest fiction collection is now available.",
+  },
+  {
+    id: 2,
+    title: "Return reminder",
+    message: "Two borrowed books are due tomorrow.",
+  },
+  {
+    id: 3,
+    title: "Books Lost",
+    message: "Two borrowed books are not to be found anywhere!",
+  },
+  {
+    id: 4,
+    title: "New book arrived",
+    message: "The latest autobiography collection is now available.",
+  },
 ];
 
 const sidebarLinks = [
@@ -69,9 +85,31 @@ function SidebarLink({
 export default function Layout() {
   const [selectedLink, setSelectedLink] = useState<string>("Home");
   const [showNotifications, setShowNotifications] = useState(false);
+  const [showProfileBanner, setShowProfileBanner] = useState(false);
   const [openChatbot, setOpenChatbot] = useState(false);
+  const [username, setUsername] = useState("User");
+
+  useEffect(() => {
+    const storedUsername =
+      localStorage.getItem("username") ||
+      localStorage.getItem("userName") ||
+      localStorage.getItem("email") ||
+      "User";
+
+    const displayName = storedUsername.includes("@")
+      ? storedUsername.split("@")[0]
+      : storedUsername;
+
+    setUsername(displayName);
+  }, []);
+
   function handleChatbotComponent() {
     setOpenChatbot((prev) => !prev);
+  }
+
+  function handleProfileToggle() {
+    setShowProfileBanner((prev) => !prev);
+    setShowNotifications(false);
   }
 
   return (
@@ -120,22 +158,58 @@ export default function Layout() {
             </h3>
           </div>
 
-                    <div className="header-actions">
-                        
-                        <button
-                            className="icon-button"
-                            onClick={() => setShowNotifications((value) => !value)}
-                            aria-label="Toggle notifications"
-                        >
-                            <span className="notification-bell"> <img src={Bell} alt="Bell" className="header-icon"  /></span>
-                            <span className="notification-count">{notifications.length}</span>
-                        </button>
-                        <button className="icon-button" aria-label="Scan barcode">
-                            <img src={BarcodeIcon} alt="Barcode" className="header-icon" id="barcode-icon" />
-                        </button>
-                        <button className="icon-button" aria-label="Open profile">
-                            <img src={ProfileIcon} alt="Profile" className="header-icon" />
-                        </button>
+          <div className="header-actions">
+            <button
+              className="icon-button"
+              onClick={() => setShowNotifications((value) => !value)}
+              aria-label="Toggle notifications"
+            >
+              <span className="notification-bell">
+                {" "}
+                <img src={Bell} alt="Bell" className="header-icon" />
+              </span>
+              <span className="notification-count">{notifications.length}</span>
+            </button>
+            <button className="icon-button" aria-label="Scan barcode">
+              <img
+                src={BarcodeIcon}
+                alt="Barcode"
+                className="header-icon"
+                id="barcode-icon"
+              />
+            </button>
+            <button
+              className="icon-button"
+              onClick={handleProfileToggle}
+              aria-label="Open profile"
+            >
+              <img src={ProfileIcon} alt="Profile" className="header-icon" />
+            </button>
+
+            {showProfileBanner && (
+              <div className="profile-banner">
+                <div className="profile-banner-header">
+                  <div className="profile-banner-avatar">
+                    <img src={ProfileIcon} alt="Profile avatar" />
+                  </div>
+                  <div>
+                    <strong>Profile</strong>
+                    <p className="profile-banner-name">{username}</p>
+                  </div>
+                </div>
+                <div className="profile-banner-body">
+                  <Link
+                    to="/profile"
+                    className="profile-banner-button"
+                    onClick={() =>{setShowProfileBanner(false);
+                        setSelectedLink("Profile")
+                    } }
+                  >
+                    Go to Profile
+                  </Link>
+                </div>
+              </div>
+            )}
 
             {showNotifications && (
               <div className="notification-banner">
