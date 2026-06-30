@@ -18,6 +18,7 @@ function RatingBadge({ rating }: { rating: number }) {
     );
 }
 
+import { BASE_URL } from "@/api-service/api";
 import type { BookInventory } from "@/models/bookInventory";
 import { Pencil, Trash2 } from "lucide-react";
 
@@ -28,12 +29,15 @@ type Props = {
 export function BookRow({ item }: Props) {
     const { book, shelf } = item;
 
+    const imageUrl = book.image_url.startsWith('/uploads/') ? BASE_URL + book.image_url : book.image_url;
+    console.log('Image URL:', imageUrl); // Debugging line to check the image URL
+
     return (
         <tr className="border-b border-neutral-300 hover:bg-gray-50">
             <td className="py-3">
                 <div className="flex px-6 items-center gap-4">
                     <img
-                        src={book.image}
+                        src={imageUrl}
                         alt={book.title}
                         className="h-24 w-20 rounded object-cover shadow"
                     />

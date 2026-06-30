@@ -20,5 +20,5 @@ export type CreateBookPayload = {
     publisher: string;
     language: string;
     description: string;
-    image: string;
+    image?: File | null;
 };
