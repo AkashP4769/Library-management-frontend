@@ -14,6 +14,7 @@ import SettingsIcon from "@assets/icons/sidebar_setting.svg";
 import LogoutIcon from "@assets/icons/sidebar_logout.svg";
 import { useEffect, useState } from "react";
 import Chatbot from "@/components/chatbot/Chatbot";
+import ISBNScanner from "@/components/scanner/ISBNScanner";
 
 const notifications_sample = [
 {
@@ -141,6 +142,7 @@ function SidebarLink({
 }
 
 export default function Layout() {
+  const [showScanner, setShowScanner] = useState(false);
   const [selectedLink, setSelectedLink] = useState<string>("Home");
   const [showNotifications, setShowNotifications] = useState(false);
   const [showProfileBanner, setShowProfileBanner] = useState(false);
@@ -169,6 +171,10 @@ export default function Layout() {
     setShowProfileBanner((prev) => !prev);
     setShowNotifications(false);
   }
+  const handleScan = async (isbn: string) => {
+    console.log(isbn);
+
+    setShowScanner(false);}
 
   return (
     <div className="layout">
@@ -228,7 +234,7 @@ export default function Layout() {
               </span>
               <span className="notification-count">{notifications_sample.length}</span>
             </button>
-            <button className="icon-button" aria-label="Scan barcode">
+            <button className="icon-button" aria-label="Scan barcode" onClick={()=>setShowScanner(true)}>
               <img
                 src={BarcodeIcon}
                 alt="Barcode"
@@ -267,6 +273,21 @@ export default function Layout() {
                   </Link>
                 </div>
               </div>
+            )}
+            {showScanner && (
+                <div className="scanner-overlay">
+                    <div className="scanner-modal">
+
+                        <h2>Scan ISBN</h2>
+
+                        <ISBNScanner onScan={handleScan} />
+
+                        <button onClick={() => setShowScanner(false)}>
+                            Close
+                        </button>
+
+                    </div>
+                </div>
             )}
 
             {showNotifications && (
