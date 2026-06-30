@@ -56,3 +56,39 @@ export type BookToShelfPayload = {
     shelf_id: number;
     quantity: number;
 };
+
+export type InventoryBookItem = {
+    isbn: string;
+    title: string;
+    author: string;
+    genre: string;
+    publisher: string;
+    language: string;
+    image_url: string;
+    shelf_id: number;
+    shelf_code: string;
+    office_location: string;
+    total_copies: number;
+    available_copies: number;
+    borrowed_copies: number;
+    average_rating: number;
+}
+
+export function responseToInventoryBookItem(item: any): InventoryBookItem {
+    return {
+        isbn: item.isbn,
+        title: item.title,
+        author: item.author,
+        genre: item.genre,
+        publisher: item.publisher,
+        language: item.language,
+        image_url: item.image_url ? item.image_url.startsWith('/uploads/') ? BASE_URL + item.image_url : item.image_url : "https://www.forewordreviews.com/books/covers/how-to-start-and-operate-an-internet-used-book-store-without-spending-a-fortune.jpg",
+        shelf_id: item.shelf_id,
+        shelf_code: item.shelf_code,
+        office_location: item.office_location,
+        total_copies: item.total_copies,
+        available_copies: item.available_copies,
+        borrowed_copies: item.borrowed_copies,
+        average_rating: item.average_rating
+    };
+}

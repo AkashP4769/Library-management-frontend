@@ -13,8 +13,8 @@ import BarcodeIcon from "@assets/icons/Barcode.png";
 import SettingsIcon from "@assets/icons/sidebar_setting.svg";
 import LogoutIcon from "@assets/icons/sidebar_logout.svg";
 import { useEffect, useState } from "react";
-import Chatbot from "@/Components/chatbot/Chatbot";
-import ISBNScanner from "@/Components/scanner/ISBNScanner";
+import Chatbot from "@/components/chatbot/Chatbot";
+import ISBNScanner from "@/components/scanner/ISBNScanner";
 import { useLazyGetBookbyOpenLibraryAPIQuery } from "@/api-service/books/books.api";
 
 

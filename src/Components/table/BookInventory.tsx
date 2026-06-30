@@ -19,15 +19,15 @@ function RatingBadge({ rating }: { rating: number }) {
 }
 
 import { BASE_URL } from "@/api-service/api";
+import type { InventoryBookItem } from "@/api-service/books/types";
 import type { BookInventory } from "@/models/bookInventory";
 import { Pencil, Trash2 } from "lucide-react";
 
 type Props = {
-    item: BookInventory;
+    item: InventoryBookItem;
 };
 
 export function BookRow({ item }: Props) {
-    const { book, shelf } = item;
 
     // const imageUrl = book.image_url.startsWith('/uploads/') ? BASE_URL + book.image_url : book.image_url;
     // console.log('Image URL:', imageUrl); // Debugging line to check the image URL
@@ -37,41 +37,41 @@ export function BookRow({ item }: Props) {
             <td className="py-3">
                 <div className="flex px-6 items-center gap-4">
                     <img
-                        src={book.image_url}
-                        alt={book.title}
+                        src={item.image_url}
+                        alt={item.title}
                         className="h-24 w-20 rounded object-cover shadow"
                     />
 
                     <div>
                         <p className="font-semibold">
-                            {book.title}
+                            {item.title}
                         </p>
 
                         <p className="text-sm text-gray-500">
-                            {book.author}
+                            {item.author}
                         </p>
                     </div>
                 </div>
             </td>
 
-            <td>{book.genre}</td>
+            <td>{item.genre}</td>
 
-            <td>{book.publisher}</td>
+            <td>{item.publisher}</td>
 
             <td>
                 <div className="font-medium">
-                    {shelf.office_location}
+                    {item.office_location}
                 </div>
 
                 <div className="text-sm text-gray-500">
-                    Shelf {shelf.shelf_code}
+                    Shelf {item.shelf_code}
                 </div>
             </td>
 
-            <td>{book.language}</td>
+            <td>{item.language}</td>
 
             <td>
-                <RatingBadge rating={book.rating} />
+                <RatingBadge rating={item.average_rating} />
             </td>
 
             <td>
@@ -90,7 +90,7 @@ export function BookRow({ item }: Props) {
 }
 
 type InventoryTableProps = {
-    books: BookInventory[];
+    books: InventoryBookItem[];
 };
 
 export function InventoryTable({
@@ -125,7 +125,7 @@ export function InventoryTable({
                     <tbody>
                         {books.map((item) => (
                             <BookRow
-                                key={item.book.id}
+                                key={item.id}
                                 item={item}
                             />
                         ))}
