@@ -36,7 +36,7 @@ function SmallShelfCard({
   return (
     <button
       onClick={onClickShelf}
-      className={`flex h-20 w-70  justify-center rounded-2xl 
+      className={`flex h-15 w-90  justify-center rounded-2xl 
         transition-all border 
         ${
           selected

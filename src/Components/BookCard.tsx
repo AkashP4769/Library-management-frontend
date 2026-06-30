@@ -60,9 +60,9 @@ function LargeBookCard(book: Book) {
   return (
     <div
       key={book.id}
-      className="flex flex-col h-120 items-center rounded-2xl justify-center px-4 py-4 border-2 border-neutral-200 bg-white"
+      className="flex flex-col h-120 items-center rounded-2xl justify-center border-2 border-neutral-200 bg-white large-book-card-padding"
     >
-      <div className="flex flex-col h-[90%] w-[90%]  items-start justify-between px-4 py-4">
+      <div className="flex flex-col h-[95%] w-[95%]  items-start justify-between large-book-card-padding">
         <img
           src={book.image}
           alt={book.title}
