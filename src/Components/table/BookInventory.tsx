@@ -29,13 +29,13 @@ export function BookRow({ item }: Props) {
     const { book, shelf } = item;
 
     return (
-        <tr className="border-b hover:bg-gray-50">
-            <td className="py-5">
-                <div className="flex items-center gap-4">
+        <tr className="border-b border-neutral-300 hover:bg-gray-50">
+            <td className="py-3">
+                <div className="flex px-6 items-center gap-4">
                     <img
                         src={book.image}
                         alt={book.title}
-                        className="h-16 w-12 rounded object-cover shadow"
+                        className="h-24 w-20 rounded object-cover shadow"
                     />
 
                     <div>
@@ -93,7 +93,7 @@ export function InventoryTable({
     books,
 }: InventoryTableProps) {
     return (
-        <div className="overflow-hidden rounded-2xl border bg-white shadow-sm">
+        <div className="overflow-hidden rounded-2xl  border-neutral-100 bg-white shadow-sm">
             <div className="flex items-center justify-between border-b p-5">
                 <h2 className="text-xl font-semibold">
                     Library Inventory

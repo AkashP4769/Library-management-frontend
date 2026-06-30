@@ -13,6 +13,7 @@ export default interface Book {
 }
 
 export type CreateBookPayload = {
+    isbn: string;
     title: string;
     author: string;
     genre: string;

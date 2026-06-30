@@ -41,10 +41,16 @@ export function AddBookForm() {
   };
 
   return (
-    <div className="w-full bg-white p-6 shadow-sm rounded-xl">
-      <h2 className="mb-6 w-full text-2xl font-bold">
-        Add New Book
-      </h2>
+    <div className="w-full p-6 rounded-xl bg-white shadow-sm ">
+      <div className="flex justify-between">
+        <h2 className="mb-6 w-full text-2xl font-bold">
+          Add New Book
+        </h2>
+        <button>
+            <img src="" alt="" />
+            <p>Scan ISBN</p>
+        </button>
+      </div>
 
       <form
         onSubmit={handleSubmit}

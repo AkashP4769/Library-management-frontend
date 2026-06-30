@@ -56,20 +56,20 @@ function AddBookToShelves(){
 
 function BookArchive({ setPageState }: { setPageState: React.Dispatch<React.SetStateAction<'inventory' | 'new-book'>> }) {
     return (
-        <div className="flex flex-col gap-4 mt-6">
-            <div className="flex justify-between items-center">
+        <div className="flex flex-col h-full gap-4 mt-6">
+            <div className="flex justify-between  items-center">
                 <div className="flex flex-col items-start">
                     <h1 className="text-3xl font-bold">Book Archives</h1>
                     <p className="text-gray-600">Centralized tracking of all books in the library.</p>
                 </div>
-                <div className="flex flex-1 justify-end h-full gap-4">
-                    <button className='w-32 flex justify-center items-center bg-tertiary-container text-white py-8 px-10 rounded-2xl hover:bg-tertiary-hover border border-tertiary'>
-                        <MdOutlineUploadFile className="inline-block mr-1" />
+                <div className="flex flex-1 justify-end items-center h-[50%] gap-4">
+                    <button className='w-40 h-full py-6 flex justify-center items-center bg-tertiary-container text-white rounded-2xl hover:bg-tertiary-hover border border-tertiary'>
+                        <MdOutlineUploadFile size={24} className="inline-block mr-1" />
                         <p className="text-sm font-semibold text-primary">Bulk import</p>
                     </button>
 
-                    <button onClick={() => setPageState('new-book')} className='w-32 flex justify-center items-center bg-primary-container text-white py-2 px-4 rounded-2xl hover:bg-primary-hover border border-primary'>
-                        <HiMiniPlus className="inline-block mr-1" />
+                    <button onClick={() => setPageState('new-book')} className='w-40 h-full py-6 flex justify-center items-center bg-primary-container text-white rounded-2xl hover:bg-primary-hover border border-primary'>
+                        <HiMiniPlus size={30} className="inline-block mr-1" />
                         <p className="text-sm font-semibold text-primary">Add New Book</p>
                     </button>
                 </div>
