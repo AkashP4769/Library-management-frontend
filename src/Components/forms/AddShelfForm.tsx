@@ -76,33 +76,38 @@ export function AddShelfForm() {
         onSubmit={handleSubmit}
         className="space-y-5 w-full self-center"
       >
-        <div className="grid gap-5 md:grid-cols-3">
-          <TextInput
-            label="Shelf Code"
-            name="shelf_code"
-            value={shelf.shelf_code}
-            onChange={handleChange}
-            required
-          />
+        <div className="flex md:grid-cols-3">
+          <div className="w-100">
+            <ShelfImagePreview preview={preview} handleImageChange={handleImageChange} />
+          </div>
 
-          <TextInput
-            label="Office Location"
-            name="office_location"
-            value={shelf.office_location}
-            onChange={handleChange}
-            required
-          />
+          <div className="flex flex-col gap-4">
+              <TextInput
+              label="Shelf Code"
+              name="shelf_code"
+              value={shelf.shelf_code}
+              onChange={handleChange}
+              required
+            />
 
-          <TextInput
-            label="Capacity"
-            name="capacity"
-            type="number"
-            value={shelf.capacity}
-            onChange={handleChange}
-            required
-          />
+            <TextInput
+              label="Office Location"
+              name="office_location"
+              value={shelf.office_location}
+              onChange={handleChange}
+              required
+            />
 
-          <BookImagePreview preview={preview} handleImageChange={handleImageChange} />
+            <TextInput
+              label="Capacity"
+              name="capacity"
+              type="number"
+              value={shelf.capacity}
+              onChange={handleChange}
+              required
+            />
+          </div>
+
         </div>
 
         <div className="flex justify-end">
@@ -126,29 +131,27 @@ export function AddShelfForm() {
   );
 }
 
-function BookImagePreview({ preview, handleImageChange }: { preview: string | null; handleImageChange: (e: React.ChangeEvent<HTMLInputElement>) => void }) {
+function ShelfImagePreview({ preview, handleImageChange }: { preview: string | null; handleImageChange: (e: React.ChangeEvent<HTMLInputElement>) => void }) {
   return (
     <div className="flex flex-col h-full gap-2">
-      <label className="text-sm ml-2 font-medium">
-          Book Cover
-      </label>
 
-      <div className="flex flex-1 items-center justify-start gap-6 rounded-lg  border-neutral-300">
-          <div className="h-full w-40 overflow-hidden rounded-lg border bg-gray-100">
+
+      <div className="flex flex-col mr-8 flex-1 items-start justify-start gap-6 rounded-lg  border-neutral-300">
+          <div className="h-full w-full overflow-hidden rounded-lg border bg-gray-100">
               {preview ? (
                   <img
                       src={preview}
                       alt="Preview"
-                      className="h-full w-full object-cover"
+                      className="h-64 w-full object-cover"
                   />
               ) : (
-                  <div className="flex h-full items-center justify-center text-sm text-gray-400">
+                  <div className="flex h-full w-full items-center justify-center text-sm text-gray-400">
                       No Image
                   </div>
               )}
           </div>
 
-          <label className="cursor-pointer rounded-lg border px-4 py-2 hover:bg-gray-50">
+          <label className="cursor-pointer w-full flex justify-center items-center rounded-lg border px-4 py-2 hover:bg-gray-50">
               Select Image
 
               <input
