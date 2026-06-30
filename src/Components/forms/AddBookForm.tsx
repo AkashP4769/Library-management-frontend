@@ -72,7 +72,7 @@ export function AddBookForm() {
 
     console.log(book);
 
-    // createBook(formData as unknown as CreateBookPayload);
+    createBook(formData as unknown as CreateBookPayload);
     const response = true;
 
     if (response) {
