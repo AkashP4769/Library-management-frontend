@@ -1,7 +1,7 @@
 import libraryBaseApi from "../api"
 import { BASE_URL } from "../api";
 import type BookResponse from "./types";
-import type { CreateBookPayload } from "./types";
+import type { BookToShelfPayload, CreateBookPayload } from "./types";
 import { bookResponseToBook } from "./types";
 import type Book from "@/models/book";
 
@@ -35,7 +35,15 @@ export const booksApi = libraryBaseApi.injectEndpoints({
         return response.map((bookResponse) => bookResponseToBook(bookResponse));
       }
     }),
+
+    addBookToShelf: builder.mutation<void, BookToShelfPayload[]>({
+      query: (payload) => ({
+        url: BASE_URL + `/book-copies`,
+        method: "POST",
+        body: payload
+      }),
+    }),
   }),
 });
 
-export const { useCreateBookMutation, useGetBookQuery, useGetBooksQuery } = booksApi;
+export const { useCreateBookMutation, useGetBookQuery, useGetBooksQuery, useAddBookToShelfMutation } = booksApi;
