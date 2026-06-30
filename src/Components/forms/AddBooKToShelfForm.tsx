@@ -37,7 +37,7 @@ export function BookCard({
             "
         >
             <img
-                src={book.image}
+                src={book.image_url}
                 className="h-20 w-14 rounded object-cover"
             />
 
@@ -404,7 +404,7 @@ export function AddBookToShelfForm() {
                                     <td className="px-4 py-4">
                                         <div className="flex items-center gap-3">
                                             <img
-                                                src={record.book.image}
+                                                src={record.book.image_url}
                                                 alt={
                                                     record.book.title
                                                 }

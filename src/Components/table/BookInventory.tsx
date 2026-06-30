@@ -33,7 +33,7 @@ export function BookRow({ item }: Props) {
             <td className="py-3">
                 <div className="flex px-6 items-center gap-4">
                     <img
-                        src={book.image}
+                        src={book.image_url}
                         alt={book.title}
                         className="h-24 w-20 rounded object-cover shadow"
                     />

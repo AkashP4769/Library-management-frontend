@@ -9,7 +9,7 @@ export const booksApi = libraryBaseApi.injectEndpoints({
       query: (payload) => ({
         url: BASE_URL + "/books",
         method: "POST",
-        body: payload
+        body: payload 
       }),
     }),
 

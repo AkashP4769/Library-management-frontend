@@ -55,9 +55,23 @@ export function AddBookForm() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
+    const formData = new FormData();
+
+    formData.append("isbn", book.isbn);
+    formData.append("title", book.title);
+    formData.append("author", book.author);
+    formData.append("genre", book.genre);
+    formData.append("publisher", book.publisher);
+    formData.append("language", book.language);
+    formData.append("description", book.description);
+
+    if (book.image) {
+        formData.append("image", book.image);
+    }
+
     console.log(book);
 
-    // createBook(book);
+    createBook(formData as unknown as CreateBookPayload);
   };
 
   return (
