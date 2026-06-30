@@ -50,3 +50,9 @@ export function bookResponseToBook(bookResponse: BookResponse): Book {
         updatedAt: bookResponse.updatedAt
     };
 }
+
+export type BookToShelfPayload = {
+    isbn: string;
+    shelf_id: number;
+    quantity: number;
+};
