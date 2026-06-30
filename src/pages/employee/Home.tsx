@@ -1,11 +1,21 @@
 import type Book from "@/models/book";
-import { books } from "@/models/book";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import './Home.css'
 import BookCard, { SmallBookCard } from "@/Components/BookCard";
+import { useGetBooksQuery } from "@/api-service/books/books.api";
 
 export default function HomePage() {
-    const [myBooks, setMyBooks] = useState<Book[]>([...books]);
+    const { data: fetchedBooks } = useGetBooksQuery();
+    const [myBooks, setMyBooks] = useState<Book[]>([]);
+
+    useEffect(() => {
+        if (fetchedBooks) {
+            setMyBooks(fetchedBooks);
+        }
+    }, [fetchedBooks]);
+
+    console.log("Fetched Books:", fetchedBooks);
+    console.log("My Books State:", myBooks);
 
     return <div className="home-page">
         <div className="flex justify-between items-center">
