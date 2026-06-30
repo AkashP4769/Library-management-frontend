@@ -8,7 +8,7 @@ export default function ShelfCard(shelf: Shelf) {
     >
       <div className="flex flex-col h-[90%] w-[90%] items-start justify-between large-book-card-padding">
         <img
-          src={shelf.image}
+          src={shelf.image_url}
           alt={shelf.shelf_code}
           className=" h-[75%] w-full object-cover rounded-2xl"
         />
@@ -46,7 +46,7 @@ function SmallShelfCard({
     >
       <div className="flex justify-between gap-2">
         <img
-          src={shelf.image}
+          src={shelf.image_url}
           alt={shelf.shelf_code}
           className=" h-full w-3/5 object-cover rounded-l-2xl"
         />

@@ -2,15 +2,25 @@ import type Book from "@/models/book";
 import type Shelf from "@/models/shelf";
 import { books as initialBooks } from "@/models/book";
 import { shelves as initialShelves } from "@/models/shelf";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import './Catalog.css'
 import BookCard from "@/Components/BookCard";
 import ShelfCard from "@/Components/ShelfCard";
+import { useGetBooksQuery } from "@/api-service/books/books.api";
 
 
 export default function CatalogPage() {
-    const [books, setBooks] = useState<Book[]>(initialBooks);
+    const { data: fetchedBooks } = useGetBooksQuery();
     const [shelves, setShelves] = useState<Shelf[]>(initialShelves);
+
+    const [books, setBooks] = useState<Book[]>([]);
+
+    useEffect(() => {
+        if (fetchedBooks) {
+            setBooks([...fetchedBooks, ...fetchedBooks]);
+        }
+    }, [fetchedBooks]);
+    
 
     return <div className="catalog-page">
         <section className="books-section">

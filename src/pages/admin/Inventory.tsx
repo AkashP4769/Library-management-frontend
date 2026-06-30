@@ -7,9 +7,12 @@ import './Inventory.css'
 import type { BookInventory } from "@/models/bookInventory";
 import { books as initialBooks } from "@/models/book";
 import { shelves as initialShelves } from "@/models/shelf";
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { AddBookToShelfForm } from '@/Components/forms/AddBooKToShelfForm';
 import { InventoryTable } from '@/Components/table/BookInventory';
+import { useGetBooksQuery } from '@/api-service/books/books.api';
+import type Book from '@/models/book';
+import { AddShelfForm } from '@/Components/forms/AddShelfForm';
 
 const books: BookInventory[] = initialBooks.map((book, index) => ({
     book,
@@ -40,8 +43,9 @@ export default function InventoryPage() {
 
 function NewBook() {
     return (
-        <div className= "flex justify-center items-center">
+        <div className= "flex flex-col justify-center items-center gap-6">
             <AddBookForm />
+            <AddShelfForm />
         </div>
     );
 }
@@ -55,6 +59,15 @@ function AddBookToShelves(){
 }
 
 function BookArchive({ setPageState }: { setPageState: React.Dispatch<React.SetStateAction<'inventory' | 'new-book'>> }) {
+    const { data: fetchedBooks } = useGetBooksQuery();
+    const [inventoryBooks, setInventoryBooks] = useState<Book[]>([]);
+
+    useEffect(() => {
+        if (fetchedBooks) {
+            setInventoryBooks(fetchedBooks);
+        }
+    }, [fetchedBooks]);
+
     return (
         <div className="flex flex-col h-full gap-4 mt-6">
             <div className="flex justify-between  items-center">
