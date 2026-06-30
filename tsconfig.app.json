@@ -22,7 +22,7 @@
     "noFallthroughCasesInSwitch": true,
     "paths": {
       "@/*": ["./src/*"],
-      "@components/*": ["./src/components/*"],
+      "@components/*": ["@/components/*"],
       "@pages/*": ["./src/pages/*"],
       "@images/*": ["./src/assets/images/*"],
       "@store/*": ["./src/store/*"],
@@ -30,5 +30,5 @@
       "@api-services/*": ["./src/api-services/*"]
     }
   },
-  "include": ["src"]
+  "include": ["src", "@/components/ui", "@/components"]
 }

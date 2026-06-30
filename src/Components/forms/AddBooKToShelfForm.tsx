@@ -32,8 +32,8 @@ export function BookCard({
             className="
                 flex w-full gap-4 rounded-lg border p-3
                 text-left transition
-                hover:border-blue-500
-                hover:bg-blue-50
+                hover:border-amber-500
+                hover:bg-amber-50
             "
         >
             <img
@@ -71,22 +71,28 @@ export function ShelfCard({
         <button
             onClick={() => onSelect?.(shelf)}
             className="
-                w-full rounded-lg border p-4 text-left
-                transition hover:border-blue-500
-                hover:bg-blue-50
+                w-full flex gap-6 rounded-lg border p-4 text-left
+                transition hover:border-amber-500
+                hover:bg-amber-50
             "
         >
-            <h3 className="font-medium">
-                {shelf.office_location}
-            </h3>
+            <img
+                src={shelf.image}
+                className="h-20 w-14 rounded object-cover"
+            />
+            <div>
+                <h3 className="font-medium">
+                    {shelf.office_location}
+                </h3>
 
-            <p className="text-sm text-gray-500">
-                Shelf {shelf.shelf_code}
-            </p>
+                <p className="text-sm text-gray-500">
+                    Shelf {shelf.shelf_code}
+                </p>
 
-            <p className="mt-2 text-xs text-gray-400">
-                Capacity: {shelf.capacity}
-            </p>
+                <p className="mt-2 text-xs text-gray-400">
+                    Capacity: {shelf.capacity}
+                </p>
+            </div>
         </button>
     );
 }
@@ -114,7 +120,7 @@ export function BookPicker({
 
     return (
         <Dialog open={open} onOpenChange={onClose}>
-            <DialogContent className="max-w-2xl">
+            <DialogContent className="w-full bg-white">
                 <DialogHeader>
                     <DialogTitle>
                         Select Book
@@ -170,7 +176,7 @@ export function ShelfPicker({
 
     return (
         <Dialog open={open} onOpenChange={onClose}>
-            <DialogContent className="max-w-2xl">
+            <DialogContent className="max-w-2xl bg-white">
                 <DialogHeader>
                     <DialogTitle>
                         Select Shelf
@@ -210,7 +216,7 @@ export function AddBookToShelfForm() {
     >([]);
 
     const [selectedBook, setSelectedBook] =
-    useState<Book | null>(null);
+        useState<Book | null>(null);
 
     const [selectedShelf, setSelectedShelf] =
         useState<Shelf | null>(null);
@@ -238,7 +244,7 @@ export function AddBookToShelfForm() {
             setBookToShelfRecords(prev =>
                 prev.map(r =>
                     r.book.id === book.id &&
-                    r.shelf.id === shelf.id
+                        r.shelf.id === shelf.id
                         ? {
                             ...r,
                             quantity:
@@ -288,7 +294,7 @@ export function AddBookToShelfForm() {
             />
 
             <div className="flex justify-between items-center">
-                <h2 className="text-xl font-semibold">
+                <h2 className="text-2xl font-semibold">
                     Add Books To Shelves
                 </h2>
                 <button className="ml-4 rounded-lg bg-primary-container px-8 py-4 text-black font-semibold hover:bg-primary-hover">
@@ -297,10 +303,10 @@ export function AddBookToShelfForm() {
             </div>
 
             {/* Selection Row */}
-            <div className="grid gap-4 md:grid-cols-4 h-20">
+            <div className="grid gap-4 md:grid-cols-4">
                 <button
                     onClick={() => setBookDialog(true)}
-                    className="rounded-lg border h-full p-4 text-left"
+                    className="rounded-lg border h-full py-2 px-4 text-left"
                 >
                     <p className="text-sm text-gray-500">
                         Book
@@ -315,7 +321,7 @@ export function AddBookToShelfForm() {
 
                 <button
                     onClick={() => setShelfDialog(true)}
-                    className="rounded-lg border h-full p-4 text-left"
+                    className="rounded-lg border h-full py-2 px-4 text-left"
                 >
                     <p className="text-sm text-gray-500">
                         Shelf
@@ -340,7 +346,7 @@ export function AddBookToShelfForm() {
 
                 <button
                     onClick={handleAddBookToShelf}
-                    className="rounded-lg h-full bg-primary-container px-4 py-2 text-black font-semibold hover:bg-primary-hover"
+                    className="rounded-lg h-full bg-primary-container shadow-md py-2 px-4 text-black font-semibold hover:bg-primary-hover"
                 >
                     Add
                 </button>
@@ -400,10 +406,9 @@ export function AddBookToShelfForm() {
                                             <img
                                                 src={record.book.image}
                                                 alt={
-                                                    record.book
-                                                        .title
+                                                    record.book.title
                                                 }
-                                                className="h-12 w-10 rounded object-cover"
+                                                className="h-20 w-16 rounded object-cover"
                                             />
 
                                             <span>
