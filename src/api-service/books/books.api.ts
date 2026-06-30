@@ -1,9 +1,9 @@
 import libraryBaseApi from "../api"
 import { BASE_URL } from "../api";
 import type BookResponse from "./types";
-import type { BookToShelfPayload, CreateBookPayload } from "./types";
+import type { BookToShelfPayload, CreateBookPayload, InventoryBookItem } from "./types";
 import type { BookAPIResponse } from "./types";
-import { bookResponseToBook } from "./types";
+import { bookResponseToBook, responseToInventoryBookItem } from "./types";
 import type Book from "@/models/book";
 
 export const booksApi = libraryBaseApi.injectEndpoints({
@@ -55,7 +55,18 @@ export const booksApi = libraryBaseApi.injectEndpoints({
         body: payload
       }),
     }),
+
+    getInventoryBooks: builder.query<InventoryBookItem[], void>({
+      query: () => ({
+        url: BASE_URL + "/book-copies/inventory",
+        method: "GET"
+      }),
+      transformResponse: (response: {inventory: [], total: number}) => {
+        return response.inventory.map((item) => responseToInventoryBookItem(item));
+      }
+    }),
   }),
+  
 });
 
-export const { useCreateBookMutation, useGetBookQuery, useGetBooksQuery, useLazyGetBookbyOpenLibraryAPIQuery } = booksApi;
+export const { useCreateBookMutation, useGetBookQuery, useGetBooksQuery, useAddBookToShelfMutation, useLazyGetBookbyOpenLibraryAPIQuery, useGetInventoryBooksQuery } = booksApi;
