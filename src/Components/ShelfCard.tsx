@@ -61,3 +61,44 @@ function SmallShelfCard({
   );
 }
 export { SmallShelfCard };
+
+function BookDetailShelfCard({
+  shelf,
+  selected,
+  onClickShelf,
+}: SmallShelfCardProps) {
+  return (
+    <button
+      onClick={onClickShelf}
+      className={`w-full rounded-xl border p-3 transition-all ${
+        selected
+          ? "border-primary bg-primary/10"
+          : "border-neutral-200 bg-white hover:border-primary"
+      }`}
+    >
+      <div className="flex items-center gap-3">
+        {/* Image */}
+        <div className="h-16 w-16 shrink-0 overflow-hidden rounded-lg">
+          <img
+            src={shelf.image_url}
+            alt={shelf.shelf_code}
+            className="h-full w-full object-cover"
+          />
+        </div>
+
+        {/* Content */}
+        <div className="flex min-w-0 flex-col text-left">
+          <h3 className="truncate text-sm font-semibold text-[#191C1D]">
+            {shelf.shelf_code}
+          </h3>
+
+          <p className="truncate text-xs text-[#575E70]">
+            {shelf.office_location}
+          </p>
+        </div>
+      </div>
+    </button>
+  );
+}
+
+export { BookDetailShelfCard };

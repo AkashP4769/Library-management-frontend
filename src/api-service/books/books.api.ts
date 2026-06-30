@@ -17,7 +17,7 @@ export const booksApi = libraryBaseApi.injectEndpoints({
       }),
     }),
 
-    getBook: builder.query<Book, void>({
+    getBook: builder.query<Book, number>({
       query: (id) => ({
         url: BASE_URL + `/books/${id}`,
         method: "GET"
