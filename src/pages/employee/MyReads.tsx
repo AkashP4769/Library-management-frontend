@@ -93,6 +93,11 @@ export default function MyReads() {
           Manage your borrowed, requested and saved books.
         </p>
       </div>
+      {/* User Profile */}
+      <section>
+        <h1></h1>
+        <div></div>
+      </section>
 
       {/* Borrowed */}
 

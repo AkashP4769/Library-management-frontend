@@ -1,8 +1,8 @@
-import employeeBaseApi from "../api"
+import libraryBaseApi from "../api"
 import type { LoginPayload, LoginResponse, SignupPayload } from "./types";
 import { BASE_URL } from "../api";
 
-export const loginApi = employeeBaseApi.injectEndpoints({
+export const loginApi = libraryBaseApi.injectEndpoints({
   endpoints: (builder) => ({
     login: builder.mutation<LoginResponse, LoginPayload>({
       query: (payload) => ({
@@ -14,7 +14,7 @@ export const loginApi = employeeBaseApi.injectEndpoints({
 
     signup: builder.mutation<LoginResponse, SignupPayload>({
       query: (payload) => ({
-        url: BASE_URL + "/auth/signup",
+        url: BASE_URL + "/auth/register",
         method: "POST",
         body: payload
       }),

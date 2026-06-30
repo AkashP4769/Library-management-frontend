@@ -3,10 +3,10 @@ export async function streamChatResponse(
   onStreamData: (text: string, type?: string) => void,
   signal?: AbortSignal,
 ): Promise<string> {
-  const response = await fetch("http://127.0.0.1:8001/chat/stream", {
+  const response = await fetch("http://127.0.0.1:8000/agent/stream", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ content: prompt }),
+    body: JSON.stringify({ prompt: prompt }),
     signal,
   });
 
