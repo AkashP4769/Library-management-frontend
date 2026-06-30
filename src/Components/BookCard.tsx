@@ -32,15 +32,15 @@ function SmallBookCard(book: Book) {
   return (
     <div
       key={book.id}
-      className="flex h-60 w-90 items-center rounded-2xl justify-center px-4 py-4 border-2 border-neutral-200 hover:bg-white duration-200"
+      className="flex h-60 w-90 items-center rounded-2xl justify-center large-book-card-padding border-2 border-neutral-200 hover:bg-white duration-200"
     >
-      <div className="flex h-[90%] w-[90%] items-center justify-between px-4 py-4">
+      <div className="flex h-[90%] w-[90%] items-center justify-between large-book-card-padding">
         <img
           src={book.image}
           alt={book.title}
           className="h-[90%] w-[50%] object-cover rounded-2xl"
         />
-        <div className="w-[40%] flex flex-col justify-between items-start h-[50%] px-4 py-4">
+        <div className="w-[40%] flex flex-col justify-between items-start h-[50%] large-book-card-padding">
           <div>
             <h3 className="text-lg font-bold mt-2 text-clip">{book.title}</h3>
             <p className="text-tertiary">{book.author}</p>
