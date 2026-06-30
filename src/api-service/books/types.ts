@@ -2,6 +2,7 @@ import type Book from "@/models/book";
 import { BASE_URL } from "@/api-service/api";
 
 export default interface BookResponse {
+<<<<<<< Updated upstream
     id: number;
     isbn: string;
     title: string;
@@ -13,6 +14,18 @@ export default interface BookResponse {
     image_url: string;
     createdAt: string;
     updatedAt: string;
+=======
+  id: number;
+  title: string;
+  author: string;
+  genre: string;
+  publisher: string;
+  language: string;
+  description: string;
+  image_url: string;
+  createdAt: string;
+  updatedAt: string;
+>>>>>>> Stashed changes
 }
 export interface BookAPIResponse {
     isbn: string;
@@ -24,14 +37,14 @@ export interface BookAPIResponse {
     cover_urls: (string | null)[] | null;
 }
 export type CreateBookPayload = {
-    isbn: string;
-    title: string;
-    author: string;
-    genre: string;
-    publisher: string;
-    language: string;
-    description: string;
-    image?: File | null;
+  isbn: string;
+  title: string;
+  author: string;
+  genre: string;
+  publisher: string;
+  language: string;
+  description: string;
+  image?: File | null;
 };
 
 export function bookResponseToBook(bookResponse: BookResponse): Book {
