@@ -1,205 +1,251 @@
-import BookCard, { LargeBookCard } from "@/Components/BookCard";
-import "./BookPage.css";
+import BookCard, { BookDetailsCard } from "@/Components/BookCard";
 import { useState } from "react";
 import type Book from "@/models/book";
 import { books } from "@/models/book";
 import type Shelf from "@/models/shelf";
 import { shelves as initialShelves } from "@/models/shelf";
-import { SmallShelfCard } from "@/Components/ShelfCard";
+import { BookDetailShelfCard } from "@/Components/ShelfCard";
 import { useParams } from "react-router";
 import { useGetBookReviewQuery } from "@/api-service/reviews/review.api";
 
 export default function BookPage() {
   const [myBooks] = useState<Book[]>([...books]);
   const { id } = useParams();
-  const [shelves, setShelves] = useState<Shelf[]>(initialShelves);
+
+  const [shelves] = useState<Shelf[]>(initialShelves);
+
   const [selectBorrowShelf, setSelectBorrowShelf] = useState<number | null>(
     null,
   );
+
   const [selectReturnShelf, setSelectReturnShelf] = useState<number | null>(
     null,
   );
+
   const [borrowed, setBorrowed] = useState(false);
   const [returned, setReturned] = useState(false);
+
   const isBookBorrowed = () => {
     setBorrowed(true);
     setSelectReturnShelf(null);
     setReturned(false);
   };
+
   const isBookReturned = () => {
     setSelectBorrowShelf(null);
     setBorrowed(false);
     setReturned(true);
   };
+
   const book = myBooks.find((book) => book.id == id);
+
+  const { data: reviews = [] } = useGetBookReviewQuery(id);
+
   if (!book) {
     return <div>Book not found</div>;
   }
-  const { data: reviews = [] } = useGetBookReviewQuery(id);
+
+  const Stars = ({ rating }: { rating: number }) => (
+    <div className="flex items-center gap-1">
+      {Array.from({ length: 5 }).map((_, i) => (
+        <span
+          key={i}
+          className={
+            i < Math.round(rating) ? "text-[#735C00]" : "text-[#E7E8E9]"
+          }
+        >
+          ★
+        </span>
+      ))}
+    </div>
+  );
+
+  const avgRating =
+    reviews.length > 0
+      ? (
+          reviews.reduce((sum: number, r: any) => sum + (r.rating || 0), 0) /
+          reviews.length
+        ).toFixed(1)
+      : book.rating;
 
   return (
-    <div className="book-page">
-      <section className="book-details-section">
-        <h1 className="text-4xl font-bold mb-4">Book Page</h1>
-        <p className="text-lg text-gray-600">This is the book page.</p>
-        <p className="text-lg text-gray-600">
-          You can add more details about the book here.
-        </p>
-        <div className="grid grid-cols-3 gap-10">
-          <div>{book && <LargeBookCard {...book} />}</div>
-          <div className="flex flex-col itens-center justify-center gap-6">
-            <h1 className="text-5xl font-bold">{book.title}</h1>
+    <div className="">
+      {/* Hero */}
+      <section className="flex flex-col gap-8 px-6 py-8 max-w-[1480px] mx-auto">
+        {/* Breadcrumb */}
+        <div className="flex items-center gap-2 text-xs font-semibold tracking-[0.6px]">
+          <span className="text-[#575E70]">HOME</span>
+          <span className="text-[#575E70]">/</span>
+          <span className="text-[#575E70]">BOOKS</span>
+          <span className="text-[#575E70]">/</span>
+          <span className="text-[#191C1D]">{book.title}</span>
+        </div>
 
-            <p className="text-2xl text-gray-500 mt-2">{book.author}</p>
+        {/* Main Layout */}
+        <div className="grid lg:grid-cols-[1.1fr_2fr_1.6fr] gap-8 w-full items-start">
+          {" "}
+          {/* Cover */}
+          <div className="flex flex-col gap-4">
+            <div className="w-[280px] h-[420px] rounded-lg bg-[#E7E8E9] shadow-[0px_10px_30px_-10px_rgba(0,0,0,0.2)] overflow-hidden">
+              <BookDetailsCard {...book} />
+            </div>
+          </div>
+          {/* Meta */}
+          <div className="flex flex-col gap-5 min-w-0">
+            <span className="inline-flex items-center px-3 py-1 rounded-full bg-[#D9DFF5] text-xs font-semibold uppercase text-[#5C6274] w-fit">
+              {book.genre}
+            </span>
 
-            <div className="flex gap-6 mt-2 text-lg">
-              <span>⭐ {book.rating}</span>
+            <h1 className="text-4xl font-bold leading-tight text-[#191C1D]">
+              {book.title}
+            </h1>
 
-              <span>{book.genre}</span>
+            <p className="text-xl font-semibold text-[#575E70]">
+              {book.author}
+            </p>
 
-              <span>{book.language}</span>
+            <div className="flex items-center gap-6">
+              <div className="flex items-center gap-2">
+                <span>⭐</span>
+                <span>{book.rating}</span>
+                <span className="text-[#575E70]">
+                  ({reviews.length} reviews)
+                </span>
+              </div>
+
+              <div className="w-px h-4 bg-[#D0C6AE]" />
+
+              <span className="text-[#575E70]">{book.language}</span>
             </div>
 
-            <p className="mt-4 text-gray-600 leading-8">{book.description}</p>
-          </div>
-        </div>
-        {/* </div> */}
-      </section>
+            <div className="flex flex-col gap-3">
+              <h2 className="text-xl font-semibold text-[#191C1D]">Synopsis</h2>
 
-      {/* reviews section */}
-      <section className="reviews-section">
-        <div className="flex gap-70">
-          <div className="borrow-tab w-60 justify-between bg-primary-container/30 border border-primary/40 flex flex-col gap-1 justify-self-end">
-            <h2 className="text-xl font-semibold">Borrow this Book</h2>
-            <div className="mt -6">
-              <p className="text-gray-500 mt-2 ">
-                Select Shelf:
-                <div className="flex flex-wrap gap-4 justify-center mt-2">
-                  {shelves.map((shelf) => (
-                    <SmallShelfCard
-                      key={shelf.id}
-                      shelf={shelf}
-                      selected={selectBorrowShelf === shelf.id}
-                      onClickShelf={() => setSelectBorrowShelf(shelf.id)}
-                    />
-                  ))}
-                </div>
+              <p className="text-base leading-7 text-[#4D4635]">
+                {book.description}
               </p>
             </div>
-
-            <div className="flex gap-4 mt-3                                                    ">
+          </div>
+          {/* Borrow */}
+          <div className="w-full min-w-[300px] max-w-[400px] rounded-2xl border border-[#D0C6AE] p-6 shadow-sm">
+            {" "}
+            {/* Header */}
+            <div className="flex items-center gap-2 pb-4 border-b border-[#D0C6AE]/70">
+              <span className="w-2 h-2 rounded-full bg-[#735C00]" />
+              <h2 className="text-sm font-semibold uppercase tracking-wide text-[#575E70]">
+                Borrow this Book
+              </h2>
+            </div>
+            {/* Shelf Grid */}
+            <div className="grid grid-cols-2 gap-3 py-5 px-5">
+              {shelves.map((shelf) => (
+                <BookDetailShelfCard
+                  key={shelf.id}
+                  shelf={shelf}
+                  selected={selectBorrowShelf === shelf.id}
+                  onClickShelf={() => setSelectBorrowShelf(shelf.id)}
+                />
+              ))}
+            </div>
+            {/* Footer Actions */}
+            <div className="flex gap-3 pt-4 border-t border-[#D0C6AE]/70">
               <button
                 disabled={!selectBorrowShelf || borrowed}
                 onClick={isBookBorrowed}
-                className={`
-                    rounded-xl borrow-button text-grey/70 transition border-primary
-                        ${
-                          borrowed
-                            ? "bg-primary/50 cursor-not-allowed"
-                            : selectBorrowShelf
-                              ? "bg-primary-container hover:opacity-90 border-primary cursor-pointer"
-                              : "bg-primary-400 cursor-not-allowed border-primary"
-                        }
-                      `}
+                className={`flex-1 rounded-xl px-4 py-3 text-sm font-medium transition ${
+                  borrowed
+                    ? "bg-[#E7E8E9] text-[#575E70]"
+                    : selectBorrowShelf
+                      ? "bg-[#735C00] text-white hover:bg-[#5C4A00]"
+                      : "bg-[#F3F4F5] text-[#9A9A9A]"
+                }`}
               >
                 {borrowed ? "Borrowed ✓" : "Borrow"}
               </button>
-              <button className=" borrow-button border rounded-xl px-6 py-3">
+
+              <button className="rounded-xl border border-[#7F7662] px-4 py-3 text-sm font-medium hover:bg-[#F3F4F5]">
                 Save
               </button>
             </div>
           </div>
-          <div>
-            <h2 className="text-2xl font-bold">Reviews</h2>
-            <p className="text-lg text-gray-600">
-              Read what others have to say about this book.
-            </p>
-            <p className="text-lg text-gray-600">
-              Maybe we can add the whole borrow logic here or make a new page
-            </p>
-            <div className="max-h-100 overflow-y-auto">
-              {reviews.map((review: any) => (
-                <div className="rounded-xl bg-white shadow-sm review-padding mt-2">
-                  <div className="flex justify-between">
-                    <div>
-                      <h3 className="font-semibold">{review.name}</h3>
-
-                      <p className="text-sm text-gray-500">
-                        {review.createdAt}
-                      </p>
-                    </div>
-
-                    <span>⭐{review.rating}</span>
-                  </div>
-
-                  <p className="mt-4 text-gray-600">{review.content}</p>
-                </div>
-              ))}
-            </div>
-          </div>
         </div>
       </section>
-      {/* return section */}
-      <section className="return-section">
-        <h2 className="text-2xl font-bold">Return this book</h2>
-        <p className="text-lg text-gray-600">
-          You can return this book to the library.
-        </p>
-        <div className="borrow-tab bg-primary-container/30 border border-primary/40 flex flex-col gap-2">
-          <h2 className="text-xl font-semibold">Return this Book</h2>
-          <div className="mt -6">
-            <p className="text-gray-500 mt-2">
-              Select Shelf:
-              <div className="flex flex-wrap gap-4">
-                {shelves.map((shelf) => (
-                  <SmallShelfCard
-                    key={shelf.id}
-                    shelf={shelf}
-                    selected={selectReturnShelf === shelf.id}
-                    onClickShelf={() => setSelectReturnShelf(shelf.id)}
+
+      {/* Reviews */}
+      <section className="border-t border-[#D0C6AE]/50 px-6 py-8 max-w-[1280px] mx-auto">
+        <div className="flex justify-between items-center mb-6">
+          <h2 className="text-xl font-semibold">Reviews</h2>
+
+          <button className="border border-[#7F7662] rounded-xl px-4 py-2 text-sm">
+            View All
+          </button>
+        </div>
+
+        {/* Rating Summary */}
+        <div className="flex items-center gap-6 bg-[#F3F4F5] rounded-xl p-5 mb-6">
+          <div className="flex flex-col items-center pr-6 border-r border-[#D0C6AE]">
+            <span className="text-4xl font-bold">{avgRating}</span>
+            <Stars rating={Number(avgRating)} />
+            <span className="text-xs text-[#575E70]">
+              {reviews.length} ratings
+            </span>
+          </div>
+
+          <div className="flex-1 flex flex-col gap-2">
+            {[5, 4, 3].map((star) => (
+              <div key={star} className="flex items-center gap-3">
+                <span className="w-4 text-xs">{star}</span>
+
+                <div className="flex-1 h-2 rounded-full bg-[#E7E8E9] overflow-hidden">
+                  <div
+                    className="h-full bg-[#735C00]"
+                    style={{
+                      width: star === 5 ? "85%" : star === 4 ? "10%" : "3%",
+                    }}
                   />
-                ))}
+                </div>
               </div>
-            </p>
+            ))}
           </div>
+        </div>
 
-          <div className="flex gap-4 mt-10">
-            <button
-              disabled={!selectReturnShelf || !borrowed}
-              onClick={isBookReturned}
-              className={`
-    rounded-xl borrow-button text-grey/70 transition border-primary
-
-    ${
-      returned
-        ? "bg-primary/50 cursor-not-allowed"
-        : selectReturnShelf
-          ? "bg-primary-container hover:opacity-90 border-primary cursor-pointer"
-          : "bg-primary-400 cursor-not-allowed border-primary"
-    }
-  `}
+        {/* Review Cards */}
+        <div className="flex flex-col gap-4">
+          {reviews.map((review: any) => (
+            <div
+              key={review.id}
+              className="border border-[#D0C6AE]/50 rounded-xl p-5"
             >
-              {!borrowed ? "Returned " : "Return"}
-            </button>
-            <button className=" borrow-button border rounded-xl px-6 py-3">
-              Save
-            </button>
-          </div>
+              <div className="flex justify-between mb-3">
+                <div>
+                  <h3 className="font-bold">{review.name}</h3>
+                  <p className="text-xs uppercase text-[#575E70]">
+                    {review.createdAt}
+                  </p>
+                </div>
+              </div>
+
+              <Stars rating={review.rating} />
+
+              <p className="text-sm leading-6 text-[#4D4635] mt-3">
+                {review.content}
+              </p>
+            </div>
+          ))}
         </div>
       </section>
 
-      {/* similar books section */}
-      <section className="similar-books-section mt-14">
-        <h2 className="text-2xl font-bold">Similar Books</h2>
-
+      {/* Similar */}
+      <section className="border-t border-[#D0C6AE]/50 px-6 py-8 max-w-[1280px] mx-auto">
         <div className="flex justify-between items-center mb-5">
-          <p className="text-lg text-gray-600">
-            Check out these similar books.
-          </p>
-          <button className="text-primary">View All</button>
+          <h2 className="text-xl font-semibold">Similar Books</h2>
+
+          <button className="border border-[#7F7662] rounded-xl px-4 py-2 text-sm">
+            View All
+          </button>
         </div>
 
-        <div className="grid grid-cols-5 gap-6">
+        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-5">
           {books.map((book) => (
             <BookCard key={book.id} {...book} />
           ))}
