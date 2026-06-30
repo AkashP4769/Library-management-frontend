@@ -4,7 +4,7 @@ import { TextAreaInput } from "@/Components/inputs/TextAreaInput";
 import { useCreateBookMutation } from "@/api-service/books/books.api";
 import type { CreateBookPayload } from "@/api-service/books/types";
 import BarcodeIcon from "@/assets/icons/Barcode.png";
-import { Book } from "lucide-react";
+import { SuccessBanner } from "@/Components/ui/SuccessBanner";
 
 
 export function AddBookForm() {
@@ -23,6 +23,7 @@ export function AddBookForm() {
 
 
   const [preview, setPreview] = useState<string | null>(null);
+  const [showSuccessBanner, setShowSuccessBanner] = useState(false);
 
   const handleChange = (
     e: React.ChangeEvent<
@@ -71,11 +72,20 @@ export function AddBookForm() {
 
     console.log(book);
 
-    createBook(formData as unknown as CreateBookPayload);
+    // createBook(formData as unknown as CreateBookPayload);
+    const response = true;
+
+    if (response) {
+      setShowSuccessBanner(true);
+      const timeout = setTimeout(()=>{
+        setShowSuccessBanner(false);
+      },2500)
+    }
   };
 
   return (
     <div className="w-full p-6 rounded-xl bg-white shadow-sm ">
+      <SuccessBanner message="Book submission received. Check the status shortly." isVisible={showSuccessBanner} />
       <div className="flex justify-between">
         <h2 className="mb-6 w-full text-2xl font-bold">
           Add New Book
