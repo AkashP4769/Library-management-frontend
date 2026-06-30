@@ -1,4 +1,5 @@
 import type Book from "@/models/book";
+import { BASE_URL } from "@/api-service/api";
 
 export default interface BookResponse {
     id: number;
@@ -33,7 +34,7 @@ export function bookResponseToBook(bookResponse: BookResponse): Book {
         publisher: bookResponse.publisher,
         language: bookResponse.language,
         description: bookResponse.description,
-        image_url: bookResponse.image_url,
+        image_url: bookResponse.image_url.startsWith('/uploads/') ? BASE_URL + bookResponse.image_url : bookResponse.image_url,
         rating: 0, // Assuming rating is not part of the response, set it to a default value
         createdAt: bookResponse.createdAt,
         updatedAt: bookResponse.updatedAt

@@ -2,7 +2,6 @@ import type Book from "@/models/book";
 import { BASE_URL } from "@/api-service/api";
 
 export default function BookCard(book: Book) {
-    const imageUrl = book.image_url.startsWith('/uploads/') ? BASE_URL + book.image_url : book.image_url;
     return (
         <div
         key={book.id}
@@ -10,7 +9,7 @@ export default function BookCard(book: Book) {
         >
         <div className="flex flex-col h-[90%] w-[90%]  items-start justify-between">
             <img
-            src={imageUrl}
+            src={book.image_url}
             alt={book.title}
             className="w-full h-[85%] object-cover rounded-2xl"
             />
@@ -31,7 +30,7 @@ export default function BookCard(book: Book) {
 }
 
 function SmallBookCard(book: Book) {
-  const imageUrl = book.image_url.startsWith('/uploads/') ? BASE_URL + book.image_url : book.image_url;
+//   const imageUrl = book.image_url.startsWith('/uploads/') ? BASE_URL + book.image_url : book.image_url;
   return (
     <div
       key={book.id}
@@ -39,7 +38,7 @@ function SmallBookCard(book: Book) {
     >
       <div className="flex h-[90%] w-[90%] items-center justify-between large-book-card-padding">
         <img
-          src={imageUrl}
+          src={book.image_url}
           alt={book.title}
           className="h-[90%] w-[50%] object-cover rounded-2xl"
         />
@@ -60,7 +59,7 @@ function SmallBookCard(book: Book) {
 export { SmallBookCard };
 
 function LargeBookCard(book: Book) {
-  const imageUrl = book.image_url.startsWith('/uploads/') ? BASE_URL + book.image_url : book.image_url;
+//   const imageUrl = book.image_url.startsWith('/uploads/') ? BASE_URL + book.image_url : book.image_url;
   return (
     <div
       key={book.id}
@@ -68,7 +67,7 @@ function LargeBookCard(book: Book) {
     >
       <div className="flex flex-col h-[95%] w-[95%]  items-start justify-between large-book-card-padding">
         <img
-          src={imageUrl}
+          src={book.image_url}
           alt={book.title}
           className="w-full h-full object-cover rounded-2xl"
         />
