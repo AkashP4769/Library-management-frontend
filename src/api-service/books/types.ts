@@ -13,7 +13,15 @@ export default interface BookResponse {
     createdAt: string;
     updatedAt: string;
 }
-
+export interface BookAPIResponse {
+    isbn: string;
+    title: string;
+    author: string;
+    pages: string | null;
+    publisher: string | null;
+    language: string | null;
+    cover_urls: (string | null)[] | null;
+}
 export type CreateBookPayload = {
     isbn: string;
     title: string;
