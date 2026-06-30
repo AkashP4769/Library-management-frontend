@@ -45,14 +45,14 @@ export default function BookPage() {
         <p className="text-lg text-gray-600">
           You can add more details about the book here.
         </p>
-        <div className="grid grid-cols-3 gap-10 h-[600px]">
+        <div className="grid grid-cols-3 gap-10">
           <div>{book && <LargeBookCard {...book} />}</div>
           <div className="flex flex-col itens-center justify-center gap-6">
             <h1 className="text-5xl font-bold">{book.title}</h1>
 
             <p className="text-2xl text-gray-500 mt-2">{book.author}</p>
 
-            <div className="flex gap-6 mt-6 text-lg">
+            <div className="flex gap-6 mt-2 text-lg">
               <span>⭐ {book.rating}</span>
 
               <span>{book.genre}</span>
@@ -60,9 +60,16 @@ export default function BookPage() {
               <span>{book.language}</span>
             </div>
 
-            <p className="mt-8 text-gray-600 leading-8">{book.description}</p>
+            <p className="mt-4 text-gray-600 leading-8">{book.description}</p>
           </div>
-          <div className="borrow-tab w-90 justify-between bg-primary-container/30 border border-primary/40 flex flex-col gap-2 justify-self-end">
+        </div>
+        {/* </div> */}
+      </section>
+
+      {/* reviews section */}
+      <section className="reviews-section">
+        <div className="flex gap-70">
+          <div className="borrow-tab w-60 justify-between bg-primary-container/30 border border-primary/40 flex flex-col gap-1 justify-self-end">
             <h2 className="text-xl font-semibold">Borrow this Book</h2>
             <div className="mt -6">
               <p className="text-gray-500 mt-2 ">
@@ -80,21 +87,20 @@ export default function BookPage() {
               </p>
             </div>
 
-            <div className="flex gap-4 mt-10">
+            <div className="flex gap-4 mt-3                                                    ">
               <button
                 disabled={!selectBorrowShelf || borrowed}
                 onClick={isBookBorrowed}
                 className={`
-    rounded-xl borrow-button text-grey/70 transition border-primary
-
-    ${
-      borrowed
-        ? "bg-primary/50 cursor-not-allowed"
-        : selectBorrowShelf
-          ? "bg-primary-container hover:opacity-90 border-primary cursor-pointer"
-          : "bg-primary-400 cursor-not-allowed border-primary"
-    }
-  `}
+                    rounded-xl borrow-button text-grey/70 transition border-primary
+                        ${
+                          borrowed
+                            ? "bg-primary/50 cursor-not-allowed"
+                            : selectBorrowShelf
+                              ? "bg-primary-container hover:opacity-90 border-primary cursor-pointer"
+                              : "bg-primary-400 cursor-not-allowed border-primary"
+                        }
+                      `}
               >
                 {borrowed ? "Borrowed ✓" : "Borrow"}
               </button>
@@ -103,35 +109,34 @@ export default function BookPage() {
               </button>
             </div>
           </div>
-        </div>
-        {/* </div> */}
-      </section>
+          <div>
+            <h2 className="text-2xl font-bold">Reviews</h2>
+            <p className="text-lg text-gray-600">
+              Read what others have to say about this book.
+            </p>
+            <p className="text-lg text-gray-600">
+              Maybe we can add the whole borrow logic here or make a new page
+            </p>
+            <div className="max-h-100 overflow-y-auto">
+              {reviews.map((review: any) => (
+                <div className="rounded-xl bg-white shadow-sm review-padding mt-2">
+                  <div className="flex justify-between">
+                    <div>
+                      <h3 className="font-semibold">{review.name}</h3>
 
-      {/* reviews section */}
-      <section className="reviews-section">
-        <h2 className="text-2xl font-bold">Reviews</h2>
-        <p className="text-lg text-gray-600">
-          Read what others have to say about this book.
-        </p>
-        <p className="text-lg text-gray-600">
-          Maybe we can add the whole borrow logic here or make a new page
-        </p>
-        <div>
-          {reviews.map((review) => (
-            <div className="rounded-xl bg-white shadow-sm review-padding mt-2">
-              <div className="flex justify-between">
-                <div>
-                  <h3 className="font-semibold">{review.name}</h3>
+                      <p className="text-sm text-gray-500">
+                        {review.createdAt}
+                      </p>
+                    </div>
 
-                  <p className="text-sm text-gray-500">{review.createdAt}</p>
+                    <span>⭐{review.rating}</span>
+                  </div>
+
+                  <p className="mt-4 text-gray-600">{review.content}</p>
                 </div>
-
-                <span>⭐{review.rating}</span>
-              </div>
-
-              <p className="mt-4 text-gray-600">{review.content}</p>
+              ))}
             </div>
-          ))}
+          </div>
         </div>
       </section>
       {/* return section */}
