@@ -107,7 +107,7 @@ export { LargeBookCard };
 
 interface BorrowedBookCardProps {
   book: Book;
-  onReturnClick: (borrowId: string) => void;
+  onReturnClick: (borrowId: number) => void;
 }
 
 function BorrowedBookCard({ book, onReturnClick }: BorrowedBookCardProps) {

@@ -1,5 +1,6 @@
 export default interface Book {
-  id: string;
+  id: number;
+  isbn: string;
   title: string;
   author: string;
   genre: string;
@@ -14,7 +15,8 @@ export default interface Book {
 
 export const books = [
   {
-    id: "1",
+    id: 1,
+    isbn: "978-0-7432-7356-5",
     title: "The Great Gatsby",
     author: "F. Scott Fitzgerald",
     genre: "Fiction",
@@ -27,7 +29,8 @@ export const books = [
     updatedAt: "2023-01-01T00:00:00Z",
   },
   {
-    id: "2",
+    id: 2,
+    isbn: "978-0-06-112008-4",
     title: "To Kill a Mockingbird",
     author: "Harper Lee",
     genre: "Fiction",
@@ -40,7 +43,8 @@ export const books = [
     updatedAt: "2023-01-01T00:00:00Z",
   },
   {
-    id: "3",
+    id: 3,
+    isbn: "978-0-452-28423-4",
     title: "1984",
     author: "George Orwell",
     genre: "Dystopian Fiction",
@@ -55,7 +59,8 @@ export const books = [
     updatedAt: "2023-01-01T00:00:00Z",
   },
   {
-    id: "1234",
+    id: 1234,
+    isbn: "978-0-7432-7356-5",
     title: "The Catcher in the Rye",
     author: "J.D. Salinger",
     genre: "Fiction",
@@ -70,7 +75,8 @@ export const books = [
     updatedAt: "2023-01-01T00:00:00Z",
   },
   {
-    id: "18",
+    id: 18,
+    isbn: "978-0-7432-7356-5",
     title: "The Great Gatsby",
     author: "F. Scott Fitzgerald",
     genre: "Fiction",
@@ -83,7 +89,8 @@ export const books = [
     updatedAt: "2023-01-01T00:00:00Z",
   },
   {
-    id: "277",
+    id: 277,
+    isbn: "978-0-06-112008-4",
     title: "To Kill a Mockingbird",
     author: "Harper Lee",
     genre: "Fiction",
@@ -96,7 +103,8 @@ export const books = [
     updatedAt: "2023-01-01T00:00:00Z",
   },
   {
-    id: "03",
+    id: 3,
+    isbn: "978-0-452-28423-4",
     title: "1984",
     author: "George Orwell",
     genre: "Dystopian Fiction",
@@ -111,7 +119,8 @@ export const books = [
     updatedAt: "2023-01-01T00:00:00Z",
   },
   {
-    id: "124",
+    id: 124,
+    isbn: "978-0-7432-7356-5",
     title: "The Catcher in the Rye",
     author: "J.D. Salinger",
     genre: "Fiction",

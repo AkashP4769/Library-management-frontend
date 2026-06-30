@@ -3,6 +3,7 @@ import { BASE_URL } from "@/api-service/api";
 
 export default interface BookResponse {
     id: number;
+    isbn: string;
     title: string;
     author: string;
     genre: string;
@@ -28,6 +29,7 @@ export type CreateBookPayload = {
 export function bookResponseToBook(bookResponse: BookResponse): Book {
     return {
         id: bookResponse.id,
+        isbn: bookResponse.isbn,
         title: bookResponse.title,
         author: bookResponse.author,
         genre: bookResponse.genre,

@@ -3,16 +3,20 @@ import { useState } from "react";
 import type Book from "@/models/book";
 import { books } from "@/models/book";
 import type Shelf from "@/models/shelf";
-import { shelves as initialShelves } from "@/models/shelf";
+
 import { BookDetailShelfCard } from "@/Components/ShelfCard";
 import { useParams } from "react-router";
 import { useGetBookReviewQuery } from "@/api-service/reviews/review.api";
+import { useGetBookQuery } from "@/api-service/books/books.api";
+import { useGetShelvesQuery } from "@/api-service/shelf/shelf.api";
 
 export default function BookPage() {
   const [myBooks] = useState<Book[]>([...books]);
-  const { id } = useParams();
 
-  const [shelves] = useState<Shelf[]>(initialShelves);
+  const { id } = useParams();
+  const { data: book } = useGetBookQuery(parseInt(id || "-1"));
+  const { data: shelves = [] } = useGetShelvesQuery();
+  // const book = myBooks.find((book) => book.id == id);
 
   const [selectBorrowShelf, setSelectBorrowShelf] = useState<number | null>(
     null,
@@ -37,7 +41,7 @@ export default function BookPage() {
     setReturned(true);
   };
 
-  const book = myBooks.find((book) => book.id == id);
+  
 
   const { data: reviews = [] } = useGetBookReviewQuery(id);
 
@@ -137,7 +141,7 @@ export default function BookPage() {
               </h2>
             </div>
             {/* Shelf Grid */}
-            <div className="grid grid-cols-2 gap-3 py-5 px-5">
+            <div className="flex flex-col h-70 overflow-auto gap-3 py-5 px-5">
               {shelves.map((shelf) => (
                 <BookDetailShelfCard
                   key={shelf.id}

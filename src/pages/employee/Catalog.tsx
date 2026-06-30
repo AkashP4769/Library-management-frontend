@@ -7,6 +7,7 @@ import './Catalog.css'
 import BookCard from "@/Components/BookCard";
 import ShelfCard from "@/Components/ShelfCard";
 import { useGetBooksQuery } from "@/api-service/books/books.api";
+import { Link } from "react-router";
 
 
 export default function CatalogPage() {
@@ -31,7 +32,9 @@ export default function CatalogPage() {
             <div className="grid grid-cols-5 gap-6">
                 {books.length === 0 ? <p className="text-bold text-primary text-xl">No books found</p> : 
                 books.map((book) => (
-                    <BookCard key={book.id} {...book} />
+                    <Link key={book.id} to={`/catalog/books/${book.id}`}>
+                        <BookCard {...book} />
+                    </Link> 
                 ))}
             </div>
         </section>

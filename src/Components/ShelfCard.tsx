@@ -80,7 +80,7 @@ function BookDetailShelfCard({
         {/* Image */}
         <div className="h-16 w-16 shrink-0 overflow-hidden rounded-lg">
           <img
-            src={shelf.image}
+            src={shelf.image_url}
             alt={shelf.shelf_code}
             className="h-full w-full object-cover"
           />
