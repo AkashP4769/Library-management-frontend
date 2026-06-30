@@ -18,7 +18,7 @@ export function TextAreaInput({
   onChange,
 }: TextAreaInputProps) {
   return (
-    <div className="flex flex-col gap-2">
+    <div className="flex h-full flex-col gap-2">
       <label
         htmlFor={name}
         className="text-sm font-medium text-gray-700"
@@ -34,13 +34,15 @@ export function TextAreaInput({
         onChange={onChange}
         placeholder={placeholder}
         className="
-          rounded-lg border border-gray-300
-          px-4 py-2
-          outline-none resize-none
-          transition
-          focus:border-blue-500
-          focus:ring-2
-          focus:ring-blue-200
+            flex-1
+            rounded-lg border border-gray-300
+            px-4 py-2
+            resize-none
+            outline-none
+            transition
+            focus:border-blue-500
+            focus:ring-2
+            focus:ring-blue-200
         "
       />
     </div>

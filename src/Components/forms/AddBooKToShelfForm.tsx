@@ -37,7 +37,7 @@ export function BookCard({
             "
         >
             <img
-                src={book.image}
+                src={book.image_url}
                 className="h-20 w-14 rounded object-cover"
             />
 
@@ -297,7 +297,7 @@ export function AddBookToShelfForm() {
                 <h2 className="text-2xl font-semibold">
                     Add Books To Shelves
                 </h2>
-                <button className="ml-4 rounded-lg bg-primary-container px-8 py-4 text-black font-semibold hover:bg-primary-hover">
+                <button className="ml-4 rounded-lg bg-primary-container hover:bg-amber-400 duration-200 px-8 py-4 text-black font-semibold hover:bg-primary-hover">
                     Upload All
                 </button>
             </div>
@@ -346,7 +346,7 @@ export function AddBookToShelfForm() {
 
                 <button
                     onClick={handleAddBookToShelf}
-                    className="rounded-lg h-full bg-primary-container shadow-md py-2 px-4 text-black font-semibold hover:bg-primary-hover"
+                    className="rounded-lg h-full bg-tertiary-container hover:bg-neutral-200 duration-300 shadow-md py-2 px-4 text-black font-semibold hover:bg-primary-hover"
                 >
                     Add
                 </button>
@@ -404,7 +404,7 @@ export function AddBookToShelfForm() {
                                     <td className="px-4 py-4">
                                         <div className="flex items-center gap-3">
                                             <img
-                                                src={record.book.image}
+                                                src={record.book.image_url}
                                                 alt={
                                                     record.book.title
                                                 }
