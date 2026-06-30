@@ -13,8 +13,10 @@ import BarcodeIcon from "@assets/icons/Barcode.png";
 import SettingsIcon from "@assets/icons/sidebar_setting.svg";
 import LogoutIcon from "@assets/icons/sidebar_logout.svg";
 import { useEffect, useState } from "react";
-import Chatbot from "@/components/chatbot/Chatbot";
-import ISBNScanner from "@/components/scanner/ISBNScanner";
+import Chatbot from "@/Components/chatbot/Chatbot";
+import ISBNScanner from "@/Components/scanner/ISBNScanner";
+import { useLazyGetBookbyOpenLibraryAPIQuery } from "@/api-service/books/books.api";
+
 
 const notifications_sample = [
 {
@@ -148,7 +150,8 @@ export default function Layout() {
   const [showProfileBanner, setShowProfileBanner] = useState(false);
   const [openChatbot, setOpenChatbot] = useState(false);
   const [username, setUsername] = useState("User");
-
+  
+  const [fetchBook, { data, isLoading, error }] = useLazyGetBookbyOpenLibraryAPIQuery();
   useEffect(() => {
     const storedUsername =
       localStorage.getItem("username") ||
@@ -172,7 +175,9 @@ export default function Layout() {
     setShowNotifications(false);
   }
   const handleScan = async (isbn: string) => {
-    console.log(isbn);
+    console.log(isbn)
+    const result = await fetchBook(isbn);
+    console.log(result.data);
 
     setShowScanner(false);}
 
