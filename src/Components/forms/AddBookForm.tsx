@@ -77,6 +77,9 @@ export function AddBookForm() {
 
     if (response) {
       setShowSuccessBanner(true);
+      const timeout = setTimeout(()=>{
+        setShowSuccessBanner(false);
+      },2500)
     }
   };
 

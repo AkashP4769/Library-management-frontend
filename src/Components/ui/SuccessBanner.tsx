@@ -32,7 +32,7 @@ export function SuccessBanner({ message, isVisible }: SuccessBannerProps) {
 
   return (
     <div
-      className={`fixed right-4 top-4 z-50 rounded-lg border border-neutral-300 bg-neutral-100 px-4 py-3 shadow-lg text-neutral-800 transition-transform duration-250 ease-out ease-in ${visible ? "translate-x-0" : "translate-x-[120%]"}`}
+      className={`fixed right-4 top-4 z-50 rounded-lg border border-neutral-300 bg-neutral-100 px-4 py-3 shadow-lg text-neutral-800 transition-transform  ease-in ${visible ? "translate-x-0" : "translate-x-[120%]"}`}
     >
       <p className="font-medium">{message}</p>
     </div>
