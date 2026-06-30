@@ -1,6 +1,7 @@
 import libraryBaseApi from "../api"
 import { BASE_URL } from "../api";
 import type { CreateBookPayload } from "./types";
+import type Book from "@/models/book";
 
 export const booksApi = libraryBaseApi.injectEndpoints({
   endpoints: (builder) => ({
@@ -13,14 +14,14 @@ export const booksApi = libraryBaseApi.injectEndpoints({
       }),
     }),
 
-    getBook: builder.query<{ id: number }, void>({
+    getBook: builder.query<Book, void>({
       query: (id) => ({
         url: BASE_URL + `/books/${id}`,
         method: "GET"
       }),
     }),
 
-    getBooks: builder.query<{ id: number }[], void>({
+    getBooks: builder.query<Book[], void>({
       query: () => ({
         url: BASE_URL + "/books",
         method: "GET"
