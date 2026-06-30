@@ -4,9 +4,9 @@ export default function ShelfCard(shelf: Shelf) {
   return (
     <div
       key={shelf.id}
-      className="flex items-center h-70 justify-center rounded-2xl border bg-white border-neutral-200 hover:bg-neutral-200 duration-200 px-4 py-4"
+      className="flex items-center h-70 justify-center rounded-2xl border bg-white border-neutral-200 hover:bg-neutral-200 duration-200 large-book-card-padding"
     >
-      <div className="flex flex-col h-[90%] w-[90%] items-start justify-between px-4 py-4">
+      <div className="flex flex-col h-[90%] w-[90%] items-start justify-between large-book-card-padding">
         <img
           src={shelf.image}
           alt={shelf.shelf_code}
