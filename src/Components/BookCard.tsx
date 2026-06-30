@@ -8,7 +8,7 @@ export default function BookCard(book: Book) {
   return (
     <div
       key={book.id}
-      className="flex flex-col h-120 w-70 items-center rounded-2xl justify-center border-2 border-neutral-200 hover:bg-white duration-200"
+      className="flex flex-col h-120 w-full items-center rounded-2xl justify-center border-2 border-neutral-200 hover:bg-white duration-200"
     >
       <div className="flex flex-col h-[90%] w-[90%]  items-start justify-between">
         <img
@@ -41,7 +41,7 @@ function SmallBookCard(book: Book) {
       key={book.id}
       className="flex h-60 w-full items-center rounded-2xl justify-center large-book-card-padding border-2 border-neutral-200 hover:bg-white duration-200"
     >
-      <div className="flex h-[90%] w-[90%] items-center justify-between large-book-card-padding">
+      <div className="flex h-[90%] w-full items-center justify-between large-book-card-padding">
         <img
           src={imageUrl}
           alt={book.title}
@@ -94,7 +94,7 @@ function BorrowedBookCard({ book, onReturnClick }: BorrowedBookCardProps) {
     ? BASE_URL + book.image_url
     : book.image_url;
   return (
-    <div className="flex flex-col h-120 w-70 rounded-2xl border-2 border-neutral-200 hover:bg-white duration-200 p-3">
+    <div className="flex flex-col h-120 w--70 rounded-2xl border-2 border-neutral-200 hover:bg-white duration-200 p-3">
       <div className="flex flex-col h-full justify-between">
         <div>
           <img
