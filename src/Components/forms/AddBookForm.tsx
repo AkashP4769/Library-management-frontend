@@ -5,7 +5,7 @@ import { useCreateBookMutation } from "@/api-service/books/books.api";
 import type { CreateBookPayload } from "@/api-service/books/types";
 import BarcodeIcon from "@/assets/icons/Barcode.png";
 import { SuccessBanner } from "@/Components/ui/SuccessBanner";
-import ISBNScanner from "../scanner/ISBNScanner";
+import ISBNScanner from "@components/scanner/ISBNScanner";
 import { useLazyGetBookbyOpenLibraryAPIQuery } from "@/api-service/books/books.api";
 export function AddBookForm() {
   const [createBook] = useCreateBookMutation();
