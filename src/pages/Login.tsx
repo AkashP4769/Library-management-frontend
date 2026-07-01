@@ -7,14 +7,13 @@ import { useState } from "react";
 import Footer from "@/components/Footer";
 import { Link, useNavigate } from "react-router";
 import { useLoginMutation } from "@/api-service/login/login.api";
-
+  
 export default function LoginPage() {
 
   const [role, setRole] = useState("Employee");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-
   const [login] = useLoginMutation();
   const navigate = useNavigate();
 

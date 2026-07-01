@@ -1,6 +1,11 @@
 import { useCallback, useRef, useState } from "react";
 import { streamChatResponse } from "./ChatbotUtils";
 
+type ChatMessage = {
+  role: "user" | "assistant";
+  text: string;
+};
+
 export function useSSE() {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [isStreaming, setIsStreaming] = useState(false);
@@ -40,5 +45,5 @@ export function useSSE() {
     }
   }, []);
 
-  return { messages, error, sendMessage };
+  return { messages, error, isStreaming, sendMessage };
 }

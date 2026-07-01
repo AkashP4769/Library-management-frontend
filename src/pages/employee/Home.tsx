@@ -1,22 +1,21 @@
 import type Book from "@/models/book";
 import { useEffect, useState } from "react";
-import './Home.css'
-import { books } from "@/models/book";
+import "./Home.css";
 import BookCard, { SmallBookCard } from "@/Components/BookCard";
 import { useGetBooksQuery } from "@/api-service/books/books.api";
 
 export default function HomePage() {
-    const { data: fetchedBooks } = useGetBooksQuery();
-    const [myBooks, setMyBooks] = useState<Book[]>([]);
+  const { data: fetchedBooks } = useGetBooksQuery();
+  const [myBooks, setMyBooks] = useState<Book[]>([]);
 
-    useEffect(() => {
-        if (fetchedBooks) {
-            setMyBooks([...fetchedBooks, ...fetchedBooks]);
-        }
-    }, [fetchedBooks]);
+  useEffect(() => {
+    if (fetchedBooks) {
+      setMyBooks([...fetchedBooks]);
+    }
+  }, [fetchedBooks]);
 
-    console.log("Fetched Books:", fetchedBooks);
-    console.log("My Books State:", myBooks);
+  console.log("Fetched Books:", fetchedBooks);
+  console.log("My Books State:", myBooks);
 
   const [showMyBooks, setShowMyBooks] = useState(false);
   const [showAllBooks, setShowAllBooks] = useState(false);

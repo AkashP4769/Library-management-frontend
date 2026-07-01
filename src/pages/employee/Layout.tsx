@@ -1,56 +1,57 @@
 import { Outlet } from "react-router";
 import "./Layout.css";
 
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
 import DashboardIcon from "@assets/icons/sidebar_dashboard.svg";
 import CatalogIcon from "@assets/icons/sidebar_catalog.svg";
 import ShelvesIcon from "@assets/icons/sidebar_shelves.svg";
 import SavedIcon from "@assets/icons/sidebar_saved.svg";
 import ProfileIcon from "@assets/icons/sidebar_profile.svg";
-import InventoryIcon from "@assets/icons/sidebar_inventory.svg";
 import Bell from "@assets/icons/Bell.png";
 import BarcodeIcon from "@assets/icons/Barcode.png";
 import SettingsIcon from "@assets/icons/sidebar_setting.svg";
 import LogoutIcon from "@assets/icons/sidebar_logout.svg";
 import { useEffect, useState } from "react";
+import type { MouseEvent } from "react";
+import { useLazyGetBookbyOpenLibraryAPIQuery } from "@/api-service/books/books.api";
 import Chatbot from "@/components/chatbot/Chatbot";
 import ISBNScanner from "@/components/scanner/ISBNScanner";
+import { clearAuth } from "@/lib/auth";
 
 const notifications_sample = [
-{
+  {
     id: 1,
-   receiver_id: 12,
-   sender_id: 14,
-   book_copy_id: 5,
-   message: "sample_message",
-   notification_type:"DUE_DATE_REMINDER",
+    receiver_id: 12,
+    sender_id: 14,
+    book_copy_id: 5,
+    message: "sample_message",
+    notification_type: "DUE_DATE_REMINDER",
   },
   {
     id: 2,
-   receiver_id: 13,
-   sender_id: 14,
-   book_copy_id: 6,
-   message: "sample_message",
-   notification_type:"REQUEST_BOOK",
+    receiver_id: 13,
+    sender_id: 14,
+    book_copy_id: 6,
+    message: "sample_message",
+    notification_type: "REQUEST_BOOK",
   },
-   {
+  {
     id: 3,
-   receiver_id: null,
-   sender_id: null,
-   book_copy_id: null,
-   message: "Welcome to the Library",
-   notification_type:"ADMIN_NOTIFICATION",
+    receiver_id: null,
+    sender_id: null,
+    book_copy_id: null,
+    message: "Welcome to the Library",
+    notification_type: "ADMIN_NOTIFICATION",
   },
   {
     id: 4,
-   receiver_id: null,
-   sender_id: 3,
-   book_copy_id: 4,
-   message: "string",
-   notification_type:"IN_STOCK_NOTIFICATION",
+    receiver_id: null,
+    sender_id: 3,
+    book_copy_id: 4,
+    message: "string",
+    notification_type: "IN_STOCK_NOTIFICATION",
   },
-
-]
+];
 
 function getNotificationContent(notification: {
   notification_type: string;
@@ -114,17 +115,26 @@ function SidebarLink({
   link,
   selectedLink,
   setSelectedLink,
+  onClick,
 }: {
   link: { name: string; href: string; icon: string };
   selectedLink: string;
   setSelectedLink: (linkName: string) => void;
+  onClick?: () => void;
 }) {
   return (
     <Link
       to={link.href}
       className="w-full"
       key={link.name}
-      onClick={() => setSelectedLink(link.name)}
+      onClick={(event: MouseEvent<HTMLAnchorElement>) => {
+        setSelectedLink(link.name);
+
+        if (onClick) {
+          event.preventDefault();
+          onClick();
+        }
+      }}
     >
       <li
         key={link.name}
@@ -148,7 +158,9 @@ export default function Layout() {
   const [showProfileBanner, setShowProfileBanner] = useState(false);
   const [openChatbot, setOpenChatbot] = useState(false);
   const [username, setUsername] = useState("User");
+  const navigate = useNavigate();
 
+  const [fetchBook] = useLazyGetBookbyOpenLibraryAPIQuery();
   useEffect(() => {
     const storedUsername =
       localStorage.getItem("username") ||
@@ -167,14 +179,22 @@ export default function Layout() {
     setOpenChatbot((prev) => !prev);
   }
 
+  function handleLogout() {
+    clearAuth();
+    navigate("/login", { replace: true });
+  }
+
   function handleProfileToggle() {
     setShowProfileBanner((prev) => !prev);
     setShowNotifications(false);
   }
   const handleScan = async (isbn: string) => {
     console.log(isbn);
+    const result = await fetchBook(isbn);
+    console.log(result.data);
 
-    setShowScanner(false);}
+    setShowScanner(false);
+  };
 
   return (
     <div className="layout">
@@ -208,6 +228,7 @@ export default function Layout() {
                 link={link}
                 selectedLink={selectedLink}
                 setSelectedLink={setSelectedLink}
+                onClick={link.name === "Logout" ? handleLogout : undefined}
               />
             ))}
           </ul>
@@ -232,9 +253,15 @@ export default function Layout() {
                 {" "}
                 <img src={Bell} alt="Bell" className="header-icon" />
               </span>
-              <span className="notification-count">{notifications_sample.length}</span>
+              <span className="notification-count">
+                {notifications_sample.length}
+              </span>
             </button>
-            <button className="icon-button" aria-label="Scan barcode" onClick={()=>setShowScanner(true)}>
+            <button
+              className="icon-button"
+              aria-label="Scan barcode"
+              onClick={() => setShowScanner(true)}
+            >
               <img
                 src={BarcodeIcon}
                 alt="Barcode"
@@ -265,9 +292,10 @@ export default function Layout() {
                   <Link
                     to="/profile"
                     className="profile-banner-button"
-                    onClick={() =>{setShowProfileBanner(false);
-                        setSelectedLink("Profile")
-                    } }
+                    onClick={() => {
+                      setShowProfileBanner(false);
+                      setSelectedLink("Profile");
+                    }}
                   >
                     Go to Profile
                   </Link>
@@ -275,19 +303,15 @@ export default function Layout() {
               </div>
             )}
             {showScanner && (
-                <div className="scanner-overlay">
-                    <div className="scanner-modal">
+              <div className="scanner-overlay">
+                <div className="scanner-modal">
+                  <h2>Scan ISBN</h2>
 
-                        <h2>Scan ISBN</h2>
+                  <ISBNScanner onScan={handleScan} />
 
-                        <ISBNScanner onScan={handleScan} />
-
-                        <button onClick={() => setShowScanner(false)}>
-                            Close
-                        </button>
-
-                    </div>
+                  <button onClick={() => setShowScanner(false)}>Close</button>
                 </div>
+              </div>
             )}
 
             {showNotifications && (

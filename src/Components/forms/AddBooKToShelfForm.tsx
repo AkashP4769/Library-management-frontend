@@ -1,6 +1,6 @@
 import type Book from "@/models/book";
 import type Shelf from "@/models/shelf";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 import {
     Dialog,
@@ -8,9 +8,9 @@ import {
     DialogHeader,
     DialogTitle,
 } from "@/components/ui/dialog";
-import { books } from "@/models/book";
-import { shelves } from "@/models/shelf";
-import { useGetBooksQuery } from "@/api-service/books/books.api";
+import { useAddBookToShelfMutation, useGetBooksQuery } from "@/api-service/books/books.api";
+import { useGetShelvesQuery } from "@/api-service/shelf/shelf.api";
+import type { BookToShelfPayload } from "@/api-service/books/types";
 
 type BookToShelfRecord = {
     book: Book;
@@ -211,14 +211,10 @@ export function ShelfPicker({
 }
 
 export function AddBookToShelfForm() {
-    const { data: fetchedBooks } = useGetBooksQuery();
-    const [inventoryBooks, setInventoryBooks] = useState<Book[]>([]);
+    const { data: inventoryBooks } = useGetBooksQuery();
+    const { data: inventoryShelves } = useGetShelvesQuery();
 
-    useEffect(() => {
-        if (fetchedBooks) {
-            setInventoryBooks(fetchedBooks);
-        }
-    }, [fetchedBooks]);
+    const [addBookToShelf] = useAddBookToShelfMutation();
 
     const [bookToShelfRecords, setBookToShelfRecords] = useState<
         BookToShelfRecord[]
@@ -286,6 +282,30 @@ export function AddBookToShelfForm() {
         );
     };
 
+    function handleUploadAll() {
+        const payload: BookToShelfPayload[] = bookToShelfRecords.map((record) => ({
+            isbn: record.book.isbn,
+            shelf_id: record.shelf.id,
+            quantity: record.quantity,
+        }));
+
+
+        addBookToShelf(payload)
+            .unwrap()
+            .then(() => {
+                alert("Books added to shelves successfully!");
+                setBookToShelfRecords([]);
+            })
+            .catch((error) => {
+                console.error("Error adding books to shelves:", error);
+                alert("Failed to add books to shelves. Please try again.");
+            });
+    }
+
+    if (!inventoryBooks || !inventoryShelves) {
+        return <div>Loading...</div>;
+    }
+
     return (
         <div className="space-y-6 w-full rounded-xl border border-neutral-100 bg-white p-6 shadow-sm">
             <BookPicker
@@ -297,7 +317,7 @@ export function AddBookToShelfForm() {
 
             <ShelfPicker
                 open={shelfDialog}
-                shelves={shelves}
+                shelves={inventoryShelves}
                 onClose={() => setShelfDialog(false)}
                 onSelect={setSelectedShelf}
             />
@@ -306,7 +326,7 @@ export function AddBookToShelfForm() {
                 <h2 className="text-2xl font-semibold">
                     Add Books To Shelves
                 </h2>
-                <button className="ml-4 rounded-lg bg-primary-container hover:bg-amber-400 duration-200 px-8 py-4 text-black font-semibold hover:bg-primary-hover">
+                <button onClick={handleUploadAll} className="ml-4 rounded-lg bg-primary-container hover:bg-amber-400 duration-200 px-8 py-4 text-black font-semibold hover:bg-primary-hover">
                     Upload All
                 </button>
             </div>
@@ -475,4 +495,3 @@ export function AddBookToShelfForm() {
         </div>
     );
 }
-

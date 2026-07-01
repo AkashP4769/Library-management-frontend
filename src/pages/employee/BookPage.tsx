@@ -1,50 +1,41 @@
 import BookCard, { BookDetailsCard } from "@/Components/BookCard";
 import { useState } from "react";
-import type Book from "@/models/book";
-import { books } from "@/models/book";
-import type Shelf from "@/models/shelf";
 
 import { BookDetailShelfCard } from "@/Components/ShelfCard";
 import { useParams } from "react-router";
 import { useGetBookReviewQuery } from "@/api-service/reviews/review.api";
-import { useGetBookQuery } from "@/api-service/books/books.api";
-import { useGetShelvesQuery } from "@/api-service/shelf/shelf.api";
+import {
+  useGetBookByGenreQuery,
+  useGetBookQuery,
+  useGetShelvesOfBookQuery,
+} from "@/api-service/books/books.api";
 
 export default function BookPage() {
-  const [myBooks] = useState<Book[]>([...books]);
-
   const { id } = useParams();
   const { data: book } = useGetBookQuery(parseInt(id || "-1"));
-  const { data: shelves = [] } = useGetShelvesQuery();
-  // const book = myBooks.find((book) => book.id == id);
+
+  const { data: shelves = [] } = useGetShelvesOfBookQuery(book?.isbn ?? "");
+  const { data: bookGenre = [] } = useGetBookByGenreQuery(
+    {
+      genre: book?.genre ?? "",
+      id: Number(id),
+    },
+    {
+      skip: !book,
+    },
+  );
 
   const [selectBorrowShelf, setSelectBorrowShelf] = useState<number | null>(
     null,
   );
 
-  const [selectReturnShelf, setSelectReturnShelf] = useState<number | null>(
-    null,
-  );
-
   const [borrowed, setBorrowed] = useState(false);
-  const [returned, setReturned] = useState(false);
 
   const isBookBorrowed = () => {
     setBorrowed(true);
-    setSelectReturnShelf(null);
-    setReturned(false);
   };
-
-  const isBookReturned = () => {
-    setSelectBorrowShelf(null);
-    setBorrowed(false);
-    setReturned(true);
-  };
-
-  
 
   const { data: reviews = [] } = useGetBookReviewQuery(id);
-
   if (!book) {
     return <div>Book not found</div>;
   }
@@ -250,7 +241,7 @@ export default function BookPage() {
         </div>
 
         <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-5">
-          {books.map((book) => (
+          {bookGenre.map((book) => (
             <BookCard key={book.id} {...book} />
           ))}
         </div>

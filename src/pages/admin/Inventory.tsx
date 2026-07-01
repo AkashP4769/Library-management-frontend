@@ -4,20 +4,11 @@ import { MdOutlineUploadFile } from "react-icons/md";
 import './Inventory.css'
 // import InventoryTable from '@/components/table/InventoryTable';
 
-import type { BookInventory } from "@/models/bookInventory";
-import { books as initialBooks } from "@/models/book";
-import { shelves as initialShelves } from "@/models/shelf";
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { AddBookToShelfForm } from '@/Components/forms/AddBooKToShelfForm';
 import { InventoryTable } from '@/Components/table/BookInventory';
-import { useGetBooksQuery } from '@/api-service/books/books.api';
-import type Book from '@/models/book';
+import { useGetInventoryBooksQuery } from '@/api-service/books/books.api';
 import { AddShelfForm } from '@/Components/forms/AddShelfForm';
-
-const books: BookInventory[] = initialBooks.map((book, index) => ({
-    book,
-    shelf: initialShelves[index % initialShelves.length],
-}));
 
 
 export default function InventoryPage() {
@@ -59,14 +50,13 @@ function AddBookToShelves(){
 }
 
 function BookArchive({ setPageState }: { setPageState: React.Dispatch<React.SetStateAction<'inventory' | 'new-book'>> }) {
-    const { data: fetchedBooks } = useGetBooksQuery();
-    const [inventoryBooks, setInventoryBooks] = useState<Book[]>([]);
+    // const { data: fetchedBooks } = useGetBooksQuery();
+    // const [inventoryBooks, setInventoryBooks] = useState<Book[]>([]);
 
-    useEffect(() => {
-        if (fetchedBooks) {
-            setInventoryBooks(fetchedBooks);
-        }
-    }, [fetchedBooks]);
+    const { data: inventoryBooksData } = useGetInventoryBooksQuery();
+
+    console.log("Fetched Inventory Books:", inventoryBooksData);
+
 
     return (
         <div className="flex flex-col h-full gap-4 mt-6">
@@ -87,7 +77,7 @@ function BookArchive({ setPageState }: { setPageState: React.Dispatch<React.SetS
                     </button>
                 </div>
             </div>
-            <InventoryTable books={books} />
+            <InventoryTable books={inventoryBooksData || []} />
         </div>
     )
 }

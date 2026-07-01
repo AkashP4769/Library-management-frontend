@@ -1,7 +1,7 @@
 import { Outlet } from "react-router";
 import "./AdminLayout.css";
 
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
 import DashboardIcon from "@assets/icons/sidebar_dashboard.svg";
 import CatalogIcon from "@assets/icons/sidebar_catalog.svg";
 import SavedIcon from "@assets/icons/sidebar_saved.svg";
@@ -10,7 +10,9 @@ import InventoryIcon from "@assets/icons/sidebar_inventory.svg";
 import SettingsIcon from "@assets/icons/sidebar_setting.svg";
 import LogoutIcon from "@assets/icons/sidebar_logout.svg";
 import { useState } from "react";
+import type { MouseEvent } from "react";
 import Chatbot from "@/components/chatbot/Chatbot";
+import { clearAuth } from "@/lib/auth";
 
 const sidebarLinks = [
   { name: "Dashboard", href: "/admin", icon: DashboardIcon },
@@ -22,24 +24,33 @@ const sidebarLinks = [
 
 const sidebarFooterLinks = [
   { name: "Settings", href: "/settings", icon: SettingsIcon },
-  { name: "Logout", href: "/logout", icon: LogoutIcon },
+  { name: "Logout", href: "/login", icon: LogoutIcon },
 ];
 
 function SidebarLink({
   link,
   selectedLink,
   setSelectedLink,
+  onClick,
 }: {
   link: { name: string; href: string; icon: string };
   selectedLink: string;
   setSelectedLink: (linkName: string) => void;
+  onClick?: () => void;
 }) {
   return (
     <Link
       to={link.href}
       className="w-full"
       key={link.name}
-      onClick={() => setSelectedLink(link.name)}
+      onClick={(event: MouseEvent<HTMLAnchorElement>) => {
+        setSelectedLink(link.name);
+
+        if (onClick) {
+          event.preventDefault();
+          onClick();
+        }
+      }}
     >
       <li
         key={link.name}
@@ -59,6 +70,13 @@ function SidebarLink({
 export default function AdminLayout() {
   const [selectedLink, setSelectedLink] = useState<string>("Dashboard");
   const [open, setOpen] = useState(false);
+  const navigate = useNavigate();
+
+  function handleLogout() {
+    clearAuth();
+    navigate("/login", { replace: true });
+  }
+
   function handleChatbotComponent() {
     setOpen((prev) => !prev);
   }
@@ -94,6 +112,7 @@ export default function AdminLayout() {
                 link={link}
                 selectedLink={selectedLink}
                 setSelectedLink={setSelectedLink}
+                onClick={link.name === "Logout" ? handleLogout : undefined}
               />
             ))}
           </ul>

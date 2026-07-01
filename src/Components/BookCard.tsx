@@ -2,6 +2,7 @@ import type Book from "@/models/book";
 import { BASE_URL } from "@/api-service/api";
 
 export default function BookCard(book: Book) {
+  console.log("image_url", book.image_url);
   return (
     <div
       key={book.id}
