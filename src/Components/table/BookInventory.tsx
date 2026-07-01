@@ -6,7 +6,7 @@ function RatingBadge({ rating }: { rating: number }) {
 
   return (
     <span className={`rounded-full px-3 py-1 text-sm font-medium ${styles}`}>
-      ★ {rating.toFixed(1)}
+      ★ {rating?.toFixed(1)}
     </span>
   );
 }

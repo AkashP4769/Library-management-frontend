@@ -27,7 +27,7 @@ export const booksApi = libraryBaseApi.injectEndpoints({
         url: BASE_URL + `/books/${id}`,
         method: "GET",
       }),
-      providesTags: (result, error, id) => [{ type: "Books", id }],
+      providesTags: ["Books"],
       transformResponse: (response: BookResponse) => {
         return bookResponseToBook(response);
       },
@@ -48,7 +48,7 @@ export const booksApi = libraryBaseApi.injectEndpoints({
         url: BASE_URL + "/books",
         method: "GET",
       }),
-      providesTags: (result) => result ? result.map(({ id }) => ({ type: "Books", id })) : [{ type: "Books", id: "LIST" }],
+      providesTags: ["Books"],
       transformResponse: (response: BookResponse[]) => {
         return response.map((bookResponse) => bookResponseToBook(bookResponse));
       },
@@ -60,7 +60,7 @@ export const booksApi = libraryBaseApi.injectEndpoints({
         method: "POST",
         body: payload,
       }),
-      invalidatesTags: [{ type: "Books", id: "LIST" }],
+      invalidatesTags: ["Books"],
     }),
 
     getInventoryBooks: builder.query<InventoryBookItem[], void>({
@@ -68,7 +68,7 @@ export const booksApi = libraryBaseApi.injectEndpoints({
         url: BASE_URL + "/book-copies/inventory",
         method: "GET",
       }),
-      providesTags: (result) => result ? result.map(({ isbn }) => ({ type: "Books", isbn })) : [{ type: "Books", id: "LIST" }],
+      providesTags: ["Books"],
       transformResponse: (response: {inventory: [], total: number}) => {
         return response.inventory.map((item) => responseToInventoryBookItem(item));
       }
@@ -79,7 +79,7 @@ export const booksApi = libraryBaseApi.injectEndpoints({
         url: BASE_URL + `/books/search/${genre}?book_id=${id}`,
         method: "GET",
       }),
-      providesTags: (result) => result ? result.map(({ id }) => ({ type: "Books", id })) : [{ type: "Books", id: "LIST" }],
+      providesTags: ["Books"],
       transformResponse: (response: BookResponse[]) => {
         return response.map((bookResponse) => bookResponseToBook(bookResponse));
       },
@@ -90,7 +90,7 @@ export const booksApi = libraryBaseApi.injectEndpoints({
         url: BASE_URL + `/books/${isbn}/shelves`,
         method: "GET",
       }),
-      providesTags: (result) => result ? result.map(({ id }) => ({ type: "Shelves", id })) : [{ type: "Shelves", id: "LIST" }],
+      providesTags: ["Books"],
       transformResponse: (response: ShelfResponse[]) => {
         return response.map((shelfResponse) =>
           shelfResponseToShelf(shelfResponse),
@@ -104,7 +104,7 @@ export const booksApi = libraryBaseApi.injectEndpoints({
         method: "POST",
         body: payload,
       }),
-      invalidatesTags: [{ type: "BorrowedBooks", id: "LIST" }],
+      invalidatesTags: ["BorrowedBooks", "Books"],
       
     }),
 
@@ -113,7 +113,7 @@ export const booksApi = libraryBaseApi.injectEndpoints({
         url: BASE_URL + `/borrowed-books/details-by-user`,  
         method: "GET",
       }),
-      providesTags: (result) => result ? result.map(({ id }) => ({ type: "BorrowedBooks", id })) : [{ type: "BorrowedBooks", id: "LIST" }],
+      providesTags: ["BorrowedBooks", "Books"],
       transformResponse: (response: { borrowed_books: BorrowedBook[] }) => {
         return response.borrowed_books.map((bookResponse) => transformBorrowedBookResponse(bookResponse));
       },
@@ -125,7 +125,7 @@ export const booksApi = libraryBaseApi.injectEndpoints({
         url: BASE_URL + `/borrowed-books/${borrowId}/return/${shelfId}`,
         method: "POST",
       }),
-      invalidatesTags: [{ type: "BorrowedBooks", id: "LIST" }],
+      invalidatesTags: ["BorrowedBooks", "Books"],
     }),
   }),
 });
