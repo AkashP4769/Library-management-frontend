@@ -3,19 +3,35 @@ import "./MyReads.css";
 import { books } from "@/models/book";
 import { FaUser, FaEnvelope, FaPhoneAlt } from "react-icons/fa";
 import EmptyShelf from "@/Components/EmptyShelf";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { SmallShelfCard } from "@/Components/ShelfCard";
 import { shelves } from "@/models/shelf";
 import type Shelf from "@/models/shelf";
+import { useGetBorrowedBooksByUserQuery, useReturnBorrowedBookMutation } from "@/api-service/books/books.api";
+import type Book from "@/models/book";
+import { transformBorrowedBookToBook } from "@/api-service/books/types";
+
 
 export default function MyReads() {
-  const borrowedBooks = books.slice(0, 2);
+  // const borrowedBooks = books.slice(0, 2);
+  const { data: borrowedBooksInformation = [] } = useGetBorrowedBooksByUserQuery();
+  const [borrowedBooks, setBorrowedBooks] = useState<Book[]>([]);
+  const [ returnBorrowedBook ] = useReturnBorrowedBookMutation();
   const requestedBooks = books.slice(2, 3);
   
   const [showReturnPanel, setShowReturnPanel] = useState(false);
   const [selectedBorrowId, setSelectedBorrowId] = useState<number | null>(null);
   const [selectedShelfId, setSelectedShelfId] = useState<number | null>(null);
   const [returnShelves, setReturnShelves] = useState<Shelf[]>([]);
+
+  useEffect(() => {
+    if (borrowedBooksInformation) {
+      console.log('Borrowed Books Information:', borrowedBooksInformation); // Debugging line to check the data
+      const filteredBooks = borrowedBooksInformation.filter(book => book.status === "BORROWED");
+      setBorrowedBooks(transformBorrowedBookToBook(filteredBooks));
+    }
+  }, [borrowedBooksInformation]);
+  
 
   const handleReturnClick = async (borrowId: number) => {
     setSelectedBorrowId(borrowId);
@@ -32,13 +48,18 @@ export default function MyReads() {
   const handleConfirmReturn = async () => {
     if (!selectedBorrowId || !selectedShelfId) return;
 
-    // TODO: Backend call
-    /*
-  await returnBook({
-    borrowId: selectedBorrowId,
-    shelfId: selectedShelfId,
-  });
-  */
+    console.log(`Returning borrowId: ${selectedBorrowId} to shelfId: ${selectedShelfId}`);
+    returnBorrowedBook({ borrowId: selectedBorrowId, shelfId: selectedShelfId }).
+      unwrap()
+      .then(() => {
+        alert("Book returned successfully");
+        console.log("Book returned successfully");
+      })
+      .catch((error) => {
+        // Handle error, e.g., show an error message
+        alert("Error returning book: " + error.message);
+        console.error("Error returning book:", error);
+      });
 
     // Close the panel
     setShowReturnPanel(false);
