@@ -6,12 +6,15 @@ import {
   useGetBooksQuery,
   useGetBorrowedBooksByUserQuery,
 } from "@/api-service/books/books.api";
-import { transformBorrowedBookToBook } from "@/api-service/books/types";
+import {
+  transformBorrowedBookToBook,
+  type BorrowedBook,
+} from "@/api-service/books/types";
 import { Link } from "react-router";
 
 export default function HomePage() {
   const { data: fetchedBooks } = useGetBooksQuery();
-  const [myBooks, setMyBooks] = useState<Book[]>([]);
+  const [myBooks, setMyBooks] = useState<BorrowedBook[]>([]);
   const [exploreBooks, setExploreBooks] = useState<Book[]>([]);
   const { data: borrowedBooksInformation = [] } =
     useGetBorrowedBooksByUserQuery();
@@ -21,6 +24,7 @@ export default function HomePage() {
       const filteredBooks = borrowedBooksInformation.filter(
         (book) => book.status === "RETURNED",
       );
+      console.log(filteredBooks, "Filtered Books"); // Debugging line to check the filtered data
       setMyBooks(transformBorrowedBookToBook(filteredBooks));
     }
   }, [borrowedBooksInformation]);
@@ -68,7 +72,7 @@ export default function HomePage() {
             <p className="text-primary text-xl font-semibold">No books found</p>
           ) : (
             myBooks.map((book) => (
-              <Link key={book.id} to={`/catalog/books/${book.id}`}>
+              <Link key={book.book_id} to={`/catalog/books/${book.id}`}>
                 <BookCard {...book} />
               </Link>
             ))
