@@ -1,12 +1,23 @@
 import type Book from "@/models/book";
 import { BASE_URL } from "@/api-service/api";
-import { useState, type MouseEvent } from "react";
+import { type MouseEvent } from "react";
 import { useNavigate } from "react-router";
 import { Heart } from "lucide-react";
+import {
+  useGetWishlistQuery,
+  useAddToWishlistMutation,
+  useRemoveFromWishlistMutation,
+} from "@/api-service/books/books.api";
 export default function BookCard(book: Book) {
   const hasShelfCopies = typeof book.total_copies === "number";
   const navigate = useNavigate();
-  const [isLiked, setIsLiked] = useState(false);
+  const { data: wishlistedBookIds = [] } = useGetWishlistQuery();
+  const isLiked = wishlistedBookIds.includes(book.id);
+  const [addToWishlist, { isLoading: isAddingToWishlist }] =
+    useAddToWishlistMutation();
+  const [removeFromWishlist, { isLoading: isRemovingFromWishlist }] =
+    useRemoveFromWishlistMutation();
+  const isUpdatingWishlist = isAddingToWishlist || isRemovingFromWishlist;
 
   function handleClick(event: MouseEvent<HTMLDivElement>) {
     const target = event.target as HTMLElement;
@@ -38,12 +49,26 @@ export default function BookCard(book: Book) {
           <button
             type="button"
             aria-label={isLiked ? "Remove from favorites" : "Add to favorites"}
-            onClick={(event) => {
+            disabled={isUpdatingWishlist}
+            onClick={async (event) => {
               event.preventDefault();
               event.stopPropagation();
-              setIsLiked((prev) => !prev);
+
+              if (!book.id || isUpdatingWishlist) {
+                return;
+              }
+
+              try {
+                if (isLiked) {
+                  await removeFromWishlist(book.id).unwrap();
+                } else {
+                  await addToWishlist(book.id).unwrap();
+                }
+              } catch (error) {
+                console.error("Failed to update wishlist:", error);
+              }
             }}
-            className="absolute right-3 top-3 z-10 flex h-10 w-10 items-center justify-center rounded-full bg-white/20 shadow-md backdrop-blur-sm transition hover:scale-110"
+            className="absolute right-3 top-3 z-10 flex h-10 w-10 items-center justify-center rounded-full bg-white/20 shadow-md backdrop-blur-sm transition hover:scale-110 disabled:cursor-not-allowed disabled:opacity-70"
           >
             <Heart
               className={`h-6 w-6 transition-all duration-200 ${

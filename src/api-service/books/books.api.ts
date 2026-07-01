@@ -10,6 +10,54 @@ import type Book from "@/models/book";
 import type ShelfResponse from "../shelf/types";
 import { shelfResponseToShelf } from "../shelf/types";
 
+function transformWishlistResponse(response: unknown): number[] {
+  const collectIds = (items: unknown[]): number[] =>
+    items
+      .map((item) => {
+        if (typeof item === "number") {
+          return item;
+        }
+
+        if (item && typeof item === "object") {
+          const record = item as {
+            book_id?: number;
+            id?: number;
+            book?: { id?: number };
+          };
+
+          return record.book_id ?? record.id ?? record.book?.id ?? null;
+        }
+
+        return null;
+      })
+      .filter((id): id is number => typeof id === "number");
+
+  if (Array.isArray(response)) {
+    return collectIds(response);
+  }
+
+  if (response && typeof response === "object") {
+    const record = response as {
+      wishlist?: unknown[];
+      wishlist_books?: unknown[];
+      books?: unknown[];
+      data?: unknown[];
+      book_ids?: unknown[];
+    };
+
+    return collectIds(
+      record.wishlist ??
+        record.wishlist_books ??
+        record.books ??
+        record.data ??
+        record.book_ids ??
+        [],
+    );
+  }
+
+  return [];
+}
+
 export const booksApi = libraryBaseApi.injectEndpoints({
   endpoints: (builder) => ({
     createBook: builder.mutation<{ id: number }, CreateBookPayload>({
@@ -127,11 +175,38 @@ export const booksApi = libraryBaseApi.injectEndpoints({
       }),
       invalidatesTags: ["BorrowedBooks", "Books"],
     }),
+
+    getWishlist: builder.query<number[], void>({
+      query: () => ({
+        url: BASE_URL + "/wishlist",
+        method: "GET",
+      }),
+      providesTags: ["Wishlist"],
+      transformResponse: (response: unknown) => transformWishlistResponse(response),
+    }),
+
+    addToWishlist: builder.mutation<void, number>({
+      query: (bookId) => ({
+        url: BASE_URL + "/wishlist",
+        method: "POST",
+        body: { book_id: bookId },
+      }),
+      invalidatesTags: ["Wishlist"],
+    }),
+
+    removeFromWishlist: builder.mutation<void, number>({
+      query: (bookId) => ({
+        url: BASE_URL + `/wishlist/${bookId}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["Wishlist"],
+    }),
   }),
 });
 
 export const { useCreateBookMutation, useGetBookQuery, useGetBooksQuery, useAddBookToShelfMutation, 
   useLazyGetBookbyOpenLibraryAPIQuery, 
   useGetInventoryBooksQuery, useGetBookByGenreQuery, useGetShelvesOfBookQuery, 
-  useBorrowBookMutation, useGetBorrowedBooksByUserQuery, useReturnBorrowedBookMutation
+  useBorrowBookMutation, useGetBorrowedBooksByUserQuery, useReturnBorrowedBookMutation,
+  useGetWishlistQuery, useAddToWishlistMutation, useRemoveFromWishlistMutation,
 } = booksApi;
