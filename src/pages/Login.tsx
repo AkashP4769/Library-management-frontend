@@ -6,7 +6,7 @@ import "tailwindcss";
 import { useState } from "react";
 import Footer from "@/components/Footer";
 import { Link, useNavigate } from "react-router";
-import { useLoginMutation } from "@/api-service/login/login.api";
+import { useGetUserDetailsQuery, useLazyGetUserDetailsQuery, useLoginMutation } from "@/api-service/login/login.api";
 import { useLazyGetUsersNotificationsQuery } from "@/api-service/notifications/notifications.api";
 
 export default function LoginPage() {
@@ -15,9 +15,10 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [login] = useLoginMutation();
+  const [getUserDetails] = useLazyGetUserDetailsQuery();
   const navigate = useNavigate();
 
-  const handleLogin = async () => {
+  const handleLogin = async (loginType: "employee" | "admin") => {
     if (email.length == 0 || password.length == 0) {
       alert("Please enter valid email and password");
       return;
@@ -34,23 +35,32 @@ export default function LoginPage() {
 
       const access_token = response.access_token;
       const refresh_token = response.refresh_token;
-      const userName =
-        response?.user?.name ||
-        response?.user?.username ||
-        response?.name ||
-        response?.username ||
-        (payload.email ? payload.email.split("@")[0] : "User");
 
-      if (access_token && refresh_token) {
-        console.log(
-          "access_token & refresh token",
-          access_token && refresh_token,
-        );
-        localStorage.setItem("access_token", access_token);
-        localStorage.setItem("refresh_token", refresh_token);
-        localStorage.setItem("username", userName);
-        localStorage.setItem("email", payload.email);
-        navigate("/", { replace: true });
+      if(!access_token || !refresh_token) {
+        alert("Login failed. Please check your credentials.");
+        return;
+      }
+
+      const role = response.role;
+      if(role !== loginType) {
+        alert(`You are trying to log in as ${loginType}, but your role is ${role}. Please use the correct login.`);
+        return;
+      }
+
+      localStorage.setItem("access_token", access_token);
+      localStorage.setItem("refresh_token", refresh_token);
+      localStorage.setItem("user_id", response.user_id.toString());
+      localStorage.setItem("email", response.email);
+      localStorage.setItem("name", response.name);
+      localStorage.setItem("contact_number", response.contact_number);
+      localStorage.setItem("role", response.role);
+
+      if (response.role === "admin") {
+        navigate("/admin", { replace: true });
+      } else if (response.role === "employee") {
+        navigate("/dashboard", { replace: true });
+      } else {
+        alert("Invalid role. Please contact support.");
       }
     } catch (error) {
       console.error("Login failed:", error);
@@ -146,7 +156,7 @@ export default function LoginPage() {
             <button
               type="submit"
               className="w-full h-[50px] bg-amber-300 text-[#141b2b] rounded font-semibold"
-              onClick={() => handleLogin()}
+              onClick={() => handleLogin(role === "Admin" ? "admin" : "employee")}
             >
               Log In as {role === "Admin" ? "Admin" : "Employee"} -{">"}
             </button>

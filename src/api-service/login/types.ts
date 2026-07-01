@@ -2,12 +2,11 @@ export type LoginResponse = {
     access_token: string,
     token_type: string,
     refresh_token: string,
-    user?: {
-        name?: string,
-        username?: string,
-    },
-    name?: string,
-    username?: string,
+    user_id: number,
+    email: string,
+    name: string,
+    contact_number: string,
+    role: string,
 }
 
 export type LoginPayload = {
