@@ -19,7 +19,7 @@ export default function CatalogPage() {
     if (fetchedShelves) {
       setShelves([...fetchedShelves]);
     }
-  }, [fetchedBooks]);
+  }, [fetchedShelves]);
 
   useEffect(() => {
     if (fetchedBooks) {
@@ -36,7 +36,13 @@ export default function CatalogPage() {
             Filter Icon
           </p>
         </div>
-        <div className="grid grid-cols-5 gap-6">
+        <div
+          className="grid  gap-6 grid-cols-1
+        sm:grid-cols-2
+        md:grid-cols-3
+        lg:grid-cols-4
+        xl:grid-cols-5"
+        >
           {books.length === 0 ? (
             <p className="text-bold text-primary text-xl">No books found</p>
           ) : (
@@ -45,22 +51,6 @@ export default function CatalogPage() {
                 <BookCard {...book} />
               </Link>
             ))
-          )}
-        </div>
-      </section>
-
-      <section className="shelves-section">
-        <div className="flex justify-between items-center">
-          <h2 className="text-2xl font-bold">Check out from Office shelves</h2>
-          <p className="text-primary font-bold hover:underline cursor-pointer">
-            Filter Icon
-          </p>
-        </div>
-        <div className="grid grid-cols-4 gap-6">
-          {shelves.length === 0 ? (
-            <p className="text-bold text-primary text-xl">No shelves found</p>
-          ) : (
-            shelves.map((shelf) => <ShelfCard key={shelf.id} {...shelf} />)
           )}
         </div>
       </section>
