@@ -112,15 +112,13 @@ interface BorrowedBookCardProps {
 }
 
 function BorrowedBookCard({ book, onReturnClick }: BorrowedBookCardProps) {
-  const imageUrl = book.image_url.startsWith("/uploads/")
-    ? BASE_URL + book.image_url
-    : book.image_url;
+  
   return (
     <div className="flex flex-col h-120 w--70 rounded-2xl border-2 border-neutral-200 hover:bg-white duration-200 p-3">
       <div className="flex flex-col h-full justify-between">
         <div>
           <img
-            src={imageUrl}
+            src={book.image_url}
             alt={book.title}
             className="w-full h-80 object-cover rounded-xl"
           />

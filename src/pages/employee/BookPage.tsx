@@ -1,5 +1,5 @@
 import BookCard, { BookDetailsCard } from "@/Components/BookCard";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type Book from "@/models/book";
 import { books } from "@/models/book";
 import type Shelf from "@/models/shelf";
@@ -8,11 +8,13 @@ import { BookDetailShelfCard } from "@/Components/ShelfCard";
 import { useParams } from "react-router";
 import { useGetBookReviewQuery } from "@/api-service/reviews/review.api";
 import {
+  useBorrowBookMutation,
   useGetBookByGenreQuery,
   useGetBookQuery,
   useGetShelvesOfBookQuery,
 } from "@/api-service/books/books.api";
 import { useGetShelvesQuery } from "@/api-service/shelf/shelf.api";
+import type { BorrowedBook } from "@/api-service/books/types";
 
 export default function BookPage() {
   const { id } = useParams();
@@ -28,6 +30,23 @@ export default function BookPage() {
       skip: !book,
     },
   );
+
+  const [borrowedBooksData] = useBorrowBookMutation();
+  const [borrowedBooks, setBorrowedBooks] = useState<BorrowedBook[]>([]);
+
+  useEffect(() => {
+    if (book) {
+      borrowedBooksData({ isbn: book.isbn, shelf_id: shelves[0]?.id ?? 0 })
+        .unwrap()
+        .then((response) => {
+          const filteredBooks = borrowedBooks.filter((response) => response.status === "borrowed");
+          setBorrowedBooks(filteredBooks);
+        })
+        .catch((error) => {
+          console.error("Error borrowing book:", error);
+        });
+    }
+  }, [book, shelves, borrowedBooksData]);
 
   const [selectBorrowShelf, setSelectBorrowShelf] = useState<number | null>(
     null,
@@ -51,6 +70,22 @@ export default function BookPage() {
     setBorrowed(false);
     setReturned(true);
   };
+
+  function handleBorrowBook() {
+    if (book && selectBorrowShelf) {
+      borrowBook({
+        isbn: book.isbn,
+        shelf_id: selectBorrowShelf,
+      })
+        .unwrap()
+        .then(() => {
+          isBookBorrowed();
+        })
+        .catch((error) => {
+          console.error("Error borrowing book:", error);
+        });
+    }
+  }
 
   const { data: reviews = [] } = useGetBookReviewQuery(id);
   if (!book) {
@@ -163,7 +198,7 @@ export default function BookPage() {
             <div className="flex gap-3 pt-4 border-t border-[#D0C6AE]/70">
               <button
                 disabled={!selectBorrowShelf || borrowed}
-                onClick={isBookBorrowed}
+                onClick={handleBorrowBook}
                 className={`flex-1 rounded-xl px-4 py-3 text-sm font-medium transition ${
                   borrowed
                     ? "bg-[#E7E8E9] text-[#575E70]"

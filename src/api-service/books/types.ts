@@ -34,6 +34,16 @@ export type CreateBookPayload = {
   image?: File | null;
 };
 
+function placeholderImageUrl(originalImageUrl: string | null): string {
+  if (!originalImageUrl) {
+    return "https://www.forewordreviews.com/books/covers/how-to-start-and-operate-an-internet-used-book-store-without-spending-a-fortune.jpg";
+  }
+  if (originalImageUrl.startsWith("/uploads/")) {
+    return BASE_URL + originalImageUrl;
+  }
+  return originalImageUrl;
+}
+
 export function bookResponseToBook(bookResponse: BookResponse): Book {
   return {
     id: bookResponse.id,
@@ -44,11 +54,7 @@ export function bookResponseToBook(bookResponse: BookResponse): Book {
     publisher: bookResponse.publisher,
     language: bookResponse.language,
     description: bookResponse.description,
-    image_url: bookResponse.image_url
-      ? bookResponse.image_url.startsWith("/uploads/")
-        ? BASE_URL + bookResponse.image_url
-        : bookResponse.image_url
-      : "https://www.forewordreviews.com/books/covers/how-to-start-and-operate-an-internet-used-book-store-without-spending-a-fortune.jpg",
+    image_url: placeholderImageUrl(bookResponse.image_url),
     rating: 0, // Assuming rating is not part of the response, set it to a default value
     createdAt: bookResponse.createdAt,
     updatedAt: bookResponse.updatedAt,
@@ -86,11 +92,7 @@ export function responseToInventoryBookItem(item: any): InventoryBookItem {
     genre: item.genre,
     publisher: item.publisher,
     language: item.language,
-    image_url: item.image_url
-      ? item.image_url.startsWith("/uploads/")
-        ? BASE_URL + item.image_url
-        : item.image_url
-      : "https://www.forewordreviews.com/books/covers/how-to-start-and-operate-an-internet-used-book-store-without-spending-a-fortune.jpg",
+    image_url: placeholderImageUrl(item.image_url),
     shelf_id: item.shelf_id,
     shelf_code: item.shelf_code,
     office_location: item.office_location,
@@ -99,4 +101,94 @@ export function responseToInventoryBookItem(item: any): InventoryBookItem {
     borrowed_copies: item.borrowed_copies,
     average_rating: item.average_rating,
   };
+}
+
+export type BorrowedBookItem = {
+  id: number;
+  book_copy_id: number;
+  user_id: number;
+  borrowed_at: string; // Use string for datetime representation
+  due_date: string; // Use string for datetime representation
+  returned_at: string | null; // Use string for datetime representation
+  status: "borrowed" | "returned" | "overdue"; // Adjust the type based on your actual status values
+  renewal_count: number;
+  fine_amount: number;
+  created_at: string; // Use string for datetime representation
+  updated_at: string | null; // Use string for datetime representation
+  deleted_at: string | null; // Use string for datetime representation
+};
+
+export type BorrowBookPayload = {
+  isbn: string;
+  shelf_id: number;
+};
+
+
+export type BorrowedBookResponse = {
+  id: number;
+  book_copy_id: number;
+  user_id: number;
+  borrowed_at: string; // Use string for datetime representation
+  due_date: string; // Use string for datetime representation
+  returned_at: string | null; // Use string for datetime representation
+  status: "borrowed" | "returned" | "overdue"; // Adjust the type based on your actual status values
+  renewal_count: number;
+  fine_amount: number;
+  created_at: string; // Use string for datetime representation
+  updated_at: string | null; // Use string for datetime representation
+  deleted_at: string | null; // Use string for datetime representation
+}
+
+export type BorrowedBook = {
+    id: number;
+    user_id: number;
+    user_name: string;
+    user_email: string;
+
+    book_copy_id: number;
+
+    isbn: string;
+    title: string;
+    author: string;
+    genre: string | null;
+    image_url: string | null;
+    publisher: string | null;
+
+    shelf_code: string;
+
+    borrowed_at: string; // Use string for datetime representation
+    due_date: string; // Use string for datetime representation
+    returned_at: string | null; // Use string for datetime representation
+
+    status: "BORROWED" | "RETURNED" | "OVERDUE"; // Adjust the type based on your actual status values
+
+    renewal_count: number;
+    fine_amount: number;
+}
+
+
+
+
+export function transformBorrowedBookResponse(response: BorrowedBook): BorrowedBook {
+  return {
+    ...response,
+    image_url: placeholderImageUrl(response.image_url)
+  };
+}
+
+export function transformBorrowedBookToBook(response: BorrowedBook[]): Book[] {
+  return response.map((book) => ({
+    id: book.id,
+    isbn: book.isbn,
+    title: book.title,
+    author: book.author,
+    genre: book.genre ?? "",
+    image_url: placeholderImageUrl(book.image_url),
+    publisher: book.publisher ?? "",
+    language: "",
+    description: "",
+    rating: 0,
+    createdAt: "",
+    updatedAt: "",
+  }));
 }
