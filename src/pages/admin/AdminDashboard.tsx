@@ -190,7 +190,7 @@ export default function AdminDashboardPage() {
             </div>
           </div>
           {/* Chart placeholder — swap for Recharts/Chart.js once data is wired up */}
-          <div className="relative h-[280px] w-full rounded-lg bg-[#F8F9FA] border border-[#D0C6AE] p-4">
+          <div className="relative h-[280px] w-full rounded-lg bg-[#F8F9FA] border border-[#D0C6AE] p-4 ">
             {isCirculationTrendsLoading ? (
               <div className="flex items-center justify-center h-full">
                 <span className="text-sm text-[#4D4635]">Loading...</span>
