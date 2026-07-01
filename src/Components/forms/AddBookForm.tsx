@@ -9,8 +9,7 @@ import ISBNScanner from "@components/scanner/ISBNScanner";
 import { useLazyGetBookbyOpenLibraryAPIQuery } from "@/api-service/books/books.api";
 export function AddBookForm() {
   const [createBook] = useCreateBookMutation();
-  const [fetchBook, { data, isLoading, error }] =
-      useLazyGetBookbyOpenLibraryAPIQuery();
+  const [fetchBook] = useLazyGetBookbyOpenLibraryAPIQuery();
   const [book, setBook] = useState<CreateBookPayload>({
     isbn: "",
     title: "",
@@ -66,13 +65,14 @@ export function AddBookForm() {
   const handleScan = async (isbn: string) => {
     console.log(isbn);
     const result = await fetchBook(isbn);
-    let file;
+    let file: File | null = null;
     console.log(result.data);
+    setshowScanner(false);
     if (result.data){
       const data = result.data;
       const cover_url =
-      data.cover_urls[1] ??
-      data.cover_urls[0] ??
+      data.cover_urls?.[1] ??
+      data.cover_urls?.[0] ??
       null;
 
       if(cover_url){
@@ -92,7 +92,7 @@ export function AddBookForm() {
     
   }));
     }
-    setshowScanner(false);
+    
   };
 
   const handleSubmit = (e: React.FormEvent) => {

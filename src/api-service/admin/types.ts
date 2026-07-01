@@ -5,6 +5,31 @@ export type DashBoardMetrics = {
   most_popular_genre: string;
 };
 
+export type CirculationTrend = {
+  date: string;
+  borrowed: number;
+  returned: number;
+  overdue: number;
+};
+
+export type RecentActivity = {
+  id: number;
+  title: string;
+  user: string;
+  date: string;
+  status: "Issued" | "Borrowed" | "Overdue" | "Returned";
+  due_date: string;
+};
+
+export type ShelfSageItem = {
+  shelf_id: number;
+  shelf_name: string;
+  utilization_rate: number;
+  available_books: number;
+  borrowed_books: number;
+  overdue_books: number;
+};
+
 export type AuditLogItem = {
   id?: string | number;
   actor_user_id?: string | number;

@@ -1,6 +1,6 @@
 import type Book from "@/models/book";
 import type Shelf from "@/models/shelf";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 import {
     Dialog,
@@ -495,4 +495,3 @@ export function AddBookToShelfForm() {
         </div>
     );
 }
-

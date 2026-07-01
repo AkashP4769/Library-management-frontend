@@ -18,9 +18,7 @@ function RatingBadge({ rating }: { rating: number }) {
     );
 }
 
-import { BASE_URL } from "@/api-service/api";
 import type { InventoryBookItem } from "@/api-service/books/types";
-import type { BookInventory } from "@/models/bookInventory";
 import { Pencil, Trash2 } from "lucide-react";
 
 type Props = {

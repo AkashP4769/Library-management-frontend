@@ -1,7 +1,6 @@
 import type Book from "@/models/book";
 import { useEffect, useState } from "react";
 import "./Home.css";
-import { books } from "@/models/book";
 import BookCard, { SmallBookCard } from "@/Components/BookCard";
 import { useGetBooksQuery } from "@/api-service/books/books.api";
 
