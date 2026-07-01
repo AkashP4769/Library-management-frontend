@@ -57,4 +57,5 @@ export const {
   useGetBookReviewQuery,
   useCreateBookReviewMutation,
   useDeleteBookReviewMutation,
+  useGetUserReviewsQuery,
 } = reviewApi;
