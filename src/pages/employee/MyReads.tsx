@@ -24,6 +24,7 @@ export default function MyReads() {
   const { data: borrowedBooksInformation = [] } =
     useGetBorrowedBooksByUserQuery();
   const [borrowedBooks, setBorrowedBooks] = useState<Book[]>([]);
+  const [myBooks, setMyBooks] = useState<Book[]>([]);
   const [returnBorrowedBook] = useReturnBorrowedBookMutation();
   const { data: fetchshelves } = useGetShelvesQuery();
   const { toast } = useToast();
@@ -62,6 +63,16 @@ export default function MyReads() {
         (book) => book.status === "BORROWED",
       );
       setBorrowedBooks(transformBorrowedBookToBook(filteredBooks));
+    }
+  }, [borrowedBooksInformation]);
+
+  useEffect(() => {
+    if (borrowedBooksInformation) {
+      console.log("Borrowed Books Information:", borrowedBooksInformation); // Debugging line to check the data
+      const filteredBooks = borrowedBooksInformation.filter(
+        (book) => book.status === "RETURNED",
+      );
+      setMyBooks(transformBorrowedBookToBook(filteredBooks));
     }
   }, [borrowedBooksInformation]);
 
@@ -229,14 +240,16 @@ export default function MyReads() {
               <p className="text-sm uppercase tracking-wide text-gray-500">
                 Books Read
               </p>
-              <h2 className="text-5xl font-bold mt-3">5</h2>
+              <h2 className="text-5xl font-bold mt-3">{myBooks.length}</h2>
             </div>
 
             <div className="bg-white rounded-2xl shadow p-6 text-center">
               <p className="text-sm uppercase tracking-wide text-gray-500">
                 Borrowed
               </p>
-              <h2 className="text-5xl font-bold mt-3">8</h2>
+              <h2 className="text-5xl font-bold mt-3">
+                {borrowedBooks.length}
+              </h2>
             </div>
 
             <div className="bg-white rounded-2xl shadow p-6 text-center">
@@ -265,8 +278,8 @@ export default function MyReads() {
         </div>
 
         <div className="grid grid-cols-5 gap-6">
-          {borrowedBooks.length ? (
-            borrowedBooks.map((book) => (
+          {myBooks.length ? (
+            myBooks.map((book) => (
               <BookCard
                 key={book.id} //book.borrowid
                 {...book}
