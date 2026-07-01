@@ -22,7 +22,7 @@ export function AddBookForm() {
     image: null,
   });
 
-
+  const [message, setMessage] = useState("Book submission received. Check the status shortly.");
   const [preview, setPreview] = useState<string | null>(null);
   const [showSuccessBanner, setShowSuccessBanner] = useState(false);
   const [showScanner, setshowScanner] = useState(false)
@@ -117,12 +117,18 @@ export function AddBookForm() {
     createBook(formData as unknown as CreateBookPayload)
       .unwrap()
       .then(() => {
+        setMessage("Book submission received. Check the status shortly.");
         setShowSuccessBanner(true);
         setTimeout(() => {
           setShowSuccessBanner(false);
         }, 3000);
       })
       .catch((error) => {
+        setMessage("Error creating book. Please try again.");
+        setShowSuccessBanner(true);
+        setTimeout(() => {
+          setShowSuccessBanner(false);
+        }, 3000);
         console.error("Error creating book:", error);
       });
 
@@ -130,7 +136,7 @@ export function AddBookForm() {
 
   return (
     <div className="w-full p-6 rounded-xl bg-white shadow-sm ">
-      <SuccessBanner message="Book submission received. Check the status shortly." isVisible={showSuccessBanner} />
+      <SuccessBanner message={message} isVisible={showSuccessBanner} />
       <div className="flex justify-between">
         <h2 className="mb-6 w-full text-2xl font-bold">
           Add New Book
