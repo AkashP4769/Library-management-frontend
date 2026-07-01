@@ -10,6 +10,7 @@ import { useGetBookReviewQuery } from "@/api-service/reviews/review.api";
 import {
   useGetBookByGenreQuery,
   useGetBookQuery,
+  useGetShelvesOfBookQuery,
 } from "@/api-service/books/books.api";
 import { useGetShelvesQuery } from "@/api-service/shelf/shelf.api";
 
@@ -17,7 +18,7 @@ export default function BookPage() {
   const { id } = useParams();
   const { data: book } = useGetBookQuery(parseInt(id || "-1"));
 
-  const { data: shelves = [] } = useGetShelvesQuery();
+  const { data: shelves = [] } = useGetShelvesOfBookQuery(book?.isbn ?? "");
   const { data: bookGenre = [] } = useGetBookByGenreQuery(
     {
       genre: book?.genre ?? "",
