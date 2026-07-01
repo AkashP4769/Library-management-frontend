@@ -16,12 +16,29 @@
   color: white;
 }
 
+.sidebar-brand {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 22px 16px 12px;
+}
+
+.sidebar-brand-icon {
+  width: 46px;
+  height: 46px;
+  object-fit: contain;
+}
+
 .sidebar-title {
   font-size: 18px;
   font-weight: bold;
-  margin-bottom: 20px;
-  padding: 10px;
+  margin: 0;
+  padding: 0;
   color: var(--color-secondary);
+  line-height: 1.2;
+  text-align: center;
 }
 
 .sidebar-nav {
