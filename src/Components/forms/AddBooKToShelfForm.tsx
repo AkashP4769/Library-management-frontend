@@ -14,6 +14,7 @@ import {
 } from "@/api-service/books/books.api";
 import { useGetShelvesQuery } from "@/api-service/shelf/shelf.api";
 import type { BookToShelfPayload } from "@/api-service/books/types";
+import { useToast } from "@/Components/ui/Toast";
 
 type BookToShelfRecord = {
   book: Book;
@@ -195,6 +196,7 @@ export function AddBookToShelfForm({
 }: Props) {
   const { data: inventoryBooks } = useGetBooksQuery();
   const { data: inventoryShelves } = useGetShelvesQuery();
+  const { toast } = useToast();
 
   const [addBookToShelf] = useAddBookToShelfMutation();
 
@@ -267,7 +269,14 @@ export function AddBookToShelfForm({
     const book = selectedBook;
     const shelf = selectedShelf;
 
-    if (!book || !shelf) return;
+    if (!book || !shelf) {
+      toast({
+        title: "Choose a book and shelf",
+        description: "Both fields are required before adding a row.",
+        variant: "error",
+      });
+      return;
+    }
 
     const existing = bookToShelfRecords.find(
       (r) => r.book.id === book.id && r.shelf.id === shelf.id,
@@ -281,10 +290,20 @@ export function AddBookToShelfForm({
             : r,
         ),
       );
+      toast({
+        title: "Quantity updated",
+        description: `${book.title} already exists on this shelf, so the quantity was increased.`,
+        variant: "info",
+      });
       return;
     }
 
     setBookToShelfRecords((prev) => [...prev, { book, shelf, quantity }]);
+    toast({
+      title: "Book queued",
+      description: `${book.title} is ready to upload to ${shelf.shelf_code}.`,
+      variant: "success",
+    });
 
     setSelectedBook(null);
     setSelectedShelf(null);
@@ -296,6 +315,15 @@ export function AddBookToShelfForm({
   };
 
   function handleUploadAll() {
+    if (bookToShelfRecords.length === 0) {
+      toast({
+        title: "Nothing to upload",
+        description: "Add at least one book to a shelf first.",
+        variant: "error",
+      });
+      return;
+    }
+
     const payload: BookToShelfPayload[] = bookToShelfRecords.map((record) => ({
       isbn: record.book.isbn,
       shelf_id: record.shelf.id,
@@ -305,12 +333,20 @@ export function AddBookToShelfForm({
     addBookToShelf(payload)
       .unwrap()
       .then(() => {
-        alert("Books added to shelves successfully!");
+        toast({
+          title: "Shelves updated",
+          description: "Books were added to shelves successfully.",
+          variant: "success",
+        });
         setBookToShelfRecords([]);
       })
       .catch((error) => {
         console.error("Error adding books to shelves:", error);
-        alert("Failed to add books to shelves. Please try again.");
+        toast({
+          title: "Upload failed",
+          description: "Failed to add books to shelves. Please try again.",
+          variant: "error",
+        });
       });
   }
 
