@@ -1,5 +1,5 @@
 import InputText from "@components/LoginInput";
-import bg_image from "../assets/Hero Image.png";
+import bg_image from "../assets/Hero Image.jpg";
 import logo from "../assets/Icon.png";
 import { FaEye, FaLock, FaEyeSlash, FaEnvelope } from "react-icons/fa";
 import "tailwindcss";
@@ -59,7 +59,7 @@ export default function LoginPage() {
     <div className="w-screen h-screen">
       <div className="flex flex-row">
         <div className="relative w-1/2 h-full">
-          <img src={bg_image} className="h-[96vh] w-full object-cover" />
+          <img src={bg_image} className="h-[100vh] w-full object-cover" />
 
           {/* Top left text */}
           <div className="absolute top-14 left-10 flex items-center gap-2 text-white">
@@ -151,7 +151,7 @@ export default function LoginPage() {
         </div>
       </div>
       <div>
-        <Footer />
+        
       </div>
     </div>
   );
