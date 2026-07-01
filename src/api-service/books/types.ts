@@ -41,7 +41,7 @@ function placeholderImageUrl(originalImageUrl: string | null): string {
   if (originalImageUrl.startsWith("/uploads/")) {
     return BASE_URL + originalImageUrl;
   }
-  return originalImageUrl;
+  return originalImageUrl;  
 }
 
 export function bookResponseToBook(bookResponse: BookResponse): Book {
@@ -145,6 +145,7 @@ export type BorrowedBook = {
     user_name: string;
     user_email: string;
 
+    book_id: number;
     book_copy_id: number;
 
     isbn: string;
@@ -176,9 +177,9 @@ export function transformBorrowedBookResponse(response: BorrowedBook): BorrowedB
   };
 }
 
-export function transformBorrowedBookToBook(response: BorrowedBook[]): Book[] {
+export function transformBorrowedBookToBook(response: BorrowedBook[], hardConvert: boolean): Book[] {
   return response.map((book) => ({
-    id: book.id,
+    id: hardConvert ? book.book_id : book.id,
     isbn: book.isbn,
     title: book.title,
     author: book.author,

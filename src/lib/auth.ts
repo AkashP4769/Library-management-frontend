@@ -16,3 +16,8 @@ export function hasAuthTokens() {
 export function clearAuth() {
   AUTH_STORAGE_KEYS.forEach((key) => localStorage.removeItem(key));
 }
+
+export function userRole() {
+  const role = localStorage.getItem("role");
+  return role ? role : null;
+}

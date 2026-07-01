@@ -67,7 +67,7 @@ export default function MyReads() {
       const filteredBooks = borrowedBooksInformation.filter(
         (book) => book.status === "BORROWED",
       );
-      setBorrowedBooks(transformBorrowedBookToBook(filteredBooks));
+      setBorrowedBooks(transformBorrowedBookToBook(filteredBooks, false));
     }
   }, [borrowedBooksInformation]);
 
@@ -77,7 +77,7 @@ export default function MyReads() {
       const filteredBooks = borrowedBooksInformation.filter(
         (book) => book.status === "RETURNED",
       );
-      setMyBooks(transformBorrowedBookToBook(filteredBooks));
+      setMyBooks(transformBorrowedBookToBook(filteredBooks, true));
     }
   }, [borrowedBooksInformation]);
 
