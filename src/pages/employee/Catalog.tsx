@@ -1,6 +1,5 @@
 import type Book from "@/models/book";
 import type Shelf from "@/models/shelf";
-import { books as initialBooks } from "@/models/book";
 import { shelves as initialShelves } from "@/models/shelf";
 import { useEffect, useState } from "react";
 import "./Catalog.css";

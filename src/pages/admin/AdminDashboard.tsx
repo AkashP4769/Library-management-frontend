@@ -11,8 +11,6 @@ import {
 import {
   LineChart,
   Line,
-  XAxis,
-  YAxis,
   Tooltip,
   ResponsiveContainer,
   CartesianGrid,

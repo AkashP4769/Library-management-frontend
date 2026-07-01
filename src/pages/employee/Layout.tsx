@@ -1,21 +1,22 @@
 import { Outlet } from "react-router";
 import "./Layout.css";
 
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
 import DashboardIcon from "@assets/icons/sidebar_dashboard.svg";
 import CatalogIcon from "@assets/icons/sidebar_catalog.svg";
 import ShelvesIcon from "@assets/icons/sidebar_shelves.svg";
 import SavedIcon from "@assets/icons/sidebar_saved.svg";
 import ProfileIcon from "@assets/icons/sidebar_profile.svg";
-import InventoryIcon from "@assets/icons/sidebar_inventory.svg";
 import Bell from "@assets/icons/Bell.png";
 import BarcodeIcon from "@assets/icons/Barcode.png";
 import SettingsIcon from "@assets/icons/sidebar_setting.svg";
 import LogoutIcon from "@assets/icons/sidebar_logout.svg";
 import { useEffect, useState } from "react";
+import type { MouseEvent } from "react";
 import { useLazyGetBookbyOpenLibraryAPIQuery } from "@/api-service/books/books.api";
 import Chatbot from "@/components/chatbot/Chatbot";
 import ISBNScanner from "@/components/scanner/ISBNScanner";
+import { clearAuth } from "@/lib/auth";
 
 const notifications_sample = [
   {
@@ -114,17 +115,26 @@ function SidebarLink({
   link,
   selectedLink,
   setSelectedLink,
+  onClick,
 }: {
   link: { name: string; href: string; icon: string };
   selectedLink: string;
   setSelectedLink: (linkName: string) => void;
+  onClick?: () => void;
 }) {
   return (
     <Link
       to={link.href}
       className="w-full"
       key={link.name}
-      onClick={() => setSelectedLink(link.name)}
+      onClick={(event: MouseEvent<HTMLAnchorElement>) => {
+        setSelectedLink(link.name);
+
+        if (onClick) {
+          event.preventDefault();
+          onClick();
+        }
+      }}
     >
       <li
         key={link.name}
@@ -148,9 +158,9 @@ export default function Layout() {
   const [showProfileBanner, setShowProfileBanner] = useState(false);
   const [openChatbot, setOpenChatbot] = useState(false);
   const [username, setUsername] = useState("User");
+  const navigate = useNavigate();
 
-  const [fetchBook, { data, isLoading, error }] =
-    useLazyGetBookbyOpenLibraryAPIQuery();
+  const [fetchBook] = useLazyGetBookbyOpenLibraryAPIQuery();
   useEffect(() => {
     const storedUsername =
       localStorage.getItem("username") ||
@@ -167,6 +177,11 @@ export default function Layout() {
 
   function handleChatbotComponent() {
     setOpenChatbot((prev) => !prev);
+  }
+
+  function handleLogout() {
+    clearAuth();
+    navigate("/login", { replace: true });
   }
 
   function handleProfileToggle() {
@@ -213,6 +228,7 @@ export default function Layout() {
                 link={link}
                 selectedLink={selectedLink}
                 setSelectedLink={setSelectedLink}
+                onClick={link.name === "Logout" ? handleLogout : undefined}
               />
             ))}
           </ul>

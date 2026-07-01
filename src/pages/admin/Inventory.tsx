@@ -4,20 +4,11 @@ import { MdOutlineUploadFile } from "react-icons/md";
 import './Inventory.css'
 // import InventoryTable from '@/components/table/InventoryTable';
 
-import type { BookInventory } from "@/models/bookInventory";
-import { books as initialBooks } from "@/models/book";
-import { shelves as initialShelves } from "@/models/shelf";
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { AddBookToShelfForm } from '@/Components/forms/AddBooKToShelfForm';
 import { InventoryTable } from '@/Components/table/BookInventory';
-import { useGetBooksQuery, useGetInventoryBooksQuery } from '@/api-service/books/books.api';
-import type Book from '@/models/book';
+import { useGetInventoryBooksQuery } from '@/api-service/books/books.api';
 import { AddShelfForm } from '@/Components/forms/AddShelfForm';
-
-const books: BookInventory[] = initialBooks.map((book, index) => ({
-    book,
-    shelf: initialShelves[index % initialShelves.length],
-}));
 
 
 export default function InventoryPage() {

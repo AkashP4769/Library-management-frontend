@@ -1,8 +1,5 @@
 import BookCard, { BookDetailsCard } from "@/Components/BookCard";
 import { useState } from "react";
-import type Book from "@/models/book";
-import { books } from "@/models/book";
-import type Shelf from "@/models/shelf";
 
 import { BookDetailShelfCard } from "@/Components/ShelfCard";
 import { useParams } from "react-router";
@@ -12,7 +9,6 @@ import {
   useGetBookQuery,
   useGetShelvesOfBookQuery,
 } from "@/api-service/books/books.api";
-import { useGetShelvesQuery } from "@/api-service/shelf/shelf.api";
 
 export default function BookPage() {
   const { id } = useParams();
@@ -33,23 +29,10 @@ export default function BookPage() {
     null,
   );
 
-  const [selectReturnShelf, setSelectReturnShelf] = useState<number | null>(
-    null,
-  );
-
   const [borrowed, setBorrowed] = useState(false);
-  const [returned, setReturned] = useState(false);
 
   const isBookBorrowed = () => {
     setBorrowed(true);
-    setSelectReturnShelf(null);
-    setReturned(false);
-  };
-
-  const isBookReturned = () => {
-    setSelectBorrowShelf(null);
-    setBorrowed(false);
-    setReturned(true);
   };
 
   const { data: reviews = [] } = useGetBookReviewQuery(id);
