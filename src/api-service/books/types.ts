@@ -34,7 +34,7 @@ export type CreateBookPayload = {
   image?: File | null;
 };
 
-function placeholderImageUrl(originalImageUrl: string | null): string {
+export function placeholderImageUrl(originalImageUrl: string | null): string {
   if (!originalImageUrl) {
     return "https://www.forewordreviews.com/books/covers/how-to-start-and-operate-an-internet-used-book-store-without-spending-a-fortune.jpg";
   }
@@ -181,9 +181,12 @@ export function transformBorrowedBookResponse(
   };
 }
 
-export function transformBorrowedBookToBook(response: BorrowedBook[]): Book[] {
+export function transformBorrowedBookToBook(
+  response: BorrowedBook[],
+  hardConvert: boolean,
+): Book[] {
   return response.map((book) => ({
-    id: book.id,
+    id: hardConvert ? book.book_id : book.id,
     isbn: book.isbn,
     title: book.title,
     author: book.author,

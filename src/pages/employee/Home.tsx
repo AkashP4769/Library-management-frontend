@@ -18,14 +18,14 @@ export default function HomePage() {
   const [exploreBooks, setExploreBooks] = useState<Book[]>([]);
   const { data: borrowedBooksInformation = [] } =
     useGetBorrowedBooksByUserQuery();
+
   useEffect(() => {
     if (borrowedBooksInformation) {
       console.log("Borrowed Books Information:", borrowedBooksInformation); // Debugging line to check the data
-      const filteredBooks = borrowedBooksInformation.filter(
-        (book) => book.status === "RETURNED",
-      );
-      console.log(filteredBooks, "Filtered Books"); // Debugging line to check the filtered data
-      setMyBooks(transformBorrowedBookToBook(filteredBooks));
+      // const filteredBooks = borrowedBooksInformation.filter(
+      //   (book) => book.status === "RETURNED",
+      // );
+      setMyBooks(transformBorrowedBookToBook(borrowedBooksInformation, true));
     }
   }, [borrowedBooksInformation]);
 

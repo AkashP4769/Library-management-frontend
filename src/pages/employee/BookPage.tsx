@@ -13,11 +13,22 @@ import {
 } from "@/api-service/books/books.api";
 import BookReviews from "@/components/Review";
 import { useGetUserDetailsQuery } from "@/api-service/login/login.api";
+import { useRequestBookMutation } from "@/api-service/notifications/notifications.api";
+import { useToast } from "@/Components/ui/Toast";
 
 export default function BookPage() {
+  const { toast } = useToast();
   const { id } = useParams();
   const { data: book } = useGetBookQuery(parseInt(id || "-1"));
   const { data: userDetails } = useGetUserDetailsQuery();
+  const [
+    requestBook,
+    {
+      isLoading: isRequesting,
+      isSuccess: isRequestSuccess,
+      isError: isRequestError,
+    },
+  ] = useRequestBookMutation();
 
   const { data: shelves = [] } = useGetShelvesOfBookQuery(book?.isbn ?? "");
   const { data: bookGenre = [] } = useGetBookByGenreQuery(
@@ -37,7 +48,6 @@ export default function BookPage() {
   );
 
   const [borrowed, setBorrowed] = useState(false);
-  const [requested, setRequested] = useState(false);
 
   const isBookBorrowed = () => {
     setBorrowed(true);
@@ -61,12 +71,25 @@ export default function BookPage() {
   }
 
   function handleRequestBook() {
-    if (book) {
-      // Implement the logic to request the book here
-      setRequested(true);
-    }
-  }
+    if (!book) return;
 
+    requestBook({ isbn: book.isbn })
+      .unwrap()
+      .then(() => {
+        toast({
+          title: "Request Sent",
+          description: "Your request was successfully submitted.",
+          variant: "success",
+        });
+      })
+      .catch(() => {
+        toast({
+          title: "Request Failed",
+          description: "Something went wrong.",
+          variant: "error",
+        });
+      });
+  }
   const { data: reviews = [] } = useGetBookReviewQuery(book?.isbn ?? "", {
     skip: !book,
   });
@@ -202,15 +225,19 @@ export default function BookPage() {
               ) : (
                 <>
                   <button
-                    disabled={requested}
+                    disabled={isRequesting}
                     onClick={handleRequestBook}
                     className={`flex-1 rounded-xl px-4 py-3 text-sm font-medium transition ${
-                      requested
+                      isRequestSuccess
                         ? "bg-[#E7E8E9] text-[#575E70]"
                         : "bg-[#735C00] text-white hover:bg-[#5C4A00]"
                     }`}
                   >
-                    {requested ? "Requested ✓" : "Request to Borrow"}
+                    {isRequestSuccess
+                      ? "Request Submitted"
+                      : isRequesting
+                        ? "Requesting..."
+                        : "Request to Borrow"}
                   </button>
                   <button className="rounded-xl border border-[#7F7662] px-4 py-3 text-sm font-medium hover:bg-[#F3F4F5]">
                     Notify Me
@@ -223,7 +250,10 @@ export default function BookPage() {
       </section>
 
       <section className="border-t max-w-[1280px]  border-[#D0C6AE]/50 px-6 py-8 mx-auto">
-        <BookReviews isbn={book.isbn} currentUserId={userDetails?.userId ?? 0}/>
+        <BookReviews
+          isbn={book.isbn}
+          currentUserId={userDetails?.userId ?? 0}
+        />
       </section>
 
       {/* Similar */}

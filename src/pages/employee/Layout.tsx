@@ -320,6 +320,14 @@ export default function Layout() {
     }
   };
 
+  const handleMarkOneRead = (notificationId: number) => {
+    resolveNotification({ notificationId, status: "SEEN" })
+      .unwrap()
+      .then(() => {
+        getUsersNotifications();
+      });
+  };
+
   return (
     <div className="layout">
       <aside className="sidebar">
@@ -484,8 +492,8 @@ export default function Layout() {
                 onClose={() => setShowNotifications(false)}
                 onAccept={(id) => acceptRequest(id)}
                 onReject={(id) => rejectRequest(id)}
-                // onMarkAllRead={() => markAllRead()} // wire to your mutation
-                // onMarkOneRead={(id) => markOneRead(id)} // wire to your mutation
+                onMarkOneRead={(id) => handleMarkOneRead(id)}
+                // onMarkAllRead={() => markAllRead()}
               />
             )}
           </div>
