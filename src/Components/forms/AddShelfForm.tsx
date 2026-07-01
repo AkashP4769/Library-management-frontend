@@ -3,11 +3,13 @@ import { TextInput } from '@/Components/inputs/TextInput';
 
 import type { CreateShelfPayload } from "@/api-service/shelf/types";
 import { useCreateShelfMutation } from "@/api-service/shelf/shelf.api";
+import { SuccessBanner } from "../ui/SuccessBanner";
 
 
 export function AddShelfForm() {
   const [createShelf] = useCreateShelfMutation();
-
+  const [message, setMessage] = useState("Shelf submission received. Check the status shortly.");
+  const [showSuccessBanner, setShowSuccessBanner] = useState(false);
   const [shelf, setShelf] = useState<CreateShelfPayload>({
     shelf_code: "",
     office_location: "",
@@ -61,11 +63,28 @@ export function AddShelfForm() {
 
     console.log(shelf);
 
-    createShelf(formData as unknown as CreateShelfPayload);
+    createShelf(formData as unknown as CreateShelfPayload).unwrap()
+      .then(() => {
+        setMessage("Shelf submission received. Check the status shortly.");
+        setShowSuccessBanner(true);
+        setTimeout(() => {
+          setShowSuccessBanner(false);
+        }, 3000);
+      })
+      .catch((error) => {
+        setMessage("Error creating shelf. Please try again.");
+        setShowSuccessBanner(true);
+        setTimeout(() => {
+          setShowSuccessBanner(false);
+        }, 3000);
+        console.error("Error creating shelf:", error);
+      });
+
   };
 
   return (
     <div className="w-full p-6 rounded-xl bg-white shadow-sm ">
+      <SuccessBanner message={message} isVisible={showSuccessBanner} />
       <div className="flex justify-between">
         <h2 className="mb-6 w-full text-2xl font-bold">
           Add New Shelf

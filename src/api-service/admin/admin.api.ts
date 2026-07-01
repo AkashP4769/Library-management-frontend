@@ -1,17 +1,23 @@
 import libraryBaseApi from "../api";
 import { BASE_URL } from "../api";
-import type { AuditLogResponse } from "./types";
+import type {
+  AuditLogResponse,
+  CirculationTrend,
+  DashBoardMetrics,
+  RecentActivity,
+  ShelfSageItem,
+} from "./types";
 
 export const adminApi = libraryBaseApi.injectEndpoints({
   endpoints: (builder) => ({
-    getDashboardMetrics: builder.query({
+    getDashboardMetrics: builder.query<DashBoardMetrics, void>({
       query: () => ({
         url: BASE_URL + "/admin/dashboard",
         method: "GET",
       }),
     }),
 
-    getCirculationTrends: builder.query<unknown, { range: string }>({
+    getCirculationTrends: builder.query<CirculationTrend[], { range: string }>({
       query: ({ range }) => ({
         url: BASE_URL + "/admin/circulation-trends",
         method: "GET",
@@ -19,7 +25,7 @@ export const adminApi = libraryBaseApi.injectEndpoints({
       }),
     }),
 
-    getRecentActivities: builder.query<unknown, { range: string }>({
+    getRecentActivities: builder.query<RecentActivity[], { range: string }>({
       query: ({ range }) => ({
         url: BASE_URL + "/admin/recent-activities",
         method: "GET",
@@ -42,20 +48,20 @@ export const adminApi = libraryBaseApi.injectEndpoints({
       }),
     }),
 
-    getInventorySummary: builder.query({
+    getInventorySummary: builder.query<unknown, void>({
       query: () => ({
         url: BASE_URL + `/admin/inventory-summary`,
         method: "GET",
       }),
     }),
 
-    getTopBooks: builder.query({
+    getTopBooks: builder.query<unknown, void>({
       query: () => ({
         url: BASE_URL + "/admin/top-books",
         method: "GET",
       }),
     }),
-    getShelfSage: builder.query({
+    getShelfSage: builder.query<ShelfSageItem[], void>({
       query: () => ({
         url: BASE_URL + "/admin/shelf-sage",
         method: "GET",

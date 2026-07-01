@@ -52,23 +52,10 @@ export default function BookPage() {
     null,
   );
 
-  const [selectReturnShelf, setSelectReturnShelf] = useState<number | null>(
-    null,
-  );
-
   const [borrowed, setBorrowed] = useState(false);
-  const [returned, setReturned] = useState(false);
 
   const isBookBorrowed = () => {
     setBorrowed(true);
-    setSelectReturnShelf(null);
-    setReturned(false);
-  };
-
-  const isBookReturned = () => {
-    setSelectBorrowShelf(null);
-    setBorrowed(false);
-    setReturned(true);
   };
 
   function handleBorrowBook() {

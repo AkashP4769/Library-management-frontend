@@ -11,8 +11,6 @@ import {
 import {
   LineChart,
   Line,
-  XAxis,
-  YAxis,
   Tooltip,
   ResponsiveContainer,
   CartesianGrid,
@@ -109,7 +107,7 @@ export default function AdminDashboardPage() {
   }, [range]);
 
   return (
-    <div className="flex flex-col gap-8 p-8 max-w-[1980px] mx-auto w-[90%]">
+    <div className="flex flex-col gap-8 p-8 max-w-[1980px] mx-auto w-[90%] overflow-scroll">
       {/* Header Actions */}
       <div className="flex justify-between items-end gap-4">
         <div className="flex flex-col">
@@ -186,6 +184,12 @@ export default function AdminDashboardPage() {
               <span className="w-3 h-3 rounded-full bg-[#575E70]" />
               <span className="text-xs font-semibold tracking-[0.6px] text-[#4D4635]">
                 Returned
+              </span>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="w-3 h-3 rounded-full bg-[#DC2626]" />
+              <span className="text-xs font-semibold tracking-[0.6px] text-[#4D4635]">
+                Overdue
               </span>
             </div>
           </div>

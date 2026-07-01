@@ -9,8 +9,7 @@ import ISBNScanner from "@components/scanner/ISBNScanner";
 import { useLazyGetBookbyOpenLibraryAPIQuery } from "@/api-service/books/books.api";
 export function AddBookForm() {
   const [createBook] = useCreateBookMutation();
-  const [fetchBook, { data, isLoading, error }] =
-      useLazyGetBookbyOpenLibraryAPIQuery();
+  const [fetchBook] = useLazyGetBookbyOpenLibraryAPIQuery();
   const [book, setBook] = useState<CreateBookPayload>({
     isbn: "",
     title: "",
@@ -22,7 +21,7 @@ export function AddBookForm() {
     image: null,
   });
 
-
+  const [message, setMessage] = useState("Book submission received. Check the status shortly.");
   const [preview, setPreview] = useState<string | null>(null);
   const [showSuccessBanner, setShowSuccessBanner] = useState(false);
   const [showScanner, setshowScanner] = useState(false)
@@ -66,13 +65,14 @@ export function AddBookForm() {
   const handleScan = async (isbn: string) => {
     console.log(isbn);
     const result = await fetchBook(isbn);
-    let file;
+    let file: File | null = null;
     console.log(result.data);
+    setshowScanner(false);
     if (result.data){
       const data = result.data;
       const cover_url =
-      data.cover_urls[1] ??
-      data.cover_urls[0] ??
+      data.cover_urls?.[1] ??
+      data.cover_urls?.[0] ??
       null;
 
       if(cover_url){
@@ -92,7 +92,7 @@ export function AddBookForm() {
     
   }));
     }
-    setshowScanner(false);
+    
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -117,12 +117,18 @@ export function AddBookForm() {
     createBook(formData as unknown as CreateBookPayload)
       .unwrap()
       .then(() => {
+        setMessage("Book submission received. Check the status shortly.");
         setShowSuccessBanner(true);
         setTimeout(() => {
           setShowSuccessBanner(false);
         }, 3000);
       })
       .catch((error) => {
+        setMessage("Error creating book. Please try again.");
+        setShowSuccessBanner(true);
+        setTimeout(() => {
+          setShowSuccessBanner(false);
+        }, 3000);
         console.error("Error creating book:", error);
       });
 
@@ -130,7 +136,7 @@ export function AddBookForm() {
 
   return (
     <div className="w-full p-6 rounded-xl bg-white shadow-sm ">
-      <SuccessBanner message="Book submission received. Check the status shortly." isVisible={showSuccessBanner} />
+      <SuccessBanner message={message} isVisible={showSuccessBanner} />
       <div className="flex justify-between">
         <h2 className="mb-6 w-full text-2xl font-bold">
           Add New Book

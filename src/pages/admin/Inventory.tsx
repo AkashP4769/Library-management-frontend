@@ -1,92 +1,136 @@
-import { AddBookForm } from '@/Components/forms/AddBookForm';
+import { AddBookForm } from "@/Components/forms/AddBookForm";
 import { HiMiniPlus } from "react-icons/hi2";
 import { MdOutlineUploadFile } from "react-icons/md";
-import './Inventory.css'
-// import InventoryTable from '@/components/table/InventoryTable';
-
+import "./Inventory.css";
 import type { BookInventory } from "@/models/bookInventory";
 import { books as initialBooks } from "@/models/book";
 import { shelves as initialShelves } from "@/models/shelf";
-import { useEffect, useState } from 'react';
-import { AddBookToShelfForm } from '@/Components/forms/AddBooKToShelfForm';
-import { InventoryTable } from '@/Components/table/BookInventory';
-import { useGetBooksQuery, useGetInventoryBooksQuery } from '@/api-service/books/books.api';
-import type Book from '@/models/book';
-import { AddShelfForm } from '@/Components/forms/AddShelfForm';
+import { useState } from "react";
+import { AddBookToShelfForm } from "@/Components/forms/AddBooKToShelfForm";
+import { InventoryTable } from "@/Components/table/BookInventory";
+import { useGetInventoryBooksQuery } from "@/api-service/books/books.api";
+import { AddShelfForm } from "@/Components/forms/AddShelfForm";
+import type {
+  CreateBookPayload,
+  BookToShelfPayload,
+} from "@/api-service/books/types";
+import { parseInventoryCSV, transformCSV } from "@/utils/InventoryUtils";
 
 const books: BookInventory[] = initialBooks.map((book, index) => ({
-    book,
-    shelf: initialShelves[index % initialShelves.length],
+  book,
+  shelf: initialShelves[index % initialShelves.length],
 }));
 
+type BulkImportState = {
+  books: CreateBookPayload[];
+  shelfAssignments: BookToShelfPayload[];
+};
 
 export default function InventoryPage() {
-    const [pageState, setPageState] = useState<'inventory' | 'new-book'>('inventory');
+  const [pageState, setPageState] = useState<"inventory" | "new-book">(
+    "inventory",
+  );
 
-    return (
-        <div className="inventory-page">
-            <h1 className="text-4xl font-bold mb-4">Inventory</h1>
-            <p className="text-lg text-gray-600">This is the Inventory page.</p>
-            <p className="text-lg text-gray-600">You can add more details about inventory here.</p>
+  // Raw CSV import result: books to create + isbn/shelf_id assignments.
+  // NOTE: shelfAssignments are NOT full {book, shelf, quantity} records yet —
+  // they only carry isbn/shelf_id/quantity. AddBookToShelfForm resolves
+  // them against the real Book/Shelf data it fetches internally.
+  const [bulkData, setBulkData] = useState<BulkImportState | null>(null);
 
-            {/* <BookForm /> */}
-            {pageState === 'inventory' && <BookArchive setPageState={setPageState} />}
-            {pageState === 'new-book' && <NewBook />}
-            {pageState === 'new-book' && <AddBookToShelves />}
+  return (
+    <div className="inventory-page">
+      <h1 className="text-4xl font-bold mb-4">Inventory</h1>
 
-            {/* <InventoryTable books={books} /> */}
-        </div>
+      {pageState === "inventory" && (
+        <BookArchive setPageState={setPageState} setBulkData={setBulkData} />
+      )}
 
-       
-    );
+      {pageState === "new-book" && <NewBook />}
+
+      {pageState === "new-book" && (
+        <AddBookToShelves shelfAssignments={bulkData?.shelfAssignments || []} />
+      )}
+    </div>
+  );
 }
 
 function NewBook() {
-    return (
-        <div className= "flex flex-col justify-center items-center gap-6">
-            <AddBookForm />
-            <AddShelfForm />
-        </div>
-    );
+  return (
+    <div className="flex flex-col justify-center items-center gap-6">
+      <AddBookForm />
+      <AddShelfForm />
+    </div>
+  );
 }
 
-function AddBookToShelves(){
-    return (
-        <div className= "flex justify-center items-center">
-            <AddBookToShelfForm />
-        </div>
-    );
+function AddBookToShelves({
+  shelfAssignments,
+}: {
+  shelfAssignments: BookToShelfPayload[];
+}) {
+  return (
+    <div className="flex justify-center items-center">
+      <AddBookToShelfForm initialAssignments={shelfAssignments} />
+    </div>
+  );
 }
 
-function BookArchive({ setPageState }: { setPageState: React.Dispatch<React.SetStateAction<'inventory' | 'new-book'>> }) {
-    // const { data: fetchedBooks } = useGetBooksQuery();
-    // const [inventoryBooks, setInventoryBooks] = useState<Book[]>([]);
+function BookArchive({
+  setPageState,
+  setBulkData,
+}: {
+  setPageState: React.Dispatch<React.SetStateAction<"inventory" | "new-book">>;
+  setBulkData: React.Dispatch<React.SetStateAction<BulkImportState | null>>;
+}) {
+  const { data: inventoryBooksData } = useGetInventoryBooksQuery();
 
-    const { data: inventoryBooksData } = useGetInventoryBooksQuery();
+  const handleBulkImport = () => {
+    const fileInput = document.createElement("input");
+    fileInput.type = "file";
+    fileInput.accept = ".csv";
 
-    console.log("Fetched Inventory Books:", inventoryBooksData);
+    fileInput.onchange = async (event: Event) => {
+      const file = (event.target as HTMLInputElement).files?.[0];
+      if (!file) return;
 
+      const rows = await parseInventoryCSV(file);
+      const parsed = transformCSV(rows);
+      console.log("parsed", parsed);
+      setBulkData(parsed);
+      setPageState("new-book");
+    };
 
-    return (
-        <div className="flex flex-col h-full gap-4 mt-6">
-            <div className="flex justify-between  items-center">
-                <div className="flex flex-col items-start">
-                    <h1 className="text-3xl font-bold">Book Archives</h1>
-                    <p className="text-gray-600">Centralized tracking of all books in the library.</p>
-                </div>
-                <div className="flex flex-1 justify-end items-center h-[50%] gap-4">
-                    <button className='w-40 h-full py-6 flex justify-center items-center bg-tertiary-container text-white rounded-2xl hover:bg-tertiary-hover border border-tertiary'>
-                        <MdOutlineUploadFile size={24} className="inline-block mr-1" />
-                        <p className="text-sm font-semibold text-primary">Bulk import</p>
-                    </button>
+    fileInput.click();
+  };
 
-                    <button onClick={() => setPageState('new-book')} className='w-40 h-full py-6 flex justify-center items-center bg-primary-container text-white rounded-2xl hover:bg-primary-hover border border-primary'>
-                        <HiMiniPlus size={30} className="inline-block mr-1" />
-                        <p className="text-sm font-semibold text-primary">Add New Book</p>
-                    </button>
-                </div>
-            </div>
-            <InventoryTable books={inventoryBooksData || []} />
+  return (
+    <div className="flex flex-col h-full gap-4 mt-6">
+      <div className="flex justify-between items-center">
+        <div className="flex flex-col items-start">
+          <h1 className="text-3xl font-bold">Book Archives</h1>
+          <p className="text-gray-600">
+            Centralized tracking of all books in the library.
+          </p>
         </div>
-    )
+        <div className="flex flex-1 justify-end items-center h-[50%] gap-4">
+          <button
+            className="w-40 h-full py-6 flex justify-center items-center bg-tertiary-container text-white rounded-2xl hover:bg-tertiary-hover border border-tertiary"
+            onClick={handleBulkImport}
+          >
+            <MdOutlineUploadFile size={24} className="inline-block mr-1" />
+            <p className="text-sm font-semibold text-primary">Bulk import</p>
+          </button>
+
+          <button
+            onClick={() => setPageState("new-book")}
+            className="w-40 h-full py-6 flex justify-center items-center bg-primary-container text-white rounded-2xl hover:bg-primary-hover border border-primary"
+          >
+            <HiMiniPlus size={30} className="inline-block mr-1" />
+            <p className="text-sm font-semibold text-primary">Add New Book</p>
+          </button>
+        </div>
+      </div>
+      <InventoryTable books={inventoryBooksData || []} />
+    </div>
+  );
 }

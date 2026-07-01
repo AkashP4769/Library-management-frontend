@@ -66,7 +66,7 @@ export const booksApi = libraryBaseApi.injectEndpoints({
     getInventoryBooks: builder.query<InventoryBookItem[], void>({
       query: () => ({
         url: BASE_URL + "/book-copies/inventory",
-        method: "GET"
+        method: "GET",
       }),
       providesTags: (result) => result ? result.map(({ isbn }) => ({ type: "Books", isbn })) : [{ type: "Books", id: "LIST" }],
       transformResponse: (response: {inventory: [], total: number}) => {
@@ -92,8 +92,10 @@ export const booksApi = libraryBaseApi.injectEndpoints({
       }),
       providesTags: (result) => result ? result.map(({ id }) => ({ type: "Shelves", id })) : [{ type: "Shelves", id: "LIST" }],
       transformResponse: (response: ShelfResponse[]) => {
-        return response.map((shelfResponse) => shelfResponseToShelf(shelfResponse));
-      }
+        return response.map((shelfResponse) =>
+          shelfResponseToShelf(shelfResponse),
+        );
+      },
     }),
 
     borrowBook: builder.mutation<BorrowedBookResponse, BorrowBookPayload>({
@@ -126,7 +128,6 @@ export const booksApi = libraryBaseApi.injectEndpoints({
       invalidatesTags: [{ type: "BorrowedBooks", id: "LIST" }],
     }),
   }),
-  
 });
 
 export const { useCreateBookMutation, useGetBookQuery, useGetBooksQuery, useAddBookToShelfMutation, 
