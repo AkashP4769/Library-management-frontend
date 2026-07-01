@@ -18,7 +18,7 @@ export default function BookCard(book: Book) {
       onClick={handleClick}
       role={book.id ? "button" : undefined}
       tabIndex={book.id ? 0 : undefined}
-      className="cursor-pointer flex flex-col h-120 w-70 items-center rounded-2xl justify-center border-2 border-neutral-200 hover:bg-white duration-200 relative"
+      className="cursor-pointer flex flex-col h-120 w-full items-center rounded-2xl justify-center border-2 border-neutral-200 hover:bg-white duration-200 relative"
     >
       <div className="flex flex-col h-[90%] w-[90%]  items-start justify-between">
         <div className="relative h-[85%] w-full">
