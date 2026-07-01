@@ -6,20 +6,30 @@ import "./Catalog.css";
 import BookCard from "@/Components/BookCard";
 import ShelfCard from "@/Components/ShelfCard";
 import { useGetBooksQuery } from "@/api-service/books/books.api";
-import { Link } from "react-router";
-import { useGetShelvesQuery } from "@/api-service/shelf/shelf.api";
+import { Link, useLocation, useNavigate } from "react-router";
+import { useGetBooksByShelfQuery, useGetShelvesQuery } from "@/api-service/shelf/shelf.api";
 
 export default function CatalogPage() {
   const { data: fetchedBooks } = useGetBooksQuery();
   const { data: fetchedShelves } = useGetShelvesQuery();
   const [shelves, setShelves] = useState<Shelf[]>(initialShelves);
+  const [selectedShelfId, setSelectedShelfId] = useState<number | null>(null);
+  const selectedShelf = shelves.find((shelf) => shelf.id === selectedShelfId);
+  const {
+    data: shelfBooks = [],
+    isFetching: isFetchingShelfBooks,
+  } = useGetBooksByShelfQuery(selectedShelfId ?? 0, {
+    skip: selectedShelfId === null,
+  });
 
   const [books, setBooks] = useState<Book[]>([]);
+  const location = useLocation();
+  const navigate = useNavigate();
   useEffect(() => {
     if (fetchedShelves) {
       setShelves([...fetchedShelves]);
     }
-  }, [fetchedBooks]);
+  }, [fetchedShelves]);
 
   useEffect(() => {
     if (fetchedBooks) {
@@ -27,24 +37,65 @@ export default function CatalogPage() {
     }
   }, [fetchedBooks]);
 
+  // Read shelfId from query params so other pages can link to /catalog?shelfId=...
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const shelfParam = params.get("shelfId");
+    if (shelfParam) {
+      const id = Number(shelfParam);
+      if (!Number.isNaN(id)) setSelectedShelfId(id);
+    }
+  }, [location.search]);
+
+  const visibleBooks = selectedShelfId ? shelfBooks : books;
+  const noBooksMessage = selectedShelf
+    ? `No books found in ${selectedShelf.shelf_code}`
+    : "No books found";
+
   return (
     <div className="catalog-page">
       <section className="books-section">
         <div className="flex justify-between items-center">
-          <h2 className="text-2xl font-bold">Explore</h2>
-          <p className="text-primary font-bold hover:underline cursor-pointer">
-            Filter Icon
-          </p>
+          <div>
+            <h2 className="text-2xl font-bold">
+              {selectedShelf ? `${selectedShelf.shelf_code} Books` : "Explore"}
+            </h2>
+            {selectedShelf && (
+              <p className="text-sm text-tertiary">
+                Showing books available in {selectedShelf.office_location}
+              </p>
+            )}
+          </div>
+          {selectedShelf && (
+            <button
+              type="button"
+              onClick={() => {
+                setSelectedShelfId(null);
+                navigate('/catalog');
+              }}
+              className="text-primary font-bold hover:underline cursor-pointer"
+            >
+              SHOW ALL
+            </button>
+          )}
         </div>
         <div className="grid grid-cols-5 gap-6">
-          {books.length === 0 ? (
-            <p className="text-bold text-primary text-xl">No books found</p>
+          {isFetchingShelfBooks ? (
+            <p className="text-bold text-primary text-xl">Loading shelf books...</p>
+          ) : visibleBooks.length === 0 ? (
+            <p className="text-bold text-primary text-xl">{noBooksMessage}</p>
           ) : (
-            books.map((book) => (
-              <Link key={book.id} to={`/catalog/books/${book.id}`}>
-                <BookCard {...book} />
-              </Link>
-            ))
+            visibleBooks.map((book) =>
+              book.id ? (
+                <Link key={`${book.isbn}-${book.id}`} to={`/catalog/books/${book.id}`}>
+                  <BookCard {...book} />
+                </Link>
+              ) : (
+                <div key={book.isbn}>
+                  <BookCard {...book} />
+                </div>
+              ),
+            )
           )}
         </div>
       </section>
@@ -60,7 +111,14 @@ export default function CatalogPage() {
           {shelves.length === 0 ? (
             <p className="text-bold text-primary text-xl">No shelves found</p>
           ) : (
-            shelves.map((shelf) => <ShelfCard key={shelf.id} {...shelf} />)
+            shelves.map((shelf) => (
+              <ShelfCard
+                key={shelf.id}
+                {...shelf}
+                selected={selectedShelfId === shelf.id}
+                onClickShelf={() => setSelectedShelfId(shelf.id)}
+              />
+            ))
           )}
         </div>
       </section>

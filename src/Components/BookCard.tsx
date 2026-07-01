@@ -1,28 +1,52 @@
 import type Book from "@/models/book";
 import { BASE_URL } from "@/api-service/api";
+import { useNavigate } from "react-router";
 
 export default function BookCard(book: Book) {
-  console.log("image_url", book.image_url);
+  const hasShelfCopies = typeof book.total_copies === "number";
+  const navigate = useNavigate();
+
+  function handleClick() {
+    if (book.id) {
+      navigate(`/catalog/books/${book.id}`);
+    }
+  }
+
   return (
     <div
       key={book.id}
-      className="flex flex-col h-120 w-70 items-center rounded-2xl justify-center border-2 border-neutral-200 hover:bg-white duration-200"
+      onClick={handleClick}
+      role={book.id ? "button" : undefined}
+      tabIndex={book.id ? 0 : undefined}
+      className="cursor-pointer flex flex-col h-120 w-70 items-center rounded-2xl justify-center border-2 border-neutral-200 hover:bg-white duration-200 relative"
     >
       <div className="flex flex-col h-[90%] w-[90%]  items-start justify-between">
-        <img
-          src={book.image_url}
-          alt={book.title}
-          className="w-full h-[85%] object-cover rounded-2xl"
-        />
+        <div className="relative h-[85%] w-full">
+          <img
+            src={book.image_url}
+            alt={book.title}
+            className="w-full h-full object-cover rounded-2xl"
+          />
+          {hasShelfCopies && (
+            <span className="absolute left-3 top-3 rounded-lg bg-white/95 px-3 py-1 text-xs font-bold text-secondary shadow">
+              {book.total_copies} copies
+            </span>
+          )}
+        </div>
         <div className="w-full flex justify-between items-center">
           <div>
             <h3 className="text-lg font-bold mt-2 text-clip line-clamp-1">
               {book.title}
             </h3>
-            <p className="text-tertiary">{book.author}</p>
+            <p className="text-tertiary line-clamp-1">{book.author}</p>
+            {hasShelfCopies && (
+              <p className="text-xs font-medium text-primary">
+                {book.available_copies ?? 0} available / {book.total_copies} total
+              </p>
+            )}
           </div>
           <p className="text-md text-muted-foreground">
-            {book.rating ? `⭐ ${book.rating}` : ""}
+            {book.rating ? `⭐ ${book.rating.toFixed(1)}` : ""}
           </p>
         </div>
       </div>

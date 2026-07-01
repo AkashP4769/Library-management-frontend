@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 
 import './Shelves.css'
 import { useGetShelvesQuery } from "@/api-service/shelf/shelf.api";
+import { useNavigate } from "react-router";
 
 
 
@@ -18,6 +19,8 @@ export default function ShelvesPage() {
         }
     }, [fetchedShelves]);
 
+    const navigate = useNavigate();
+
     return <div className="shelves-page">
         <section className="shelves-section">
             <div className="flex justify-between items-center">
@@ -27,7 +30,11 @@ export default function ShelvesPage() {
             <div className="grid grid-cols-4 gap-6">
                 {shelves.length === 0 ? <p className="text-bold text-primary text-xl">No shelves found</p> : 
                 shelves.map((shelf) => (
-                    <ShelfCard key={shelf.id} {...shelf} />
+                    <ShelfCard
+                        key={shelf.id}
+                        {...shelf}
+                        onClickShelf={() => navigate(`/catalog?shelfId=${shelf.id}`)}
+                    />
                 ))}
             </div>
         </section>
