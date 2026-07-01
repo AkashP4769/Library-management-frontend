@@ -20,6 +20,7 @@ export default function CatalogPage() {
       setShelves([...fetchedShelves]);
     }
   }, [fetchedBooks]);
+
   useEffect(() => {
     if (fetchedBooks) {
       setBooks([...fetchedBooks]);
