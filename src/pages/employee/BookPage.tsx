@@ -1,4 +1,5 @@
 import BookCard, { BookDetailsCard } from "@/Components/BookCard";
+import { Link } from "react-router";
 import { useState } from "react";
 
 import { BookDetailShelfCard } from "@/Components/ShelfCard";
@@ -268,7 +269,7 @@ export default function BookPage() {
                 </div>
               </div>
 
-              <Stars rating={review.rating} />
+              <Stars rating={review.rating.toFixed(1)} />
 
               <p className="text-sm leading-6 text-[#4D4635] mt-3">
                 {review.content}
@@ -290,7 +291,9 @@ export default function BookPage() {
 
         <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-5">
           {bookGenre.map((book) => (
-            <BookCard key={book.id} {...book} />
+            <Link key={book.id} to={`/catalog/books/${book.id}`}>
+              <BookCard {...book} />
+            </Link>
           ))}
         </div>
       </section>
