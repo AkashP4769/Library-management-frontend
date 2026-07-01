@@ -9,6 +9,9 @@ export default interface Book {
   description: string;
   image_url: string;
   rating: number;
+  total_copies?: number;
+  available_copies?: number;
+  borrowed_copies?: number;
   createdAt: string;
   updatedAt: string;
 }

@@ -2,6 +2,7 @@ import type Book from "@/models/book";
 import { useEffect, useState } from "react";
 import "./Home.css";
 import BookCard, { SmallBookCard } from "@/Components/BookCard";
+import { Link } from "react-router";
 import { useGetBooksQuery } from "@/api-service/books/books.api";
 
 export default function HomePage() {
@@ -50,7 +51,11 @@ export default function HomePage() {
           {myBooks.length === 0 ? (
             <p className="text-primary text-xl font-semibold">No books found</p>
           ) : (
-            myBooks.map((book) => <BookCard key={book.id} {...book} />)
+            myBooks.map((book) => (
+              <Link key={book.id} to={`/catalog/books/${book.id}`}>
+                <BookCard {...book} />
+              </Link>
+            ))
           )}
         </div>
       </section>
@@ -85,7 +90,11 @@ export default function HomePage() {
           {myBooks.length === 0 ? (
             <p className="text-primary text-xl font-semibold">No books found</p>
           ) : (
-            myBooks.map((book) => <SmallBookCard key={book.id} {...book} />)
+            myBooks.map((book) => (
+              <Link key={book.id} to={`/catalog/books/${book.id}`}>
+                <SmallBookCard {...book} />
+              </Link>
+            ))
           )}
         </div>
       </section>

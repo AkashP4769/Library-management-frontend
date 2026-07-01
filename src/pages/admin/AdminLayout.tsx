@@ -32,11 +32,13 @@ function SidebarLink({
   selectedLink,
   setSelectedLink,
   onClick,
+  isLogout = false,
 }: {
   link: { name: string; href: string; icon: string };
   selectedLink: string;
   setSelectedLink: (linkName: string) => void;
   onClick?: () => void;
+  isLogout?: boolean;
 }) {
   return (
     <Link
@@ -54,12 +56,12 @@ function SidebarLink({
     >
       <li
         key={link.name}
-        className={`${selectedLink === link.name ? "bg-tertiary-container text-secondary" : "text-tertiary hover:bg-surface-container duration-200"}`}
+        className={`${selectedLink === link.name ? "bg-tertiary-container text-secondary" : isLogout ? "logout-link" : "text-tertiary hover:bg-surface-container duration-200"}`}
       >
         <img
           src={link.icon}
           alt={`${link.name} Icon`}
-          className="sidebar-icon"
+          className={`sidebar-icon ${isLogout ? "sidebar-icon-logout" : ""}`}
         />
         <p>{link.name}</p>
       </li>
@@ -116,6 +118,7 @@ export default function AdminLayout() {
                 selectedLink={selectedLink}
                 setSelectedLink={setSelectedLink}
                 onClick={link.name === "Logout" ? handleLogout : undefined}
+                isLogout={link.name === "Logout"}
               />
             ))}
           </ul>
