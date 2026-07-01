@@ -58,7 +58,7 @@ export default function LoginPage() {
       if (response.role === "admin") {
         navigate("/admin", { replace: true });
       } else if (response.role === "employee") {
-        navigate("/dashboard", { replace: true });
+        navigate("/", { replace: true });
       } else {
         alert("Invalid role. Please contact support.");
       }
@@ -72,7 +72,7 @@ export default function LoginPage() {
     <div className="w-screen h-screen">
       <div className="flex flex-row">
         <div className="relative w-1/2 h-full">
-          <img src={bg_image} className="h-[100vh] w-full object-cover" />
+          <img src={bg_image} className="h-screen  w-full object-cover" />
 
           {/* Top left text */}
           <div className="absolute top-14 left-10 flex items-center gap-2 text-white">
@@ -85,10 +85,10 @@ export default function LoginPage() {
           {/* Center text */}
           <div className="absolute inset-0 flex flex-col items-center justify-center text-white px-8">
             <div className="items-left">
-              <h2 className="text-2xl text-amber-300 font-bold leading-normal text-left">
-                Preserving Knowledge, Empowering <br /> Discovery.
+              <h2 className="text-5xl text-amber-300 font-bold leading-normal text-left">
+                Preserving Knowledge,<br /> Empowering Discovery.
               </h2>
-              <p className="text-lg mt-7 text-white/80 text-left">
+              <p className="text-xl mt-7 text-white text-left">
                 Welcome back to the world's most advanced library <br />{" "}
                 management ecosystem. Sign in to manage your collection <br />{" "}
                 with scholarly precision.
@@ -155,7 +155,7 @@ export default function LoginPage() {
             </div>
             <button
               type="submit"
-              className="w-full h-[50px] bg-amber-300 text-[#141b2b] rounded font-semibold"
+              className="w-full h-[50px] bg-amber-300 hover:bg-amber-400 duration-200 text-[#141b2b] rounded font-semibold"
               onClick={() => handleLogin(role === "Admin" ? "admin" : "employee")}
             >
               Log In as {role === "Admin" ? "Admin" : "Employee"} -{">"}

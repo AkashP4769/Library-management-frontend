@@ -1,5 +1,5 @@
-import { useState } from "react";
-import bgImage from "../assets/Image.jpg";
+import { useEffect, useState } from "react";
+import bgImage from "../assets/new_signup_bg.jpg";
 import InputText from "@/components/LoginInput";
 import { FaEye, FaLock, FaEyeSlash, FaEnvelope, FaUser } from "react-icons/fa";
 import { Link, useNavigate } from "react-router";
@@ -13,13 +13,41 @@ export default function SignupPage() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+
+  const [emailError, setEmailError] = useState("");
+  const [passwordError, setPasswordError] = useState("");
+
+  useEffect(() => {
+    if (email.length > 0 && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      setEmailError("Please enter a valid email address.");
+    } else {
+      setEmailError("");
+    }
+
+    if (password.length > 0 && password !== confirmPassword) {
+      setPasswordError("Passwords do not match.");
+    } else {
+      setPasswordError("");
+    }
+
+    if (password.length > 0 && password.length < 6) {
+      setPasswordError("Password must be at least 6 characters long.");
+    } else if (password.length >= 6 && password === confirmPassword) {
+      setPasswordError("");
+    }
+
+  }, [email, password, confirmPassword]);
 
   const [signup] = useSignupMutation();
 
   async function handleSignup() {
     // Handle signup logic here
     console.log("Signup clicked with:", { name, email, password });
-    if(email.length == 0 || password.length == 0) alert("Please enter valid email and password")
+    if(emailError || passwordError) {
+      alert("Please fix the errors before signing up.");
+      return;
+    }
 
     const payload = {
       name: name,
@@ -53,10 +81,10 @@ export default function SignupPage() {
           {/* Center text */}
           <div className="absolute inset-0 flex flex-col items-center justify-center text-white px-8">
             <div className="items-left">
-              <h2 className="text-3xl text-[#FFE086] font-bold leading-normal">
+              <h2 className="text-5xl text-amber-300 font-bold leading-normal">
                 Lumina Library
               </h2>
-              <p className="text-xl mt-10 text-white">
+              <p className="text-xl mt-10 font-bold text-white">
                 The future of scholarly management. Join thousands of librarians
                 in a <br /> streamlined ecosystem designed for precision, order,
                 and aesthetic <br /> clarity.
@@ -108,9 +136,28 @@ export default function SignupPage() {
                 onRightIconClick={() => { setShowPassword(!showPassword); return {}; }}
               />
             </div>
+            <div>
+              <InputText
+                label="CONFIRM PASSWORD"
+                placeholder="confirm password"
+                type={showPassword ? "text" : "password"}
+                name="cpwd"
+                leftIcon={<FaLock />}
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                rightIcon={showPassword ? <FaEyeSlash /> : <FaEye />}
+                onRightIconClick={() => { setShowPassword(!showPassword); return {}; }}
+              />
+            </div>
+
+            <div className="flex gap-1 h-2">
+              {emailError && <span className="text-red-500 text-sm">{emailError}</span>}
+              {passwordError && <span className="text-red-500 text-sm">{passwordError}</span>}
+            </div>
+
             <button
               type="submit"
-              className="w-full h-[50px] bg-amber-300 text-[#141b2b] rounded font-semibold"
+              className="w-full h-[50px] bg-amber-300 hover:bg-amber-400 duration-200 text-[#141b2b] rounded font-semibold"
               onClick={() => handleSignup()}
             >
               Create Account{" "}
