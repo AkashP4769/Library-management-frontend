@@ -1,7 +1,7 @@
 import { Outlet } from "react-router";
 import "./Layout.css";
 
-import { Link, useNavigate } from "react-router";
+import { Link, useLocation, useNavigate } from "react-router";
 import DashboardIcon from "@assets/icons/sidebar_dashboard.svg";
 import CatalogIcon from "@assets/icons/sidebar_catalog.svg";
 import ShelvesIcon from "@assets/icons/sidebar_shelves.svg";
@@ -116,11 +116,13 @@ function SidebarLink({
   selectedLink,
   setSelectedLink,
   onClick,
+  isLogout = false,
 }: {
   link: { name: string; href: string; icon: string };
   selectedLink: string;
   setSelectedLink: (linkName: string) => void;
   onClick?: () => void;
+  isLogout?: boolean;
 }) {
   return (
     <Link
@@ -138,12 +140,12 @@ function SidebarLink({
     >
       <li
         key={link.name}
-        className={`h-10 ${selectedLink === link.name ? "bg-tertiary-container text-secondary" : "text-tertiary hover:bg-surface-container duration-200"}`}
+        className={`h-10 ${selectedLink === link.name ? "bg-tertiary-container text-secondary" : isLogout ? "logout-link" : "text-tertiary hover:bg-surface-container duration-200"}`}
       >
         <img
           src={link.icon}
           alt={`${link.name} Icon`}
-          className="sidebar-icon"
+          className={`sidebar-icon ${isLogout ? "sidebar-icon-logout" : ""}`}
         />
         <p className="">{link.name}</p>
       </li>
@@ -159,6 +161,7 @@ export default function Layout() {
   const [openChatbot, setOpenChatbot] = useState(false);
   const [username, setUsername] = useState("User");
   const navigate = useNavigate();
+  const location = useLocation();
   const { toast } = useToast();
 
   const [fetchBook] = useLazyGetBookbyOpenLibraryAPIQuery();
@@ -175,6 +178,24 @@ export default function Layout() {
 
     setUsername(displayName);
   }, []);
+
+  useEffect(() => {
+    const path = location.pathname;
+
+    if (path === "/home" || path === "/") {
+      setSelectedLink("Home");
+    } else if (path.startsWith("/catalog")) {
+      setSelectedLink("Catalog");
+    } else if (path.startsWith("/shelves")) {
+      setSelectedLink("Shelves");
+    } else if (path.startsWith("/my-reads")) {
+      setSelectedLink("My Reads");
+    } else if (path.startsWith("/settings")) {
+      setSelectedLink("Settings");
+    } else {
+      setSelectedLink("Home");
+    }
+  }, [location.pathname]);
 
   function handleChatbotComponent() {
     setOpenChatbot((prev) => !prev);
@@ -261,6 +282,7 @@ export default function Layout() {
                 selectedLink={selectedLink}
                 setSelectedLink={setSelectedLink}
                 onClick={link.name === "Logout" ? handleLogout : undefined}
+                isLogout={link.name === "Logout"}
               />
             ))}
           </ul>
@@ -271,9 +293,10 @@ export default function Layout() {
         <header className="employee-header">
           <div>
             <h3 className="header-title">
-              <Link to="/home" onClick={() => {
-                      setSelectedLink("Home");
-                    }}>LUMINA</Link> &emsp; {">"} &emsp; {selectedLink.toUpperCase()}
+              <Link to="#" onClick={(e)=>{
+                        e.preventDefault();
+                        navigate(-1);
+                    }}>LUMINA</Link>  &emsp; {">"} &emsp; {selectedLink.toUpperCase()}
             </h3>
           </div>
 
