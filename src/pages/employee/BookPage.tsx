@@ -10,9 +10,13 @@ import {
   useGetBookQuery,
   useGetShelvesOfBookQuery,
 } from "@/api-service/books/books.api";
+import BookReviews from "@/components/Review";
+import { useGetUserDetailsQuery } from "@/api-service/login/login.api";
+
 export default function BookPage() {
   const { id } = useParams();
   const { data: book } = useGetBookQuery(parseInt(id || "-1"));
+  const { data: userDetails } = useGetUserDetailsQuery();
 
   const { data: shelves = [] } = useGetShelvesOfBookQuery(book?.isbn ?? "");
   const { data: bookGenre = [] } = useGetBookByGenreQuery(
@@ -62,7 +66,10 @@ export default function BookPage() {
     }
   }
 
-  const { data: reviews = [] } = useGetBookReviewQuery(id);
+  const { data: reviews = [] } = useGetBookReviewQuery(book?.isbn ?? "", {
+    skip: !book,
+  });
+
   if (!book) {
     return <div>Book not found</div>;
   }
@@ -129,7 +136,7 @@ export default function BookPage() {
             <div className="flex items-center gap-6">
               <div className="flex items-center gap-2">
                 <span>⭐</span>
-                <span>{book.rating}</span>
+                <span>{avgRating}</span>
                 <span className="text-[#575E70]">
                   ({reviews.length} reviews)
                 </span>
@@ -214,68 +221,8 @@ export default function BookPage() {
         </div>
       </section>
 
-      {/* Reviews */}
-      <section className="border-t border-[#D0C6AE]/50 px-6 py-8 max-w-[1280px] mx-auto">
-        <div className="flex justify-between items-center mb-6">
-          <h2 className="text-xl font-semibold">Reviews</h2>
-
-          <button className="border border-[#7F7662] rounded-xl px-4 py-2 text-sm">
-            View All
-          </button>
-        </div>
-
-        {/* Rating Summary */}
-        <div className="flex items-center gap-6 bg-[#F3F4F5] rounded-xl p-5 mb-6">
-          <div className="flex flex-col items-center pr-6 border-r border-[#D0C6AE]">
-            <span className="text-4xl font-bold">{avgRating}</span>
-            <Stars rating={Number(avgRating)} />
-            <span className="text-xs text-[#575E70]">
-              {reviews.length} ratings
-            </span>
-          </div>
-
-          <div className="flex-1 flex flex-col gap-2">
-            {[5, 4, 3].map((star) => (
-              <div key={star} className="flex items-center gap-3">
-                <span className="w-4 text-xs">{star}</span>
-
-                <div className="flex-1 h-2 rounded-full bg-[#E7E8E9] overflow-hidden">
-                  <div
-                    className="h-full bg-[#735C00]"
-                    style={{
-                      width: star === 5 ? "85%" : star === 4 ? "10%" : "3%",
-                    }}
-                  />
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Review Cards */}
-        <div className="flex flex-col gap-4">
-          {reviews.map((review: any) => (
-            <div
-              key={review.id}
-              className="border border-[#D0C6AE]/50 rounded-xl p-5"
-            >
-              <div className="flex justify-between mb-3">
-                <div>
-                  <h3 className="font-bold">{review.name}</h3>
-                  <p className="text-xs uppercase text-[#575E70]">
-                    {review.createdAt}
-                  </p>
-                </div>
-              </div>
-
-              <Stars rating={review.rating} />
-
-              <p className="text-sm leading-6 text-[#4D4635] mt-3">
-                {review.content}
-              </p>
-            </div>
-          ))}
-        </div>
+      <section className="border-t max-w-[1280px]  border-[#D0C6AE]/50 px-6 py-8 mx-auto">
+        <BookReviews isbn={book.isbn} currentUserId={userDetails?.userId ?? 0}/>
       </section>
 
       {/* Similar */}
