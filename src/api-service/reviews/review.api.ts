@@ -1,5 +1,6 @@
 import libraryBaseApi from "../api";
 import { BASE_URL } from "../api";
+import type { ReviewResponse } from "./types";
 
 export const reviewApi = libraryBaseApi.injectEndpoints({
   endpoints: (builder) => ({
@@ -9,7 +10,13 @@ export const reviewApi = libraryBaseApi.injectEndpoints({
         method: "GET",
       }),
     }),
+    getUserReviews: builder.query<ReviewResponse[], void>({
+      query: () => ({
+        url: BASE_URL + `/reviews/user/review`,
+        method: "GET",
+      }),
+    }),
   }),
 });
 
-export const { useGetBookReviewQuery } = reviewApi;
+export const { useGetBookReviewQuery, useGetUserReviewsQuery } = reviewApi;

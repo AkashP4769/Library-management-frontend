@@ -19,6 +19,7 @@ import type Book from "@/models/book";
 import { transformBorrowedBookToBook } from "@/api-service/books/types";
 import { useGetShelvesQuery } from "@/api-service/shelf/shelf.api";
 import { useToast } from "@/Components/ui/Toast";
+import { useGetUserReviewsQuery } from "@/api-service/reviews/review.api";
 
 export default function MyReads() {
   const { data: borrowedBooksInformation = [] } =
@@ -28,6 +29,7 @@ export default function MyReads() {
   const [returnBorrowedBook] = useReturnBorrowedBookMutation();
   const { data: fetchshelves } = useGetShelvesQuery();
   const { toast } = useToast();
+  const { data: userReviews = [] } = useGetUserReviewsQuery();
   const requestedBooks = books.slice(2, 3);
   const { data: user } = useUserQuery();
   const [showReturnPanel, setShowReturnPanel] = useState(false);
@@ -256,7 +258,7 @@ export default function MyReads() {
               <p className="text-sm uppercase tracking-wide text-gray-500">
                 Reviews
               </p>
-              <h2 className="text-5xl font-bold mt-3">12</h2>
+              <h2 className="text-5xl font-bold mt-3">{userReviews.length}</h2>
             </div>
           </div>
         </div>
