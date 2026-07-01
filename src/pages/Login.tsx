@@ -7,9 +7,9 @@ import { useState } from "react";
 import Footer from "@/components/Footer";
 import { Link, useNavigate } from "react-router";
 import { useLoginMutation } from "@/api-service/login/login.api";
-  
-export default function LoginPage() {
+import { useLazyGetUsersNotificationsQuery } from "@/api-service/notifications/notifications.api";
 
+export default function LoginPage() {
   const [role, setRole] = useState("Employee");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -18,14 +18,14 @@ export default function LoginPage() {
   const navigate = useNavigate();
 
   const handleLogin = async () => {
-    if(email.length == 0 || password.length == 0) {
+    if (email.length == 0 || password.length == 0) {
       alert("Please enter valid email and password");
       return;
     }
 
     const payload = {
       email: email,
-      password: password
+      password: password,
     };
 
     try {
@@ -41,20 +41,23 @@ export default function LoginPage() {
         response?.username ||
         (payload.email ? payload.email.split("@")[0] : "User");
 
-      if(access_token && refresh_token){
-          console.log("access_token & refresh token", access_token && refresh_token);
-          localStorage.setItem("access_token", access_token);
-          localStorage.setItem("refresh_token", refresh_token);
-          localStorage.setItem("username", userName);
-          localStorage.setItem("email", payload.email);
-          navigate("/", {replace: true});
+      if (access_token && refresh_token) {
+        console.log(
+          "access_token & refresh token",
+          access_token && refresh_token,
+        );
+        localStorage.setItem("access_token", access_token);
+        localStorage.setItem("refresh_token", refresh_token);
+        localStorage.setItem("username", userName);
+        localStorage.setItem("email", payload.email);
+        navigate("/", { replace: true });
       }
     } catch (error) {
       console.error("Login failed:", error);
       alert("Login failed. Please check your credentials.");
     }
   };
-  
+
   return (
     <div className="w-screen h-screen">
       <div className="flex flex-row">
@@ -134,7 +137,10 @@ export default function LoginPage() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 rightIcon={showPassword ? <FaEyeSlash /> : <FaEye />}
-                onRightIconClick={() => { setShowPassword(!showPassword); return {}; }}
+                onRightIconClick={() => {
+                  setShowPassword(!showPassword);
+                  return {};
+                }}
               />
             </div>
             <button
@@ -145,14 +151,15 @@ export default function LoginPage() {
               Log In as {role === "Admin" ? "Admin" : "Employee"} -{">"}
             </button>
             <p className="text-sm text-center">
-              New Librarian? <Link to="/signup" className="text-blue-500">Create your account</Link>
+              New Librarian?{" "}
+              <Link to="/signup" className="text-blue-500">
+                Create your account
+              </Link>
             </p>
           </div>
         </div>
       </div>
-      <div>
-        
-      </div>
+      <div></div>
     </div>
   );
 }

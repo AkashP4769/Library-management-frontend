@@ -1,0 +1,73 @@
+.notification-scroll-area {
+  max-height: 360px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+}
+
+.notification-scroll-area::-webkit-scrollbar {
+  width: 6px;
+}
+.notification-scroll-area::-webkit-scrollbar-thumb {
+  background: #d0c6ae;
+  border-radius: 4px;
+}
+
+.notification-banner-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.notification-mark-all {
+  font-size: 0.75rem;
+  color: #4d4635;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+.notification-mark-all:hover {
+  text-decoration: underline;
+}
+
+.notification-unread {
+  background-color: rgba(252, 211, 77, 0.08);
+  border-left: 3px solid #fcd34d;
+  cursor: pointer;
+}
+.notification-read {
+  opacity: 0.75;
+}
+
+.notification-item-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+}
+
+.notification-time {
+  font-size: 0.7rem;
+  color: #575e70;
+  white-space: nowrap;
+  margin-left: 8px;
+}
+
+.notification-empty-state {
+  padding: 24px 16px;
+  text-align: center;
+  color: #575e70;
+  font-size: 0.85rem;
+}
+
+.notification-view-more {
+  width: 100%;
+  padding: 8px;
+  font-size: 0.8rem;
+  color: #4d4635;
+  background: #fcfbf6;
+  border: none;
+  border-top: 1px solid #d0c6ae;
+  cursor: pointer;
+}
+.notification-view-more:hover {
+  background: #f5f1e6;
+}
