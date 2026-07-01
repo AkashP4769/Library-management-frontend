@@ -14,12 +14,9 @@ export default function ISBNScanner({ onScan }: Props) {
   });
 
   return (
-    <video
-      ref={ref}
-      style={{
-        width: "100%",
-        borderRadius: 12,
-      }}
-    />
+    <div className="scanner-video-shell">
+      <video ref={ref} className="scanner-video" />
+      <div className="scanner-frame" aria-hidden="true" />
+    </div>
   );
 }
