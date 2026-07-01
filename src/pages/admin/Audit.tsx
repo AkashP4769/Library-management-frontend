@@ -19,15 +19,16 @@ const RANGE_OPTIONS = [
   { label: "90 days", value: "90d" },
 ] as const;
 
-const STATUS_OPTIONS = [
+const ACTION_OPTIONS = [
   { label: "All", value: "all" },
-  { label: "Success", value: "success" },
-  { label: "Warning", value: "warning" },
-  { label: "Failed", value: "failed" },
+  { label: "Login", value: "login" },
+  { label: "Create", value: "create" },
+  { label: "Update", value: "update" },
+  { label: "Return", value: "return" },
 ] as const;
 
 type Range = (typeof RANGE_OPTIONS)[number]["value"];
-type StatusFilter = (typeof STATUS_OPTIONS)[number]["value"];
+type ActionFilter = (typeof ACTION_OPTIONS)[number]["value"];
 
 type NormalizedAuditLog = {
   id: string;
@@ -38,14 +39,18 @@ type NormalizedAuditLog = {
   status: string;
   severity: "success" | "warning" | "failed" | "neutral";
   time: string;
+  createdAt: string;
   details: string;
+  actionType: string;
 };
 
 function normalizeAuditResponse(response?: AuditLogResponse): AuditLogItem[] {
   if (!response) return [];
   if (Array.isArray(response)) return response;
 
-  return response.audit_logs ?? response.logs ?? response.results ?? response.data ?? [];
+  return (
+    response.audit_logs ?? response.logs ?? response.results ?? response.data ?? []
+  );
 }
 
 function toSentence(value?: string): string {
@@ -111,16 +116,23 @@ function normalizeLog(log: AuditLogItem, index: number): NormalizedAuditLog {
     id: String(log.id ?? `${action ?? "audit"}-${index}`),
     actor: actor || `User ${log.actor_user_id ?? "System"}`,
     action: toSentence(action),
-    entity: log.entity_type ? toSentence(log.entity_type) : log.entity ? toSentence(log.entity) : "Record",
-    target: log.target || (log.entity_id ? `ID ${log.entity_id}` : "Library system"),
+    entity: log.entity_type
+      ? toSentence(log.entity_type)
+      : log.entity
+        ? toSentence(log.entity)
+        : "Record",
+    target:
+      log.target || (log.entity_id ? `ID ${log.entity_id}` : "Library system"),
     status: status ? toSentence(status) : "Recorded",
     severity: getSeverity(log),
     time: formatAuditTime(log.created_at ?? log.timestamp ?? log.date),
+    createdAt: log.created_at ?? log.timestamp ?? log.date ?? "",
     details:
       log.details ||
       detailsFromMetadata ||
       statusChange ||
       `${toSentence(action)} event recorded`,
+    actionType: (action ?? "").toLowerCase(),
   };
 }
 
@@ -131,6 +143,21 @@ function matchesSearch(log: NormalizedAuditLog, search: string): boolean {
   return Object.values(log).some((value) =>
     String(value).toLowerCase().includes(query),
   );
+}
+
+function matchesAction(log: NormalizedAuditLog, actionFilter: ActionFilter) {
+  return actionFilter === "all" || log.actionType === actionFilter;
+}
+
+function matchesRange(log: NormalizedAuditLog, range: Range): boolean {
+  const createdAt = new Date(log.createdAt);
+  if (!log.createdAt || Number.isNaN(createdAt.getTime())) return true;
+
+  const days = Number(range.replace("d", ""));
+  const cutoff = new Date();
+  cutoff.setDate(cutoff.getDate() - days);
+
+  return createdAt >= cutoff;
 }
 
 function AuditMetric({
@@ -185,15 +212,15 @@ function AuditSkeleton() {
 
 export default function AuditPage() {
   const [range, setRange] = useState<Range>("30d");
-  const [statusFilter, setStatusFilter] = useState<StatusFilter>("all");
+  const [actionFilter, setActionFilter] = useState<ActionFilter>("all");
   const [search, setSearch] = useState("");
 
   const [fetchAuditLogs, { data, isLoading, isFetching, isError }] =
     useLazyGetAuditLogsQuery();
 
   useEffect(() => {
-    fetchAuditLogs({ range, status: statusFilter });
-  }, [fetchAuditLogs, range, statusFilter]);
+    fetchAuditLogs({ range });
+  }, [fetchAuditLogs, range]);
 
   const normalizedLogs = useMemo(
     () => normalizeAuditResponse(data).map(normalizeLog),
@@ -201,8 +228,14 @@ export default function AuditPage() {
   );
 
   const visibleLogs = useMemo(
-    () => normalizedLogs.filter((log) => matchesSearch(log, search)),
-    [normalizedLogs, search],
+    () =>
+      normalizedLogs.filter(
+        (log) =>
+          matchesRange(log, range) &&
+          matchesAction(log, actionFilter) &&
+          matchesSearch(log, search),
+      ),
+    [actionFilter, normalizedLogs, range, search],
   );
 
   const successCount = normalizedLogs.filter(
@@ -227,7 +260,7 @@ export default function AuditPage() {
 
         <button
           className="audit-refresh-button"
-          onClick={() => fetchAuditLogs({ range, status: statusFilter })}
+          onClick={() => fetchAuditLogs({ range })}
           disabled={loading}
           type="button"
         >
@@ -290,14 +323,14 @@ export default function AuditPage() {
             </div>
 
             <select
-              aria-label="Audit status"
+              aria-label="Audit action"
               className="audit-select"
-              value={statusFilter}
+              value={actionFilter}
               onChange={(event) =>
-                setStatusFilter(event.target.value as StatusFilter)
+                setActionFilter(event.target.value as ActionFilter)
               }
             >
-              {STATUS_OPTIONS.map((option) => (
+              {ACTION_OPTIONS.map((option) => (
                 <option key={option.value} value={option.value}>
                   {option.label}
                 </option>
