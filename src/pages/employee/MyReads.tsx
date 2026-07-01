@@ -17,20 +17,20 @@ import {
 } from "@/api-service/books/books.api";
 import type Book from "@/models/book";
 import { transformBorrowedBookToBook } from "@/api-service/books/types";
+import { useGetShelvesQuery } from "@/api-service/shelf/shelf.api";
 
 export default function MyReads() {
-  // const borrowedBooks = books.slice(0, 2);
   const { data: borrowedBooksInformation = [] } =
     useGetBorrowedBooksByUserQuery();
   const [borrowedBooks, setBorrowedBooks] = useState<Book[]>([]);
   const [returnBorrowedBook] = useReturnBorrowedBookMutation();
+  const { data: fetchshelves } = useGetShelvesQuery();
   const requestedBooks = books.slice(2, 3);
   const { data: user } = useUserQuery();
   const [showReturnPanel, setShowReturnPanel] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [selectedBorrowId, setSelectedBorrowId] = useState<number | null>(null);
   const [selectedShelfId, setSelectedShelfId] = useState<number | null>(null);
-  const [returnShelves, setReturnShelves] = useState<Shelf[]>([]);
   const [updateUser, { isLoading }] = useUpdateUserMutation();
 
   const handleSubmit = async (e: any) => {
@@ -65,13 +65,6 @@ export default function MyReads() {
 
   const handleReturnClick = async (borrowId: number) => {
     setSelectedBorrowId(borrowId);
-
-    // TODO: Fetch shelves from backend
-    // const shelves = await getReturnShelves(borrowId);
-
-    // Placeholder
-    setReturnShelves(shelves);
-
     setSelectedShelfId(null);
     setShowReturnPanel(true);
   };
@@ -100,6 +93,9 @@ export default function MyReads() {
 
     // Optional: refresh borrowed books list
   };
+  if (!fetchshelves) {
+    return <div>Shelf not found</div>;
+  }
 
   return (
     <div className="my-reads-page space-y-12">
@@ -293,7 +289,7 @@ export default function MyReads() {
             </h2>
 
             <div className="flex flex-wrap gap-3">
-              {returnShelves.map((shelf) => (
+              {fetchshelves.map((shelf) => (
                 <SmallShelfCard
                   key={shelf.id}
                   shelf={shelf}

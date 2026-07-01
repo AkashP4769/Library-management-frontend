@@ -39,7 +39,9 @@ export default function BookPage() {
       borrowedBooksData({ isbn: book.isbn, shelf_id: shelves[0]?.id ?? 0 })
         .unwrap()
         .then((response) => {
-          const filteredBooks = borrowedBooks.filter((response) => response.status === "borrowed");
+          const filteredBooks = borrowedBooks.filter(
+            (response) => response.status === "borrowed",
+          );
           setBorrowedBooks(filteredBooks);
         })
         .catch((error) => {
@@ -72,6 +74,7 @@ export default function BookPage() {
           console.error("Error borrowing book:", error);
         });
     }
+    setBorrowed(true);
   }
 
   const { data: reviews = [] } = useGetBookReviewQuery(id);

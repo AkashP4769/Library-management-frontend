@@ -112,7 +112,6 @@ interface BorrowedBookCardProps {
 }
 
 function BorrowedBookCard({ book, onReturnClick }: BorrowedBookCardProps) {
-  
   return (
     <div className="flex flex-col h-120 w--70 rounded-2xl border-2 border-neutral-200 hover:bg-white duration-200 p-3">
       <div className="flex flex-col h-full justify-between">
