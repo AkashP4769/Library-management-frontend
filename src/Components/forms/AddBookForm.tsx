@@ -5,11 +5,12 @@ import { useCreateBookMutation } from "@/api-service/books/books.api";
 import type { CreateBookPayload } from "@/api-service/books/types";
 import BarcodeIcon from "@/assets/icons/Barcode.png";
 import { SuccessBanner } from "@/Components/ui/SuccessBanner";
-
-
+import ISBNScanner from "../scanner/ISBNScanner";
+import { useLazyGetBookbyOpenLibraryAPIQuery } from "@/api-service/books/books.api";
 export function AddBookForm() {
   const [createBook] = useCreateBookMutation();
-
+  const [fetchBook, { data, isLoading, error }] =
+      useLazyGetBookbyOpenLibraryAPIQuery();
   const [book, setBook] = useState<CreateBookPayload>({
     isbn: "",
     title: "",
@@ -24,7 +25,7 @@ export function AddBookForm() {
 
   const [preview, setPreview] = useState<string | null>(null);
   const [showSuccessBanner, setShowSuccessBanner] = useState(false);
-
+  const [showScanner, setshowScanner] = useState(false)
   const handleChange = (
     e: React.ChangeEvent<
       HTMLInputElement | HTMLTextAreaElement
@@ -37,7 +38,17 @@ export function AddBookForm() {
       [name]: value,
     }));
   };
+  async function imageUrlToFile(url: string) {
+    const response = await fetch(url);
 
+    const blob = await response.blob();
+
+    return new File(
+        [blob],
+        "cover.jpg",
+        { type: blob.type }
+    );
+}
   const handleImageChange = (
       e: React.ChangeEvent<HTMLInputElement>
   ) => {
@@ -51,6 +62,37 @@ export function AddBookForm() {
       }));
 
       setPreview(URL.createObjectURL(file));
+  };
+  const handleScan = async (isbn: string) => {
+    console.log(isbn);
+    const result = await fetchBook(isbn);
+    let file;
+    console.log(result.data);
+    if (result.data){
+      const data = result.data;
+      const cover_url =
+      data.cover_urls[1] ??
+      data.cover_urls[0] ??
+      null;
+
+      if(cover_url){
+         file = await imageUrlToFile(cover_url);
+         setPreview(URL.createObjectURL(file));
+      }
+      
+  setBook(prev => ({
+    ...prev,
+    isbn,
+    title: data.title ?? "",
+    author: data.author ?? "",
+    publisher: data.publisher ?? "",
+    language: data.language ?? "",
+    description: "",
+    image: file,
+    
+  }));
+    }
+    setshowScanner(false);
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -72,15 +114,18 @@ export function AddBookForm() {
 
     console.log(book);
 
-    createBook(formData as unknown as CreateBookPayload);
-    const response = true;
+    createBook(formData as unknown as CreateBookPayload)
+      .unwrap()
+      .then(() => {
+        setShowSuccessBanner(true);
+        setTimeout(() => {
+          setShowSuccessBanner(false);
+        }, 3000);
+      })
+      .catch((error) => {
+        console.error("Error creating book:", error);
+      });
 
-    if (response) {
-      setShowSuccessBanner(true);
-      const timeout = setTimeout(()=>{
-        setShowSuccessBanner(false);
-      },2500)
-    }
   };
 
   return (
@@ -92,10 +137,10 @@ export function AddBookForm() {
         </h2>
         <button className="flex items-center gap-2 rounded-lg w-48 justify-center py-2 font-medium bg-tertiary-container hover:bg-neutral-200 text-black transition hover:bg-primary-hover">
           <img src={BarcodeIcon} alt="Barcode icon" />
-          <p>Scan ISBN</p>
+          <p onClick={()=>{setshowScanner(true)}}>Scan ISBN</p>
         </button>
       </div>
-
+     
       <form
         onSubmit={handleSubmit}
         className="space-y-5 w-full self-center"
@@ -176,6 +221,17 @@ export function AddBookForm() {
           </button>
         </div>
       </form>
+       {showScanner && (
+                    <div className="scanner-overlay">
+                      <div className="scanner-modal">
+                        <h2>Scan ISBN</h2>
+      
+                        <ISBNScanner onScan={handleScan} />
+      
+                        <button onClick={() => setshowScanner(false)}>Close</button>
+                      </div>
+                    </div>
+                  )}
     </div>
   );
 }
