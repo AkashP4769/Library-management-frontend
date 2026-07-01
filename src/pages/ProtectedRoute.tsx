@@ -15,7 +15,6 @@ export function ProtectedRoute() {
   return <Outlet />;
 }
 
-
 export function AdminProtectedRoute() {
   if (!hasAuthTokens()) {
     clearAuth();
@@ -24,11 +23,14 @@ export function AdminProtectedRoute() {
   }
 
   if (!userRole() || userRole() !== "admin") {
-    console.log("User role is not admin. Redirecting to login.", { role: userRole() });
+    console.log("User role is not admin. Redirecting to login.", {
+      role: userRole(),
+    });
     return <Navigate to="/login" replace />;
   }
 
-  console.log("User is authenticated and has admin role. Rendering admin routes.");
+  console.log(
+    "User is authenticated and has admin role. Rendering admin routes.",
+  );
   return <Outlet />;
 }
-

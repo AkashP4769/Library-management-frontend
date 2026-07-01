@@ -6,7 +6,11 @@ import "tailwindcss";
 import { useState } from "react";
 import Footer from "@/components/Footer";
 import { Link, useNavigate } from "react-router";
-import { useGetUserDetailsQuery, useLazyGetUserDetailsQuery, useLoginMutation } from "@/api-service/login/login.api";
+import {
+  useGetUserDetailsQuery,
+  useLazyGetUserDetailsQuery,
+  useLoginMutation,
+} from "@/api-service/login/login.api";
 import { useLazyGetUsersNotificationsQuery } from "@/api-service/notifications/notifications.api";
 
 export default function LoginPage() {
@@ -36,14 +40,16 @@ export default function LoginPage() {
       const access_token = response.access_token;
       const refresh_token = response.refresh_token;
 
-      if(!access_token || !refresh_token) {
+      if (!access_token || !refresh_token) {
         alert("Login failed. Please check your credentials.");
         return;
       }
 
       const role = response.role;
-      if(role !== loginType) {
-        alert(`You are trying to log in as ${loginType}, but your role is ${role}. Please use the correct login.`);
+      if (role !== loginType) {
+        alert(
+          `You are trying to log in as ${loginType}, but your role is ${role}. Please use the correct login.`,
+        );
         return;
       }
 
@@ -86,7 +92,8 @@ export default function LoginPage() {
           <div className="absolute inset-0 flex flex-col items-center justify-center text-white px-8">
             <div className="items-left">
               <h2 className="text-5xl text-amber-300 font-bold leading-normal text-left">
-                Preserving Knowledge,<br /> Empowering Discovery.
+                Preserving Knowledge,
+                <br /> Empowering Discovery.
               </h2>
               <p className="text-xl mt-7 text-white text-left">
                 Welcome back to the world's most advanced library <br />{" "}
@@ -156,7 +163,9 @@ export default function LoginPage() {
             <button
               type="submit"
               className="w-full h-[50px] bg-amber-300 hover:bg-amber-400 duration-200 text-[#141b2b] rounded font-semibold"
-              onClick={() => handleLogin(role === "Admin" ? "admin" : "employee")}
+              onClick={() =>
+                handleLogin(role === "Admin" ? "admin" : "employee")
+              }
             >
               Log In as {role === "Admin" ? "Admin" : "Employee"} -{">"}
             </button>

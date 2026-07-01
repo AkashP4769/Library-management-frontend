@@ -41,7 +41,7 @@ export function placeholderImageUrl(originalImageUrl: string | null): string {
   if (originalImageUrl.startsWith("/uploads/")) {
     return BASE_URL + originalImageUrl;
   }
-  return originalImageUrl;  
+  return originalImageUrl;
 }
 
 export function bookResponseToBook(bookResponse: BookResponse): Book {
@@ -123,7 +123,6 @@ export type BorrowBookPayload = {
   shelf_id: number;
 };
 
-
 export type BorrowedBookResponse = {
   id: number;
   book_copy_id: number;
@@ -137,47 +136,55 @@ export type BorrowedBookResponse = {
   created_at: string; // Use string for datetime representation
   updated_at: string | null; // Use string for datetime representation
   deleted_at: string | null; // Use string for datetime representation
-}
+};
+
+export type RequestedBook = {
+  id: number;
+  status: number;
+  book: BookResponse;
+};
 
 export type BorrowedBook = {
-    id: number;
-    user_id: number;
-    user_name: string;
-    user_email: string;
+  id: number;
+  user_id: number;
+  user_name: string;
+  user_email: string;
 
-    book_id: number;
-    book_copy_id: number;
+  book_copy_id: number;
+  book_id: number;
 
-    isbn: string;
-    title: string;
-    author: string;
-    genre: string | null;
-    image_url: string | null;
-    publisher: string | null;
+  isbn: string;
+  title: string;
+  author: string;
+  genre: string | null;
+  image_url: string | null;
+  publisher: string | null;
 
-    shelf_code: string;
+  shelf_code: string;
 
-    borrowed_at: string; // Use string for datetime representation
-    due_date: string; // Use string for datetime representation
-    returned_at: string | null; // Use string for datetime representation
+  borrowed_at: string; // Use string for datetime representation
+  due_date: string; // Use string for datetime representation
+  returned_at: string | null; // Use string for datetime representation
 
-    status: "BORROWED" | "RETURNED" | "OVERDUE"; // Adjust the type based on your actual status values
+  status: "BORROWED" | "RETURNED" | "OVERDUE"; // Adjust the type based on your actual status values
 
-    renewal_count: number;
-    fine_amount: number;
-}
+  renewal_count: number;
+  fine_amount: number;
+};
 
-
-
-
-export function transformBorrowedBookResponse(response: BorrowedBook): BorrowedBook {
+export function transformBorrowedBookResponse(
+  response: BorrowedBook,
+): BorrowedBook {
   return {
     ...response,
-    image_url: placeholderImageUrl(response.image_url)
+    image_url: placeholderImageUrl(response.image_url),
   };
 }
 
-export function transformBorrowedBookToBook(response: BorrowedBook[], hardConvert: boolean): Book[] {
+export function transformBorrowedBookToBook(
+  response: BorrowedBook[],
+  hardConvert: boolean,
+): Book[] {
   return response.map((book) => ({
     id: hardConvert ? book.book_id : book.id,
     isbn: book.isbn,
@@ -191,5 +198,25 @@ export function transformBorrowedBookToBook(response: BorrowedBook[], hardConver
     rating: 0,
     createdAt: "",
     updatedAt: "",
+  }));
+}
+
+export function transformRequestedBookResponse(
+  response: RequestedBook[],
+): any[] {
+  return response.map((request) => ({
+    id: request.book.id,
+    isbn: request.book.isbn,
+    title: request.book.title,
+    author: request.book.author,
+    genre: request.book.genre ?? "",
+    publisher: request.book.publisher ?? "",
+    language: request.book.language ?? "",
+    description: request.book.description ?? "",
+    image_url: placeholderImageUrl(request.book.image_url),
+    rating: 0,
+    createdAt: request.book.createdAt,
+    updatedAt: request.book.updatedAt,
+    status: request.status,
   }));
 }
