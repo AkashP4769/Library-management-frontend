@@ -26,7 +26,7 @@ export default function BookCard(book: Book) {
       onClick={handleClick}
       role={book.id ? "button" : undefined}
       tabIndex={book.id ? 0 : undefined}
-      className="cursor-pointer flex flex-col h-120 w-70 items-center rounded-2xl justify-center border-2 border-neutral-200 hover:bg-white duration-200 relative"
+      className="cursor-pointer flex flex-col h-120 w-full items-center rounded-2xl justify-center border-2 border-neutral-200 hover:bg-white duration-200 relative"
     >
       <div className="flex flex-col h-[90%] w-[90%]  items-start justify-between">
         <div className="relative h-[85%] w-full">
@@ -68,7 +68,8 @@ export default function BookCard(book: Book) {
             <p className="text-tertiary line-clamp-1">{book.author}</p>
             {hasShelfCopies && (
               <p className="text-xs font-medium text-primary">
-                {book.available_copies ?? 0} available / {book.total_copies} total
+                {book.available_copies ?? 0} available / {book.total_copies}{" "}
+                total
               </p>
             )}
           </div>
@@ -114,15 +115,15 @@ function SmallBookCard(book: Book) {
   return (
     <div
       key={book.id}
-      className="flex h-60 w-full items-center rounded-2xl justify-center large-book-card-padding border-2 border-neutral-200 hover:bg-white duration-200"
+      className="flex h-60 w-full items-center rounded-2xl justify-center  border-2 border-neutral-200 hover:bg-white duration-200"
     >
-      <div className="flex h-[90%] w-full items-center justify-between large-book-card-padding">
+      <div className="flex h-[90%] ml-4 mr-4  w-full items-center justify-between ">
         <img
           src={book.image_url}
           alt={book.title}
           className="h-[90%] w-[50%] object-cover rounded-2xl"
         />
-        <div className="w-[40%] flex flex-col justify-between items-start h-[50%] large-book-card-padding">
+        <div className="w-[40%] flex flex-col justify-between items-start h-[50%]">
           <div>
             <h3 className="text-lg font-bold mt-2 text-clip">{book.title}</h3>
             <p className="text-tertiary">{book.author}</p>
@@ -164,7 +165,7 @@ interface BorrowedBookCardProps {
 
 function BorrowedBookCard({ book, onReturnClick }: BorrowedBookCardProps) {
   return (
-    <div className="flex flex-col h-120 w--70 rounded-2xl border-2 border-neutral-200 hover:bg-white duration-200 p-3">
+    <div className="flex flex-col h-120 w--full rounded-2xl border-2 border-neutral-200 hover:bg-white duration-200 p-3">
       <div className="flex flex-col h-full justify-between">
         <div>
           <img

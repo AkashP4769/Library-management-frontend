@@ -2,16 +2,32 @@ import type Book from "@/models/book";
 import { useEffect, useState } from "react";
 import "./Home.css";
 import BookCard, { SmallBookCard } from "@/Components/BookCard";
+import {
+  useGetBooksQuery,
+  useGetBorrowedBooksByUserQuery,
+} from "@/api-service/books/books.api";
+import { transformBorrowedBookToBook } from "@/api-service/books/types";
 import { Link } from "react-router";
-import { useGetBooksQuery } from "@/api-service/books/books.api";
 
 export default function HomePage() {
   const { data: fetchedBooks } = useGetBooksQuery();
   const [myBooks, setMyBooks] = useState<Book[]>([]);
+  const [exploreBooks, setExploreBooks] = useState<Book[]>([]);
+  const { data: borrowedBooksInformation = [] } =
+    useGetBorrowedBooksByUserQuery();
+  useEffect(() => {
+    if (borrowedBooksInformation) {
+      console.log("Borrowed Books Information:", borrowedBooksInformation); // Debugging line to check the data
+      const filteredBooks = borrowedBooksInformation.filter(
+        (book) => book.status === "RETURNED",
+      );
+      setMyBooks(transformBorrowedBookToBook(filteredBooks));
+    }
+  }, [borrowedBooksInformation]);
 
   useEffect(() => {
     if (fetchedBooks) {
-      setMyBooks([...fetchedBooks]);
+      setExploreBooks([...fetchedBooks]);
     }
   }, [fetchedBooks]);
 
@@ -67,7 +83,7 @@ export default function HomePage() {
             Most Popular This Week
           </h2>
 
-          {myBooks.length > 5 && (
+          {exploreBooks.length > 5 && (
             <button
               onClick={() => setShowAllBooks(!showAllBooks)}
               className="text-primary font-semibold hover:underline text-sm sm:text-base"
@@ -87,10 +103,10 @@ export default function HomePage() {
         ${showAllBooks ? "max-h-[3000px]" : "max-h-[260px]"}
       `}
         >
-          {myBooks.length === 0 ? (
+          {exploreBooks.length === 0 ? (
             <p className="text-primary text-xl font-semibold">No books found</p>
           ) : (
-            myBooks.map((book) => (
+            exploreBooks.map((book) => (
               <Link key={book.id} to={`/catalog/books/${book.id}`}>
                 <SmallBookCard {...book} />
               </Link>
