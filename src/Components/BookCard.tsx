@@ -1,12 +1,20 @@
 import type Book from "@/models/book";
 import { BASE_URL } from "@/api-service/api";
+import { useState, type MouseEvent } from "react";
 import { useNavigate } from "react-router";
-
+import { Heart } from "lucide-react";
 export default function BookCard(book: Book) {
   const hasShelfCopies = typeof book.total_copies === "number";
   const navigate = useNavigate();
+  const [isLiked, setIsLiked] = useState(false);
 
-  function handleClick() {
+  function handleClick(event: MouseEvent<HTMLDivElement>) {
+    const target = event.target as HTMLElement;
+
+    if (target.closest("button")) {
+      return;
+    }
+
     if (book.id) {
       navigate(`/catalog/books/${book.id}`);
     }
@@ -27,6 +35,25 @@ export default function BookCard(book: Book) {
             alt={book.title}
             className="w-full h-full object-cover rounded-2xl"
           />
+          <button
+            type="button"
+            aria-label={isLiked ? "Remove from favorites" : "Add to favorites"}
+            onClick={(event) => {
+              event.preventDefault();
+              event.stopPropagation();
+              setIsLiked((prev) => !prev);
+            }}
+            className="absolute right-3 top-3 z-10 flex h-10 w-10 items-center justify-center rounded-full bg-white/20 shadow-md backdrop-blur-sm transition hover:scale-110"
+          >
+            <Heart
+              className={`h-6 w-6 transition-all duration-200 ${
+                isLiked
+                  ? "fill-red-500 text-red-500"
+                  : "fill-transparent text-white hover:text-red-400"
+              }`}
+              strokeWidth={2}
+            />
+          </button>
           {hasShelfCopies && (
             <span className="absolute left-3 top-3 rounded-lg bg-white/95 px-3 py-1 text-xs font-bold text-secondary shadow">
               {book.total_copies} copies

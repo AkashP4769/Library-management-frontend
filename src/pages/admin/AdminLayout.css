@@ -71,6 +71,20 @@
   /* background-color: var(--color-surface-container); */
 }
 
+.logout-link {
+  color: #dc2626;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.logout-link:hover {
+  background-color: #fee2e2;
+  color: #b91c1c;
+}
+
+.sidebar-icon-logout {
+  filter: brightness(0) saturate(100%) invert(21%) sepia(93%) saturate(7453%) hue-rotate(356deg) brightness(102%) contrast(104%);
+}
+
 .ask-ai-button {
   display: flex;
   align-items: center;
