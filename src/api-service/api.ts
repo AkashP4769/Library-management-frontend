@@ -68,6 +68,7 @@ const LibraryBaseApi = createApi({
     "Inventory",
     "Admin",
     "User",
+	"Reviews",
   ],
 });
 

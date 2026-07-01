@@ -10,6 +10,7 @@ export const loginApi = libraryBaseApi.injectEndpoints({
         method: "POST",
         body: new URLSearchParams({ username: payload.email, password: payload.password })
       }),
+      invalidatesTags: ["User"],
     }),
 
     signup: builder.mutation<LoginResponse, SignupPayload>({
@@ -18,8 +19,26 @@ export const loginApi = libraryBaseApi.injectEndpoints({
         method: "POST",
         body: payload
       }),
+      invalidatesTags: ["User"],
+    }),
+
+    getUserDetails: builder.query<{userId: number, email: string, name: string, contactNumber: string, role: string}, void>({
+      query: () => ({
+        url: BASE_URL + "/auth/user",
+        method: "GET",
+      }),
+      providesTags: ["User"],
+      transformResponse: (response: {user_id: number, email: string, name: string, contact_number: string, role: string}) => {
+        return {
+          userId: response.user_id,
+          email: response.email,
+          name: response.name,
+          contactNumber: response.contact_number,
+          role: response.role
+        }
+      }
     }),
   }),
 });
 
-export const { useLoginMutation, useSignupMutation } = loginApi;
+export const { useLoginMutation, useSignupMutation, useGetUserDetailsQuery } = loginApi;
