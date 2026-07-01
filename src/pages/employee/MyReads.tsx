@@ -12,6 +12,8 @@ import {
 } from "@/api-service/user/user.api";
 import {
   useGetBorrowedBooksByUserQuery,
+  useGetBooksQuery,
+  useGetWishlistQuery,
   useReturnBorrowedBookMutation,
 } from "@/api-service/books/books.api";
 import type Book from "@/models/book";
@@ -23,6 +25,8 @@ import { useGetUserReviewsQuery } from "@/api-service/reviews/review.api";
 export default function MyReads() {
   const { data: borrowedBooksInformation = [] } =
     useGetBorrowedBooksByUserQuery();
+  const { data: allBooks = [] } = useGetBooksQuery();
+  const { data: wishlistBookIds = [] } = useGetWishlistQuery();
   const [borrowedBooks, setBorrowedBooks] = useState<Book[]>([]);
   const [myBooks, setMyBooks] = useState<Book[]>([]);
   const [returnBorrowedBook] = useReturnBorrowedBookMutation();
@@ -127,6 +131,10 @@ export default function MyReads() {
   if (!fetchshelves) {
     return <div>Shelf not found</div>;
   }
+
+  const wishlistBooks = allBooks.filter((book) =>
+    wishlistBookIds.includes(book.id),
+  );
 
   return (
     <div className="my-reads-page space-y-12">
@@ -263,12 +271,30 @@ export default function MyReads() {
           </div>
         </div>
       </section>
-      <div>
-        <h1 className="text-3xl font-bold">My Reads</h1>
-        <p className="text-gray-500">
-          Manage your borrowed, requested and saved books.
-        </p>
-      </div>
+
+      <section>
+        <div className="flex justify-between items-center mb-6">
+          <div>
+            <h2 className="text-2xl font-bold">WishList</h2>
+            <p className="text-gray-500">
+              Books you saved for later are shown here.
+            </p>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-5 gap-6">
+          {wishlistBooks.length ? (
+            wishlistBooks.map((book) => (
+              <Link key={book.id} to={`/catalog/books/${book.id}`}>
+                <BookCard {...book} />
+              </Link>
+            ))
+          ) : (
+            <EmptyShelf message="No books added in Wishlist" />
+          )}
+        </div>
+      </section>
+
       {/* Borrowed */}
       <section>
         <div className="flex justify-between items-center mb-5">
