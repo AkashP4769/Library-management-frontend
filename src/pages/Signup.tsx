@@ -1,5 +1,5 @@
 import { useState } from "react";
-import bgImage from "../assets/Image.png";
+import bgImage from "../assets/Image.jpg";
 import InputText from "@/components/LoginInput";
 import { FaEye, FaLock, FaEyeSlash, FaEnvelope, FaUser } from "react-icons/fa";
 import { Link, useNavigate } from "react-router";
@@ -46,9 +46,9 @@ export default function SignupPage() {
   const navigate = useNavigate();
   return (
     <div className="v-screen h-screen">
-      <div className="flex flex-row h-[96vh] w-full">
+      <div className="flex flex-row h-[100vh] w-full">
         <div className="relative w-1/2 h-full">
-          <img src={bgImage} className="h-[96vh] w-full object-cover" />
+          <img src={bgImage} className="h-[100vh] w-full object-cover" />
 
           {/* Center text */}
           <div className="absolute inset-0 flex flex-col items-center justify-center text-white px-8">
@@ -122,7 +122,7 @@ export default function SignupPage() {
         </div>
       </div>
       <div>
-        <Footer />
+       
       </div>
     </div>
   );
