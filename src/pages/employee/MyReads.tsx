@@ -18,6 +18,7 @@ import {
 import type Book from "@/models/book";
 import { transformBorrowedBookToBook } from "@/api-service/books/types";
 import { useGetShelvesQuery } from "@/api-service/shelf/shelf.api";
+import { useToast } from "@/Components/ui/Toast";
 
 export default function MyReads() {
   const { data: borrowedBooksInformation = [] } =
@@ -25,6 +26,7 @@ export default function MyReads() {
   const [borrowedBooks, setBorrowedBooks] = useState<Book[]>([]);
   const [returnBorrowedBook] = useReturnBorrowedBookMutation();
   const { data: fetchshelves } = useGetShelvesQuery();
+  const { toast } = useToast();
   const requestedBooks = books.slice(2, 3);
   const { data: user } = useUserQuery();
   const [showReturnPanel, setShowReturnPanel] = useState(false);
@@ -69,7 +71,15 @@ export default function MyReads() {
     setShowReturnPanel(true);
   };
   const handleConfirmReturn = async () => {
-    if (!selectedBorrowId || !selectedShelfId) return;
+    if (!selectedBorrowId || !selectedShelfId) {
+      toast({
+        title: "Select a return shelf",
+        description:
+          "Choose where this book should be placed before returning it.",
+        variant: "error",
+      });
+      return;
+    }
 
     console.log(
       `Returning borrowId: ${selectedBorrowId} to shelfId: ${selectedShelfId}`,
@@ -77,12 +87,21 @@ export default function MyReads() {
     returnBorrowedBook({ borrowId: selectedBorrowId, shelfId: selectedShelfId })
       .unwrap()
       .then(() => {
-        alert("Book returned successfully");
+        toast({
+          title: "Book returned",
+          description: "The borrowed book was returned successfully.",
+          variant: "success",
+        });
         console.log("Book returned successfully");
       })
       .catch((error) => {
         // Handle error, e.g., show an error message
-        alert("Error returning book: " + error.message);
+        toast({
+          title: "Return failed",
+          description:
+            error?.message || "Error returning book. Please try again.",
+          variant: "error",
+        });
         console.error("Error returning book:", error);
       });
 

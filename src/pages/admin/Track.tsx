@@ -51,6 +51,22 @@ function initials(name: string): string {
     .join("");
 }
 
+function formatDate(value?: string): string {
+  console.log(value);
+  if (!value) return "Time unavailable";
+
+  const date = new Date(value);
+  console.log(date);
+  if (Number.isNaN(date.getTime())) return value;
+  return new Intl.DateTimeFormat("en", {
+    month: "short",
+    day: "numeric",
+    hour: "numeric",
+    minute: "2-digit",
+    timeZone: "Asia/Kolkata",
+  }).format(date);
+}
+
 function SkeletonRows() {
   return (
     <>
@@ -234,7 +250,7 @@ export default function Track() {
 
                       {/* Issued date */}
                       <td className="px-6 py-4 text-sm text-[#575E70] whitespace-nowrap">
-                        {row.date}
+                        {formatDate(row.date)}
                       </td>
 
                       {/* Status */}
@@ -255,7 +271,7 @@ export default function Track() {
                           isOverdue ? "text-[#B91C1C]" : "text-[#575E70]"
                         }`}
                       >
-                        {row.due_date ?? "—"}
+                        {formatDate(row.due_date) ?? "—"}
                       </td>
 
                       {/* Row actions */}

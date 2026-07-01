@@ -17,6 +17,7 @@ import { useLazyGetBookbyOpenLibraryAPIQuery } from "@/api-service/books/books.a
 import Chatbot from "@/components/chatbot/Chatbot";
 import ISBNScanner from "@/components/scanner/ISBNScanner";
 import { clearAuth } from "@/lib/auth";
+import { useToast } from "@/Components/ui/Toast";
 
 const notifications_sample = [
   {
@@ -103,7 +104,6 @@ const sidebarLinks = [
   { name: "Catalog", href: "/catalog", icon: CatalogIcon },
   { name: "Shelves", href: "/shelves", icon: ShelvesIcon },
   { name: "My Reads", href: "/my-reads", icon: SavedIcon },
-  { name: "Profile", href: "/profile", icon: ProfileIcon },
 ];
 
 const sidebarFooterLinks = [
@@ -159,6 +159,7 @@ export default function Layout() {
   const [openChatbot, setOpenChatbot] = useState(false);
   const [username, setUsername] = useState("User");
   const navigate = useNavigate();
+  const { toast } = useToast();
 
   const [fetchBook] = useLazyGetBookbyOpenLibraryAPIQuery();
   useEffect(() => {
@@ -190,17 +191,45 @@ export default function Layout() {
   }
   const handleScan = async (isbn: string) => {
     console.log(isbn);
-    const result = await fetchBook(isbn);
-    console.log(result.data);
+    try {
+      const data = await fetchBook(isbn).unwrap();
+      console.log(data);
+      setShowScanner(false);
 
-    setShowScanner(false);
+      if (data) {
+        toast({
+          title: "ISBN scanned",
+          description: `Found ${data.title || "book details"} for ISBN ${isbn}.`,
+          variant: "success",
+        });
+        return;
+      }
+
+      toast({
+        title: "No book found",
+        description: `ISBN ${isbn} did not return book details.`,
+        variant: "error",
+      });
+    } catch (error) {
+      setShowScanner(false);
+      toast({
+        title: "Scanner lookup failed",
+        description: "Please try scanning again.",
+        variant: "error",
+      });
+      console.error("Error fetching scanned ISBN:", error);
+    }
   };
 
   return (
     <div className="layout">
       <aside className="sidebar">
         <div className="sidebar-brand">
-          <img src="/src/assets/favicon.svg" alt="Lumina Library" className="sidebar-brand-icon" />
+          <img
+            src="/src/assets/favicon.svg"
+            alt="Lumina Library"
+            className="sidebar-brand-icon"
+          />
           <h2 className="sidebar-title">Luminar Library</h2>
         </div>
         <nav className="sidebar-nav">
@@ -293,7 +322,7 @@ export default function Layout() {
                 </div>
                 <div className="profile-banner-body">
                   <Link
-                    to="/profile"
+                    to="/my-reads"
                     className="profile-banner-button"
                     onClick={() => {
                       setShowProfileBanner(false);
@@ -308,11 +337,23 @@ export default function Layout() {
             {showScanner && (
               <div className="scanner-overlay">
                 <div className="scanner-modal">
-                  <h2>Scan ISBN</h2>
-
-                  <ISBNScanner onScan={handleScan} />
-
-                  <button onClick={() => setShowScanner(false)}>Close</button>
+                  <div className="scanner-modal-header">
+                    <div>
+                      <h2 className="scanner-modal-title">Scan ISBN</h2>
+                      <p className="scanner-modal-copy">Place the barcode inside the frame.</p>
+                    </div>
+                    <span className="scanner-status">
+                      <span className="scanner-status-dot" />
+                      Camera active
+                    </span>
+                  </div>
+                  <div className="scanner-body">
+                    <ISBNScanner onScan={handleScan} />
+                    <p className="scanner-hint">Hold steady while Lumina reads the ISBN.</p>
+                  </div>
+                  <div className="scanner-modal-actions">
+                    <button className="scanner-close-button" onClick={() => setShowScanner(false)}>Close</button>
+                  </div>
                 </div>
               </div>
             )}

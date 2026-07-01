@@ -23,7 +23,7 @@ export default function CatalogPage() {
 
   useEffect(() => {
     if (fetchedBooks) {
-      setBooks([...fetchedBooks, ...fetchedBooks]);
+      setBooks([...fetchedBooks]);
     }
   }, [fetchedBooks]);
 

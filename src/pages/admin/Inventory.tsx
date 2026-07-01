@@ -30,11 +30,6 @@ export default function InventoryPage() {
   const [pageState, setPageState] = useState<"inventory" | "new-book">(
     "inventory",
   );
-
-  // Raw CSV import result: books to create + isbn/shelf_id assignments.
-  // NOTE: shelfAssignments are NOT full {book, shelf, quantity} records yet —
-  // they only carry isbn/shelf_id/quantity. AddBookToShelfForm resolves
-  // them against the real Book/Shelf data it fetches internally.
   const [bulkData, setBulkData] = useState<BulkImportState | null>(null);
 
   return (
