@@ -7,6 +7,7 @@ import {
   useGetBorrowedBooksByUserQuery,
 } from "@/api-service/books/books.api";
 import { transformBorrowedBookToBook } from "@/api-service/books/types";
+import { Link } from "react-router";
 
 export default function HomePage() {
   const { data: fetchedBooks } = useGetBooksQuery();
@@ -66,7 +67,11 @@ export default function HomePage() {
           {myBooks.length === 0 ? (
             <p className="text-primary text-xl font-semibold">No books found</p>
           ) : (
-            myBooks.map((book) => <BookCard key={book.id} {...book} />)
+            myBooks.map((book) => (
+              <Link key={book.id} to={`/catalog/books/${book.id}`}>
+                <BookCard {...book} />
+              </Link>
+            ))
           )}
         </div>
       </section>
@@ -102,7 +107,9 @@ export default function HomePage() {
             <p className="text-primary text-xl font-semibold">No books found</p>
           ) : (
             exploreBooks.map((book) => (
-              <SmallBookCard key={book.id} {...book} />
+              <Link key={book.id} to={`/catalog/books/${book.id}`}>
+                <SmallBookCard {...book} />
+              </Link>
             ))
           )}
         </div>

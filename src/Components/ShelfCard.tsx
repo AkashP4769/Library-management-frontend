@@ -1,10 +1,25 @@
 import type Shelf from "@/models/shelf";
 
-export default function ShelfCard(shelf: Shelf) {
+type ShelfCardProps = Shelf & {
+  selected?: boolean;
+  onClickShelf?: (shelf: Shelf) => void;
+};
+
+export default function ShelfCard({
+  selected = false,
+  onClickShelf,
+  ...shelf
+}: ShelfCardProps) {
   return (
-    <div
+    <button
+      type="button"
       key={shelf.id}
-      className="flex items-center h-70 justify-center rounded-2xl border bg-white border-neutral-200 hover:bg-neutral-200 duration-200 large-book-card-padding"
+      onClick={() => onClickShelf?.(shelf)}
+      className={`flex items-center h-70 justify-center rounded-2xl border bg-white duration-200 large-book-card-padding text-left ${
+        selected
+          ? "border-primary ring-2 ring-primary/20"
+          : "border-neutral-200 hover:bg-neutral-200"
+      }`}
     >
       <div className="flex flex-col h-[90%] w-[90%] items-start justify-between large-book-card-padding">
         <img
@@ -19,7 +34,7 @@ export default function ShelfCard(shelf: Shelf) {
           <p className="text-tertiary">{shelf.office_location}</p>
         </div>
       </div>
-    </div>
+    </button>
   );
 }
 

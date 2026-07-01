@@ -1,12 +1,11 @@
 import BookCard, { BorrowedBookCard } from "@/Components/BookCard";
+import { Link } from "react-router";
 import "./MyReads.css";
 import { books } from "@/models/book";
 import { FaUser, FaEnvelope, FaPhoneAlt, FaEdit } from "react-icons/fa";
 import EmptyShelf from "@/Components/EmptyShelf";
 import { useEffect, useState } from "react";
 import { SmallShelfCard } from "@/Components/ShelfCard";
-import { shelves } from "@/models/shelf";
-import type Shelf from "@/models/shelf";
 import {
   useUpdateUserMutation,
   useUserQuery,
@@ -210,7 +209,7 @@ export default function MyReads() {
 
                   <input
                     type="text"
-                    defaultValue={user?.contact_number}
+                    defaultValue={user?.contact_number ?? ""}
                     name="contact_number"
                     className="w-full border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-primary"
                   />
@@ -219,6 +218,7 @@ export default function MyReads() {
 
               <div className="flex justify-end gap-3 mt-8">
                 <button
+                  type="button"
                   onClick={() => setIsEditing(false)}
                   className="px-5 py-2 rounded-lg border border-gray-300 hover:bg-gray-100"
                 >
@@ -282,10 +282,9 @@ export default function MyReads() {
         <div className="grid grid-cols-5 gap-6">
           {myBooks.length ? (
             myBooks.map((book) => (
-              <BookCard
-                key={book.id} //book.borrowid
-                {...book}
-              />
+              <Link key={book.id} to={`/catalog/books/${book.id}`}>
+                <BookCard {...book} />
+              </Link>
             ))
           ) : (
             <EmptyShelf message="No borrowed books" />
@@ -366,7 +365,11 @@ export default function MyReads() {
 
         <div className="grid grid-cols-5 gap-6">
           {requestedBooks.length ? (
-            requestedBooks.map((book) => <BookCard key={book.id} {...book} />)
+            requestedBooks.map((book) => (
+              <Link key={book.id} to={`/catalog/books/${book.id}`}>
+                <BookCard {...book} />
+              </Link>
+            ))
           ) : (
             <EmptyShelf message="No pending requests" />
           )}

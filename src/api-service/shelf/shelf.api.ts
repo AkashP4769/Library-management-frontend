@@ -1,8 +1,9 @@
 import type Shelf from "@/models/shelf";
 import libraryBaseApi from "../api"
 import { BASE_URL } from "../api";
-import { shelfResponseToShelf, type CreateShelfPayload } from "./types";
+import { shelfBookResponseToBook, shelfResponseToShelf, type CreateShelfPayload, type ShelfBookResponse } from "./types";
 import type ShelfResponse from "./types";
+import type Book from "@/models/book";
 
 
 export const shelvesApi = libraryBaseApi.injectEndpoints({
@@ -35,7 +36,18 @@ export const shelvesApi = libraryBaseApi.injectEndpoints({
         return response.map((shelfResponse) => shelfResponseToShelf(shelfResponse));
       }
     }),
+
+    getBooksByShelf: builder.query<Book[], number>({
+      query: (shelfId) => ({
+        url: BASE_URL + `/shelves/${shelfId}/books`,
+        method: "GET"
+      }),
+      providesTags: ["Books"],
+      transformResponse: (response: ShelfBookResponse[]) => {
+        return response.map((bookResponse) => shelfBookResponseToBook(bookResponse));
+      }
+    }),
   }),
 });
 
-export const { useCreateShelfMutation, useGetShelfQuery, useGetShelvesQuery } = shelvesApi;
+export const { useCreateShelfMutation, useGetShelfQuery, useGetShelvesQuery, useGetBooksByShelfQuery } = shelvesApi;
