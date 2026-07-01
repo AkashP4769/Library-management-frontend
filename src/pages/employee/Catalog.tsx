@@ -17,12 +17,12 @@ export default function CatalogPage() {
   const [books, setBooks] = useState<Book[]>([]);
   useEffect(() => {
     if (fetchedShelves) {
-      setShelves([...fetchedShelves, ...fetchedShelves]);
+      setShelves([...fetchedShelves]);
     }
   }, [fetchedBooks]);
   useEffect(() => {
     if (fetchedBooks) {
-      setBooks([...fetchedBooks, ...fetchedBooks]);
+      setBooks([...fetchedBooks]);
     }
   }, [fetchedBooks]);
 

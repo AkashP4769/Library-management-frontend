@@ -1,8 +1,5 @@
 import BookCard, { BookDetailsCard } from "@/Components/BookCard";
-import { useEffect, useState } from "react";
-import type Book from "@/models/book";
-import { books } from "@/models/book";
-import type Shelf from "@/models/shelf";
+import { useState } from "react";
 
 import { BookDetailShelfCard } from "@/Components/ShelfCard";
 import { useParams } from "react-router";
@@ -13,9 +10,6 @@ import {
   useGetBookQuery,
   useGetShelvesOfBookQuery,
 } from "@/api-service/books/books.api";
-import { useGetShelvesQuery } from "@/api-service/shelf/shelf.api";
-import type { BorrowedBook } from "@/api-service/books/types";
-
 export default function BookPage() {
   const { id } = useParams();
   const { data: book } = useGetBookQuery(parseInt(id || "-1"));
@@ -31,28 +25,14 @@ export default function BookPage() {
     },
   );
 
-  const [borrowedBooksData] = useBorrowBookMutation();
-  const [borrowedBooks, setBorrowedBooks] = useState<BorrowedBook[]>([]);
-
-  useEffect(() => {
-    if (book) {
-      borrowedBooksData({ isbn: book.isbn, shelf_id: shelves[0]?.id ?? 0 })
-        .unwrap()
-        .then((response) => {
-          const filteredBooks = borrowedBooks.filter((response) => response.status === "borrowed");
-          setBorrowedBooks(filteredBooks);
-        })
-        .catch((error) => {
-          console.error("Error borrowing book:", error);
-        });
-    }
-  }, [book, shelves, borrowedBooksData]);
+  const [borrowBook] = useBorrowBookMutation();
 
   const [selectBorrowShelf, setSelectBorrowShelf] = useState<number | null>(
     null,
   );
 
   const [borrowed, setBorrowed] = useState(false);
+  const [requested, setRequested] = useState(false);
 
   const isBookBorrowed = () => {
     setBorrowed(true);
@@ -71,6 +51,13 @@ export default function BookPage() {
         .catch((error) => {
           console.error("Error borrowing book:", error);
         });
+    }
+  }
+
+  function handleRequestBook() {
+    if (book) {
+      // Implement the logic to request the book here
+      setRequested(true);
     }
   }
 
@@ -172,34 +159,55 @@ export default function BookPage() {
             </div>
             {/* Shelf Grid */}
             <div className="flex flex-col h-70 overflow-auto gap-3 py-5 px-5">
-              {shelves.map((shelf) => (
-                <BookDetailShelfCard
-                  key={shelf.id}
-                  shelf={shelf}
-                  selected={selectBorrowShelf === shelf.id}
-                  onClickShelf={() => setSelectBorrowShelf(shelf.id)}
-                />
-              ))}
+              {shelves.length > 0 ? (
+                shelves.map((shelf) => (
+                  <BookDetailShelfCard
+                    key={shelf.id}
+                    shelf={shelf}
+                    selected={selectBorrowShelf === shelf.id}
+                    onClickShelf={() => setSelectBorrowShelf(shelf.id)}
+                  />
+                ))
+              ) : (
+                <div className="text-center text-[#575E70]">
+                  No shelves available for this book.
+                </div>
+              )}
             </div>
             {/* Footer Actions */}
             <div className="flex gap-3 pt-4 border-t border-[#D0C6AE]/70">
-              <button
-                disabled={!selectBorrowShelf || borrowed}
-                onClick={handleBorrowBook}
-                className={`flex-1 rounded-xl px-4 py-3 text-sm font-medium transition ${
-                  borrowed
-                    ? "bg-[#E7E8E9] text-[#575E70]"
-                    : selectBorrowShelf
-                      ? "bg-[#735C00] text-white hover:bg-[#5C4A00]"
-                      : "bg-[#F3F4F5] text-[#9A9A9A]"
-                }`}
-              >
-                {borrowed ? "Borrowed ✓" : "Borrow"}
-              </button>
-
-              <button className="rounded-xl border border-[#7F7662] px-4 py-3 text-sm font-medium hover:bg-[#F3F4F5]">
-                Save
-              </button>
+              {shelves.length > 0 ? (
+                <button
+                  disabled={!selectBorrowShelf || borrowed}
+                  onClick={handleBorrowBook}
+                  className={`flex-1 rounded-xl px-4 py-3 text-sm font-medium transition ${
+                    borrowed
+                      ? "bg-[#E7E8E9] text-[#575E70]"
+                      : selectBorrowShelf
+                        ? "bg-[#735C00] text-white hover:bg-[#5C4A00]"
+                        : "bg-[#F3F4F5] text-[#9A9A9A]"
+                  }`}
+                >
+                  {borrowed ? "Borrowed ✓" : "Borrow"}
+                </button>
+              ) : (
+                <>
+                  <button
+                    disabled={requested}
+                    onClick={handleRequestBook}
+                    className={`flex-1 rounded-xl px-4 py-3 text-sm font-medium transition ${
+                      requested
+                        ? "bg-[#E7E8E9] text-[#575E70]"
+                        : "bg-[#735C00] text-white hover:bg-[#5C4A00]"
+                    }`}
+                  >
+                    {requested ? "Requested ✓" : "Request to Borrow"}
+                  </button>
+                  <button className="rounded-xl border border-[#7F7662] px-4 py-3 text-sm font-medium hover:bg-[#F3F4F5]">
+                    Notify Me
+                  </button>
+                </>
+              )}
             </div>
           </div>
         </div>
