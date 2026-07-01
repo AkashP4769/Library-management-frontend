@@ -103,7 +103,6 @@ const sidebarLinks = [
   { name: "Catalog", href: "/catalog", icon: CatalogIcon },
   { name: "Shelves", href: "/shelves", icon: ShelvesIcon },
   { name: "My Reads", href: "/my-reads", icon: SavedIcon },
-  { name: "Profile", href: "/profile", icon: ProfileIcon },
 ];
 
 const sidebarFooterLinks = [
@@ -200,7 +199,11 @@ export default function Layout() {
     <div className="layout">
       <aside className="sidebar">
         <div className="sidebar-brand">
-          <img src="/src/assets/favicon.svg" alt="Lumina Library" className="sidebar-brand-icon" />
+          <img
+            src="/src/assets/favicon.svg"
+            alt="Lumina Library"
+            className="sidebar-brand-icon"
+          />
           <h2 className="sidebar-title">Luminar Library</h2>
         </div>
         <nav className="sidebar-nav">
@@ -293,7 +296,7 @@ export default function Layout() {
                 </div>
                 <div className="profile-banner-body">
                   <Link
-                    to="/profile"
+                    to="/my-reads"
                     className="profile-banner-button"
                     onClick={() => {
                       setShowProfileBanner(false);
