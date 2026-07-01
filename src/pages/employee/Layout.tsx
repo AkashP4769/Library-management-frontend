@@ -271,7 +271,9 @@ export default function Layout() {
         <header className="employee-header">
           <div>
             <h3 className="header-title">
-              LUMINA &emsp; {">"} &emsp; {selectedLink.toUpperCase()}
+              <Link to="/home" onClick={() => {
+                      setSelectedLink("Home");
+                    }}>LUMINA</Link> &emsp; {">"} &emsp; {selectedLink.toUpperCase()}
             </h3>
           </div>
 
@@ -316,8 +318,7 @@ export default function Layout() {
                     <img src={ProfileIcon} alt="Profile avatar" />
                   </div>
                   <div>
-                    <strong>Profile</strong>
-                    <p className="profile-banner-name">{username}</p>
+                    <p className="profile-banner-name">{localStorage.getItem("name")}</p>
                   </div>
                 </div>
                 <div className="profile-banner-body">
@@ -331,6 +332,7 @@ export default function Layout() {
                   >
                     Go to Profile
                   </Link>
+                  
                 </div>
               </div>
             )}
