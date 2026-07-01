@@ -4,12 +4,14 @@ import { TextAreaInput } from "@/Components/inputs/TextAreaInput";
 import { useCreateBookMutation } from "@/api-service/books/books.api";
 import type { CreateBookPayload } from "@/api-service/books/types";
 import BarcodeIcon from "@/assets/icons/Barcode.png";
-import { SuccessBanner } from "@/Components/ui/SuccessBanner";
 import ISBNScanner from "@components/scanner/ISBNScanner";
 import { useLazyGetBookbyOpenLibraryAPIQuery } from "@/api-service/books/books.api";
+import { useToast } from "@/Components/ui/Toast";
+
 export function AddBookForm() {
   const [createBook] = useCreateBookMutation();
   const [fetchBook] = useLazyGetBookbyOpenLibraryAPIQuery();
+  const { toast } = useToast();
   const [book, setBook] = useState<CreateBookPayload>({
     isbn: "",
     title: "",
@@ -21,9 +23,7 @@ export function AddBookForm() {
     image: null,
   });
 
-  const [message, setMessage] = useState("Book submission received. Check the status shortly.");
   const [preview, setPreview] = useState<string | null>(null);
-  const [showSuccessBanner, setShowSuccessBanner] = useState(false);
   const [showScanner, setshowScanner] = useState(false)
   const handleChange = (
     e: React.ChangeEvent<
@@ -64,35 +64,55 @@ export function AddBookForm() {
   };
   const handleScan = async (isbn: string) => {
     console.log(isbn);
-    const result = await fetchBook(isbn);
-    let file: File | null = null;
-    console.log(result.data);
-    setshowScanner(false);
-    if (result.data){
-      const data = result.data;
-      const cover_url =
-      data.cover_urls?.[1] ??
-      data.cover_urls?.[0] ??
-      null;
+    try {
+      const data = await fetchBook(isbn).unwrap();
+      let file: File | null = null;
+      console.log(data);
+      setshowScanner(false);
+      if (data){
+        const cover_url =
+        data.cover_urls?.[1] ??
+        data.cover_urls?.[0] ??
+        null;
 
-      if(cover_url){
-         file = await imageUrlToFile(cover_url);
-         setPreview(URL.createObjectURL(file));
+        if(cover_url){
+           file = await imageUrlToFile(cover_url);
+           setPreview(URL.createObjectURL(file));
+        }
+
+        setBook(prev => ({
+          ...prev,
+          isbn,
+          title: data.title ?? "",
+          author: data.author ?? "",
+          publisher: data.publisher ?? "",
+          language: data.language ?? "",
+          description: "",
+          image: file,
+        }));
+
+        toast({
+          title: "ISBN scanned",
+          description: "Book details were filled from Open Library.",
+          variant: "success",
+        });
+        return;
       }
-      
-  setBook(prev => ({
-    ...prev,
-    isbn,
-    title: data.title ?? "",
-    author: data.author ?? "",
-    publisher: data.publisher ?? "",
-    language: data.language ?? "",
-    description: "",
-    image: file,
-    
-  }));
+
+      toast({
+        title: "No book found",
+        description: `ISBN ${isbn} did not return book details.`,
+        variant: "error",
+      });
+    } catch (error) {
+      setshowScanner(false);
+      toast({
+        title: "Scanner lookup failed",
+        description: "Please check the ISBN or enter the details manually.",
+        variant: "error",
+      });
+      console.error("Error fetching scanned ISBN:", error);
     }
-    
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -117,18 +137,18 @@ export function AddBookForm() {
     createBook(formData as unknown as CreateBookPayload)
       .unwrap()
       .then(() => {
-        setMessage("Book submission received. Check the status shortly.");
-        setShowSuccessBanner(true);
-        setTimeout(() => {
-          setShowSuccessBanner(false);
-        }, 3000);
+        toast({
+          title: "Book created",
+          description: "Book submission received. Check the status shortly.",
+          variant: "success",
+        });
       })
       .catch((error) => {
-        setMessage("Error creating book. Please try again.");
-        setShowSuccessBanner(true);
-        setTimeout(() => {
-          setShowSuccessBanner(false);
-        }, 3000);
+        toast({
+          title: "Could not create book",
+          description: "Please review the details and try again.",
+          variant: "error",
+        });
         console.error("Error creating book:", error);
       });
 
@@ -136,14 +156,17 @@ export function AddBookForm() {
 
   return (
     <div className="w-full p-6 rounded-xl bg-white shadow-sm ">
-      <SuccessBanner message={message} isVisible={showSuccessBanner} />
       <div className="flex justify-between">
         <h2 className="mb-6 w-full text-2xl font-bold">
           Add New Book
         </h2>
-        <button className="flex items-center gap-2 rounded-lg w-48 justify-center py-2 font-medium bg-tertiary-container hover:bg-neutral-200 text-black transition hover:bg-primary-hover">
+        <button
+          type="button"
+          onClick={()=>{setshowScanner(true)}}
+          className="flex items-center gap-2 rounded-lg w-48 justify-center py-2 font-medium bg-tertiary-container hover:bg-neutral-200 text-black transition hover:bg-primary-hover"
+        >
           <img src={BarcodeIcon} alt="Barcode icon" />
-          <p onClick={()=>{setshowScanner(true)}}>Scan ISBN</p>
+          <span>Scan ISBN</span>
         </button>
       </div>
      
@@ -230,11 +253,23 @@ export function AddBookForm() {
        {showScanner && (
                     <div className="scanner-overlay">
                       <div className="scanner-modal">
-                        <h2>Scan ISBN</h2>
-      
-                        <ISBNScanner onScan={handleScan} />
-      
-                        <button onClick={() => setshowScanner(false)}>Close</button>
+                        <div className="scanner-modal-header">
+                          <div>
+                            <h2 className="scanner-modal-title">Scan ISBN</h2>
+                            <p className="scanner-modal-copy">Place the barcode inside the frame.</p>
+                          </div>
+                          <span className="scanner-status">
+                            <span className="scanner-status-dot" />
+                            Camera active
+                          </span>
+                        </div>
+                        <div className="scanner-body">
+                          <ISBNScanner onScan={handleScan} />
+                          <p className="scanner-hint">Hold steady while Lumina reads the ISBN.</p>
+                        </div>
+                        <div className="scanner-modal-actions">
+                          <button className="scanner-close-button" onClick={() => setshowScanner(false)}>Close</button>
+                        </div>
                       </div>
                     </div>
                   )}
