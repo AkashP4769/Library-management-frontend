@@ -60,7 +60,7 @@ const router = createBrowserRouter([
           { path: 'track', element: <TrackPage />},
           { path: 'inventory', element: <InventoryPage />},
           { path: 'audit', element: <AuditPage />},
-          { path: 'profile', element: <ProfilePage />},
+          { path: 'profile', element: <MyReads  />},
           { path: 'settings', element: <SettingsPage />},
         ]
       },
