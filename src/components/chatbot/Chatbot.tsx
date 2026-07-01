@@ -14,7 +14,7 @@ export default function Chatbot({ isBotOpen = () => {} }) {
     setChat("");
   };
   return (
-    <div className="absolute bottom-10 right-10  h-[450px] w-[400px] shadow-xl flex flex-col bg-transparent z-[1]">
+    <div className="absolute bottom-10 right-10  h-[450px] w-[400px] shadow-xl flex flex-col bg-transparent z-1">
       <div className="bot-header">
         <div className="bg-black bg-transparent w-9 h-9">
           <RiRobot2Line size={20} className="text-black" />

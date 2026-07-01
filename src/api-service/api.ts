@@ -59,7 +59,15 @@ const LibraryBaseApi = createApi({
   refetchOnMountOrArgChange: true,
   refetchOnReconnect: true,
   endpoints: () => ({}),
-  tagTypes: ["Library", "User"],
+  tagTypes: [
+    "Library",
+    "Books",
+    "BorrowedBooks",
+    "MyBooks",
+    "Shelves",
+    "Inventory",
+    "Admin",
+  ],
 });
 
 export default LibraryBaseApi;

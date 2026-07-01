@@ -83,7 +83,10 @@ export default function AdminLayout() {
   return (
     <div className="layout">
       <aside className="sidebar">
-        <h2 className="sidebar-title">Library Management</h2>
+        <div className="sidebar-brand">
+          <img src="/src/assets/favicon.svg" alt="Luminar Library" className="sidebar-brand-icon" />
+          <h2 className="sidebar-title">Lumina Library</h2>
+        </div>
         <nav className="sidebar-nav">
           <ul>
             {sidebarLinks.map((link) => (
