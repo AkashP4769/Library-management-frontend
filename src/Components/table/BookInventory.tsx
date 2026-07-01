@@ -95,7 +95,7 @@ export function InventoryTable({
     books,
 }: InventoryTableProps) {
     return (
-        <div className="overflow-hidden rounded-2xl  border-neutral-100 bg-white shadow-sm">
+        <div className="overflow-hidden overflow-y-auto rounded-2xl  border-neutral-100 bg-white shadow-sm">
             <div className="flex items-center justify-between border-b p-5">
                 <h2 className="text-xl font-semibold">
                     Library Inventory
