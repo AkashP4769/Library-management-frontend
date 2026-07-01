@@ -18,83 +18,126 @@ import Chatbot from "@/components/chatbot/Chatbot";
 import ISBNScanner from "@/components/scanner/ISBNScanner";
 import { clearAuth } from "@/lib/auth";
 import { useToast } from "@/Components/ui/Toast";
+import {
+  useLazyGetUsersNotificationsQuery,
+  useResolveNotificationMutation,
+} from "@/api-service/notifications/notifications.api";
+import NotificationsPanel from "@/components/NotificationPanel/NotificationPanel";
 
-const notifications_sample = [
-  {
-    id: 1,
-    receiver_id: 12,
-    sender_id: 14,
-    book_copy_id: 5,
-    message: "sample_message",
-    notification_type: "DUE_DATE_REMINDER",
-  },
-  {
-    id: 2,
-    receiver_id: 13,
-    sender_id: 14,
-    book_copy_id: 6,
-    message: "sample_message",
-    notification_type: "REQUEST_BOOK",
-  },
-  {
-    id: 3,
-    receiver_id: null,
-    sender_id: null,
-    book_copy_id: null,
-    message: "Welcome to the Library",
-    notification_type: "ADMIN_NOTIFICATION",
-  },
-  {
-    id: 4,
-    receiver_id: null,
-    sender_id: 3,
-    book_copy_id: 4,
-    message: "string",
-    notification_type: "IN_STOCK_NOTIFICATION",
-  },
-];
-
+// const userNotifications = [
+//   {
+//     id: 1,
+//     receiver_id: 12,
+//     sender_id: 14,
+//     book_copy_id: 5,
+//     message: "sample_message",
+//     notification_type: "DUE_DATE_REMINDER",
+//   },
+//   {
+//     id: 2,
+//     receiver_id: 13,
+//     sender_id: 14,
+//     book_copy_id: 6,
+//     message: "sample_message",
+//     notification_type: "REQUEST_BOOK",
+//   },
+//   {
+//     id: 3,
+//     receiver_id: null,
+//     sender_id: null,
+//     book_copy_id: null,
+//     message: "Welcome to the Library",
+//     notification_type: "ADMIN_NOTIFICATION",
+//   },
+//   {
+//     id: 4,
+//     receiver_id: null,
+//     sender_id: 3,
+//     book_copy_id: 4,
+//     message: "string",
+//     notification_type: "IN_STOCK_NOTIFICATION",
+//   },
+// ];
 function getNotificationContent(notification: {
   notification_type: string;
-  book_copy_id?: number | null;
-  sender_id?: number | null;
-  message?: string;
+  sender?: {
+    id: number;
+    name: string;
+    email: string;
+  } | null;
+  book_copy?: {
+    id: number;
+    status: string;
+    book?: {
+      id: number;
+      title: string;
+      isbn: number;
+    } | null;
+  } | null;
+  message?: string | null;
 }) {
+  const senderName = notification.sender?.name ?? "Someone";
+  const bookTitle = notification.book_copy?.book?.title ?? "a book";
+
   switch (notification.notification_type) {
     case "DUE_DATE_REMINDER":
       return {
-        title: "DUE DATE REMINDER",
-        message: `Your book ${notification.book_copy_id} is due.`,
+        title: "Due Date Reminder",
+        message: `Your borrowed copy of "${bookTitle}" is due soon. Please return or renew it on time.`,
         showActions: false,
-        viewBookPath: undefined,
+        viewBookPath: `/catalog/books/${notification.book_copy?.book?.id}`,
       };
+
     case "ADMIN_NOTIFICATION":
       return {
-        title: "Admin Notification",
-        message: notification.message || "You have a new admin notification.",
+        title: "Library Update",
+        message:
+          notification.message ||
+          "There is a new update from the library administration.",
         showActions: false,
         viewBookPath: undefined,
       };
+
     case "REQUEST_BOOK":
       return {
-        title: "Request Book",
-        message: `User ${notification.sender_id} is requesting your book ${notification.book_copy_id}`,
+        title: "Book Request",
+        message: `${senderName} has requested to borrow your copy of "${bookTitle}".`,
         showActions: true,
-        viewBookPath: undefined,
+        viewBookPath: `/catalog/books/${notification.book_copy?.book?.id}`,
       };
+
+    case "BOOK_BORROW_ACCEPTED":
+      return {
+        title: "Request Accepted",
+        message: `${senderName} accepted your request for "${bookTitle}". You can now coordinate the handoff.`,
+        showActions: false,
+        viewBookPath: `/catalog/books/${notification.book_copy?.book?.id}`,
+      };
+
+    case "BOOK_BORROW_REJECTED":
+      return {
+        title: "Request Declined",
+        message: `${senderName} declined your request for "${bookTitle}".`,
+        showActions: false,
+        viewBookPath: `/catalog/books/${notification.book_copy?.book?.id}`,
+      };
+
     case "IN_STOCK_NOTIFICATION":
       return {
-        title: "In Stock",
-        message: `Your requested book ${notification.book_copy_id} is in stock!`,
+        title: "Book Available",
+        message: `"${bookTitle}" is now back in stock and available to borrow.`,
         showActions: false,
-        viewBookPath: `/catalog/books/${notification.book_copy_id}`,
+        viewBookPath: `/catalog/books/${notification.book_copy?.book?.id}`,
       };
+
     default:
       return {
         title: "Notification",
-        message: notification.message || "You have a new notification.",
+        message:
+          notification.message ||
+          `There is an update regarding "${bookTitle}".`,
         showActions: false,
-        viewBookPath: undefined,
+        viewBookPath: `/catalog/books/${notification.book_copy?.book?.id}`,
       };
   }
 }
@@ -160,6 +203,12 @@ export default function Layout() {
   const [showProfileBanner, setShowProfileBanner] = useState(false);
   const [openChatbot, setOpenChatbot] = useState(false);
   const [username, setUsername] = useState("User");
+  const [resolveNotification, { isLoading: isResolving }] =
+    useResolveNotificationMutation();
+  const [
+    getUsersNotifications,
+    { data: userNotifications, isLoading: loadingNotifications },
+  ] = useLazyGetUsersNotificationsQuery();
   const navigate = useNavigate();
   const location = useLocation();
   const { toast } = useToast();
@@ -197,6 +246,12 @@ export default function Layout() {
     }
   }, [location.pathname]);
 
+  useEffect(() => {
+    if (localStorage.getItem("access_token")) {
+      getUsersNotifications();
+    }
+  }, [getUsersNotifications]);
+
   function handleChatbotComponent() {
     setOpenChatbot((prev) => !prev);
   }
@@ -204,6 +259,48 @@ export default function Layout() {
   function handleLogout() {
     clearAuth();
     navigate("/login", { replace: true });
+  }
+
+  function acceptRequest(notificationId: number) {
+    resolveNotification({ notificationId, status: "APPROVED" })
+      .unwrap()
+      .then(() => {
+        toast({
+          title: "Request Accepted",
+          description: "The book request has been accepted.",
+          variant: "success",
+        });
+        getUsersNotifications(); // Refresh notifications after resolving
+      })
+      .catch((error) => {
+        console.error("Error resolving notification:", error);
+        toast({
+          title: "Error",
+          description: "Failed to accept the request. Please try again.",
+          variant: "error",
+        });
+      });
+  }
+
+  function rejectRequest(notificationId: number) {
+    resolveNotification({ notificationId, status: "REJECTED" })
+      .unwrap()
+      .then(() => {
+        toast({
+          title: "Request Rejected",
+          description: "The book request has been rejected.",
+          variant: "success",
+        });
+        getUsersNotifications(); // Refresh notifications after resolving
+      })
+      .catch((error) => {
+        console.error("Error resolving notification:", error);
+        toast({
+          title: "Error",
+          description: "Failed to reject the request. Please try again.",
+          variant: "error",
+        });
+      });
   }
 
   function handleProfileToggle() {
@@ -293,10 +390,16 @@ export default function Layout() {
         <header className="employee-header">
           <div>
             <h3 className="header-title">
-              <Link to="#" onClick={(e)=>{
-                        e.preventDefault();
-                        navigate(-1);
-                    }}>LUMINA</Link>  &emsp; {">"} &emsp; {selectedLink.toUpperCase()}
+              <Link
+                to="#"
+                onClick={(e) => {
+                  e.preventDefault();
+                  navigate(-1);
+                }}
+              >
+                LUMINA
+              </Link>{" "}
+              &emsp; {">"} &emsp; {selectedLink.toUpperCase()}
             </h3>
           </div>
 
@@ -311,7 +414,7 @@ export default function Layout() {
                 <img src={Bell} alt="Bell" className="header-icon" />
               </span>
               <span className="notification-count">
-                {notifications_sample.length}
+                {userNotifications?.length}
               </span>
             </button>
             <button
@@ -341,7 +444,9 @@ export default function Layout() {
                     <img src={ProfileIcon} alt="Profile avatar" />
                   </div>
                   <div>
-                    <p className="profile-banner-name">{localStorage.getItem("name")}</p>
+                    <p className="profile-banner-name">
+                      {localStorage.getItem("name")}
+                    </p>
                   </div>
                 </div>
                 <div className="profile-banner-body">
@@ -355,7 +460,6 @@ export default function Layout() {
                   >
                     Go to Profile
                   </Link>
-                  
                 </div>
               </div>
             )}
@@ -365,7 +469,9 @@ export default function Layout() {
                   <div className="scanner-modal-header">
                     <div>
                       <h2 className="scanner-modal-title">Scan ISBN</h2>
-                      <p className="scanner-modal-copy">Place the barcode inside the frame.</p>
+                      <p className="scanner-modal-copy">
+                        Place the barcode inside the frame.
+                      </p>
                     </div>
                     <span className="scanner-status">
                       <span className="scanner-status-dot" />
@@ -374,54 +480,32 @@ export default function Layout() {
                   </div>
                   <div className="scanner-body">
                     <ISBNScanner onScan={handleScan} />
-                    <p className="scanner-hint">Hold steady while Lumina reads the ISBN.</p>
+                    <p className="scanner-hint">
+                      Hold steady while Lumina reads the ISBN.
+                    </p>
                   </div>
                   <div className="scanner-modal-actions">
-                    <button className="scanner-close-button" onClick={() => setShowScanner(false)}>Close</button>
+                    <button
+                      className="scanner-close-button"
+                      onClick={() => setShowScanner(false)}
+                    >
+                      Close
+                    </button>
                   </div>
                 </div>
               </div>
             )}
 
             {showNotifications && (
-              <div className="notification-banner">
-                <div className="notification-banner-header">
-                  <strong>Notifications</strong>
-                </div>
-                <ul>
-                  {notifications_sample.map((item) => {
-                    const content = getNotificationContent(item);
-
-                    return (
-                      <li key={item.id}>
-                        <h4>{content.title}</h4>
-                        <p>{content.message}</p>
-                        {content.showActions && (
-                          <div className="notification-action-row">
-                            <button className="notification-action-btn accept">
-                              Accept
-                            </button>
-                            <button className="notification-action-btn reject">
-                              Reject
-                            </button>
-                          </div>
-                        )}
-                        {content.viewBookPath && (
-                          <div className="notification-action-row">
-                            <Link
-                              to={content.viewBookPath}
-                              className="notification-action-btn accept"
-                              onClick={() => setShowNotifications(false)}
-                            >
-                              View Book
-                            </Link>
-                          </div>
-                        )}
-                      </li>
-                    );
-                  })}
-                </ul>
-              </div>
+              <NotificationsPanel
+                notifications={userNotifications}
+                isLoading={loadingNotifications}
+                onClose={() => setShowNotifications(false)}
+                onAccept={(id) => acceptRequest(id)}
+                onReject={(id) => rejectRequest(id)}
+                // onMarkAllRead={() => markAllRead()} // wire to your mutation
+                // onMarkOneRead={(id) => markOneRead(id)} // wire to your mutation
+              />
             )}
           </div>
         </header>
