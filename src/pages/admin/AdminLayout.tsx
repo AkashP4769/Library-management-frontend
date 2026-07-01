@@ -22,7 +22,7 @@ const sidebarLinks = [
 
 const sidebarFooterLinks = [
   { name: "Settings", href: "/settings", icon: SettingsIcon },
-  { name: "Logout", href: "/logout", icon: LogoutIcon },
+  { name: "Logout", href: "/login", icon: LogoutIcon },
 ];
 
 function SidebarLink({
