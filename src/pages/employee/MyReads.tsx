@@ -17,14 +17,16 @@ import {
 } from "@/api-service/books/books.api";
 import type Book from "@/models/book";
 import { transformBorrowedBookToBook } from "@/api-service/books/types";
+import { useGetShelvesQuery } from "@/api-service/shelf/shelf.api";
 import { useToast } from "@/Components/ui/Toast";
 
 export default function MyReads() {
-  // const borrowedBooks = books.slice(0, 2);
   const { data: borrowedBooksInformation = [] } =
     useGetBorrowedBooksByUserQuery();
   const [borrowedBooks, setBorrowedBooks] = useState<Book[]>([]);
-  const [ returnBorrowedBook ] = useReturnBorrowedBookMutation();
+  const [myBooks, setMyBooks] = useState<Book[]>([]);
+  const [returnBorrowedBook] = useReturnBorrowedBookMutation();
+  const { data: fetchshelves } = useGetShelvesQuery();
   const { toast } = useToast();
   const requestedBooks = books.slice(2, 3);
   const { data: user } = useUserQuery();
@@ -32,7 +34,6 @@ export default function MyReads() {
   const [isEditing, setIsEditing] = useState(false);
   const [selectedBorrowId, setSelectedBorrowId] = useState<number | null>(null);
   const [selectedShelfId, setSelectedShelfId] = useState<number | null>(null);
-  const [returnShelves, setReturnShelves] = useState<Shelf[]>([]);
   const [updateUser, { isLoading }] = useUpdateUserMutation();
 
   const handleSubmit = async (e: any) => {
@@ -65,15 +66,18 @@ export default function MyReads() {
     }
   }, [borrowedBooksInformation]);
 
+  useEffect(() => {
+    if (borrowedBooksInformation) {
+      console.log("Borrowed Books Information:", borrowedBooksInformation); // Debugging line to check the data
+      const filteredBooks = borrowedBooksInformation.filter(
+        (book) => book.status === "RETURNED",
+      );
+      setMyBooks(transformBorrowedBookToBook(filteredBooks));
+    }
+  }, [borrowedBooksInformation]);
+
   const handleReturnClick = async (borrowId: number) => {
     setSelectedBorrowId(borrowId);
-
-    // TODO: Fetch shelves from backend
-    // const shelves = await getReturnShelves(borrowId);
-
-    // Placeholder
-    setReturnShelves(shelves);
-
     setSelectedShelfId(null);
     setShowReturnPanel(true);
   };
@@ -81,7 +85,8 @@ export default function MyReads() {
     if (!selectedBorrowId || !selectedShelfId) {
       toast({
         title: "Select a return shelf",
-        description: "Choose where this book should be placed before returning it.",
+        description:
+          "Choose where this book should be placed before returning it.",
         variant: "error",
       });
       return;
@@ -104,7 +109,8 @@ export default function MyReads() {
         // Handle error, e.g., show an error message
         toast({
           title: "Return failed",
-          description: error?.message || "Error returning book. Please try again.",
+          description:
+            error?.message || "Error returning book. Please try again.",
           variant: "error",
         });
         console.error("Error returning book:", error);
@@ -117,6 +123,9 @@ export default function MyReads() {
 
     // Optional: refresh borrowed books list
   };
+  if (!fetchshelves) {
+    return <div>Shelf not found</div>;
+  }
 
   return (
     <div className="my-reads-page space-y-12">
@@ -231,14 +240,16 @@ export default function MyReads() {
               <p className="text-sm uppercase tracking-wide text-gray-500">
                 Books Read
               </p>
-              <h2 className="text-5xl font-bold mt-3">5</h2>
+              <h2 className="text-5xl font-bold mt-3">{myBooks.length}</h2>
             </div>
 
             <div className="bg-white rounded-2xl shadow p-6 text-center">
               <p className="text-sm uppercase tracking-wide text-gray-500">
                 Borrowed
               </p>
-              <h2 className="text-5xl font-bold mt-3">8</h2>
+              <h2 className="text-5xl font-bold mt-3">
+                {borrowedBooks.length}
+              </h2>
             </div>
 
             <div className="bg-white rounded-2xl shadow p-6 text-center">
@@ -267,8 +278,8 @@ export default function MyReads() {
         </div>
 
         <div className="grid grid-cols-5 gap-6">
-          {borrowedBooks.length ? (
-            borrowedBooks.map((book) => (
+          {myBooks.length ? (
+            myBooks.map((book) => (
               <BookCard
                 key={book.id} //book.borrowid
                 {...book}
@@ -310,7 +321,7 @@ export default function MyReads() {
             </h2>
 
             <div className="flex flex-wrap gap-3">
-              {returnShelves.map((shelf) => (
+              {fetchshelves.map((shelf) => (
                 <SmallShelfCard
                   key={shelf.id}
                   shelf={shelf}

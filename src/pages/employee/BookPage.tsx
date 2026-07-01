@@ -52,6 +52,7 @@ export default function BookPage() {
           console.error("Error borrowing book:", error);
         });
     }
+    setBorrowed(true);
   }
 
   function handleRequestBook() {
