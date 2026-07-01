@@ -125,7 +125,7 @@ export function InventoryTable({
                     <tbody>
                         {books.map((item) => (
                             <BookRow
-                                key={item.id}
+                                // key={item.id}
                                 item={item}
                             />
                         ))}
