@@ -110,7 +110,7 @@ function RatingSummary({ reviews }: { reviews: BookReview[] }) {
 
   const counts = [5, 4, 3, 2, 1].map((star) => ({
     star,
-    count: reviews.filter((r) => r.rating === star).length,
+    count: reviews.filter((r) => Math.round(r.rating) === star).length,
   }));
 
   return (
