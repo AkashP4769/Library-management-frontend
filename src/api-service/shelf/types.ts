@@ -37,6 +37,14 @@ export interface ShelfBookResponse {
     average_rating: number | null;
 }
 
+export type ShelfFilterParamsType = {
+  shelfId?: number;
+  q?: string;
+  author?: string;
+  genre?: string;
+  language?: string;
+};
+
 function imageUrlWithFallback(
     imageUrl: string | null,
     fallback: string,

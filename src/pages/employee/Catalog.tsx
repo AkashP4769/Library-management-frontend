@@ -8,9 +8,23 @@ import ShelfCard from "@/Components/ShelfCard";
 import { useGetBooksQuery } from "@/api-service/books/books.api";
 import { Link, useLocation, useNavigate } from "react-router";
 import { useGetBooksByShelfQuery, useGetShelvesQuery } from "@/api-service/shelf/shelf.api";
+import type { FilterParamsType } from "@/api-service/books/types";
+import { BookFilters } from "@/components/catalog/BookFilter";
+
+
+
+
 
 export default function CatalogPage() {
-  const { data: fetchedBooks } = useGetBooksQuery();
+  const [filterParams, setFilterParams] = useState<FilterParamsType>({
+    q: undefined,
+    author: undefined,
+    genre: undefined,
+    language: undefined,
+  });
+
+  const { data: fetchedBooks } = useGetBooksQuery(filterParams, {});
+
   const { data: fetchedShelves } = useGetShelvesQuery();
   const [shelves, setShelves] = useState<Shelf[]>(initialShelves);
   const [selectedShelfId, setSelectedShelfId] = useState<number | null>(null);
@@ -18,9 +32,15 @@ export default function CatalogPage() {
   const {
     data: shelfBooks = [],
     isFetching: isFetchingShelfBooks,
-  } = useGetBooksByShelfQuery(selectedShelfId ?? 0, {
-    skip: selectedShelfId === null,
-  });
+  } = useGetBooksByShelfQuery(
+    {
+      shelfId: selectedShelfId ?? 0,
+      ...filterParams
+    },
+    {
+      skip: selectedShelfId === null,
+    }
+  );
 
   const [books, setBooks] = useState<Book[]>([]);
   const location = useLocation();
@@ -35,7 +55,7 @@ export default function CatalogPage() {
     if (fetchedBooks) {
       setBooks([...fetchedBooks]);
     }
-  }, [fetchedBooks]);
+  }, [fetchedBooks, filterParams]);
 
   // Read shelfId from query params so other pages can link to /catalog?shelfId=...
   useEffect(() => {
@@ -56,28 +76,33 @@ export default function CatalogPage() {
     <div className="catalog-page">
       <section className="books-section">
         <div className="flex justify-between items-center">
-          <div>
-            <h2 className="text-2xl font-bold">
+          <div className="flex w-full items-center  justify-between gap-1">
+            <div>
+              <h2 className="text-2xl font-bold">
               {selectedShelf ? `${selectedShelf.shelf_code} Books` : "Explore"}
-            </h2>
-            {selectedShelf && (
-              <p className="text-sm text-tertiary">
-                Showing books available in {selectedShelf.office_location}
-              </p>
-            )}
+              </h2>
+              {selectedShelf && (
+                <p className="text-sm text-tertiary">
+                  Showing books available in {selectedShelf.office_location}
+                </p>
+              )}
+            </div>
+            <div className="flex items-center justify-end gap-4">
+              <BookFilters filterParams={filterParams} onChange={setFilterParams} />
+              {selectedShelf && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setSelectedShelfId(null);
+                    navigate('/catalog');
+                  }}
+                  className="text-primary w-40 mb-6 font-bold hover:underline cursor-pointer"
+                >
+                  SHOW ALL
+                </button>
+              )}
+            </div>
           </div>
-          {selectedShelf && (
-            <button
-              type="button"
-              onClick={() => {
-                setSelectedShelfId(null);
-                navigate('/catalog');
-              }}
-              className="text-primary font-bold hover:underline cursor-pointer"
-            >
-              SHOW ALL
-            </button>
-          )}
         </div>
         <div className="grid grid-cols-5 gap-6">
           {isFetchingShelfBooks ? (

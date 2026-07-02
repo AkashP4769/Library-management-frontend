@@ -9,12 +9,16 @@ import {
 import {
   transformBorrowedBookToBook,
   type BorrowedBook,
+  type FilterParamsType,
 } from "@/api-service/books/types";
 import { Link } from "react-router";
 
 export default function HomePage() {
-  const { data: fetchedBooks } = useGetBooksQuery();
-  const [myBooks, setMyBooks] = useState<BorrowedBook[]>([]);
+  const [filterParams, setFilterParams] = useState<FilterParamsType>({
+    q: undefined,
+  });
+  const { data: fetchedBooks } = useGetBooksQuery(filterParams, {});
+  const [myBooks, setMyBooks] = useState<Book[]>([]);
   const [exploreBooks, setExploreBooks] = useState<Book[]>([]);
   const { data: borrowedBooksInformation = [] } =
     useGetBorrowedBooksByUserQuery();

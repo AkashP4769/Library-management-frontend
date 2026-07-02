@@ -1,10 +1,10 @@
 import { useLazyGetRecentActivitiesQuery } from "@/api-service/admin/admin.api";
 import { placeholderImageUrl } from "@/api-service/books/types";
-import { useEffect, useState } from "react";
+import { Search } from "lucide-react";
+import Papa from "papaparse";
+import { useEffect, useMemo, useState } from "react";
 
-// ─── Types ────────────────────────────────────────────────────────────────────
-
-type ActivityStatus = "Issued" | "Borrowed" | "Overdue" | "Returned";
+type ActivityStatus = "ISSUED" | "BORROWED" | "OVERDUE" | "RETURNED";
 
 interface ActivityRow {
   image_url: string | null;
@@ -24,14 +24,31 @@ const RANGE_OPTIONS = [
 
 type Range = (typeof RANGE_OPTIONS)[number]["value"];
 
-const STATUS_STYLES: Record<ActivityStatus, { pill: string; dot: string }> = {
-  Issued: { pill: "bg-[#DCFCE7] text-[#15803D]", dot: "bg-[#15803D]" },
-  Borrowed: { pill: "bg-[#FEF9C3] text-[#A16207]", dot: "bg-[#A16207]" },
-  Overdue: { pill: "bg-[#FEE2E2] text-[#B91C1C]", dot: "bg-[#B91C1C]" },
-  Returned: { pill: "bg-[#E9E8E9] text-[#4D4635]", dot: "bg-[#7F7662]" },
+const STATUS_STYLES: Record<
+  ActivityStatus,
+  {
+    pill: string;
+    dot: string;
+  }
+> = {
+  ISSUED: {
+    pill: "bg-blue-50 text-blue-700",
+    dot: "bg-blue-600",
+  },
+  BORROWED: {
+    pill: "bg-amber-50 text-amber-700",
+    dot: "bg-amber-600",
+  },
+  OVERDUE: {
+    pill: "bg-red-50 text-red-700",
+    dot: "bg-red-600",
+  },
+  RETURNED: {
+    pill: "bg-emerald-50 text-emerald-700",
+    dot: "bg-emerald-600",
+  },
 };
 
-/** Deterministically map a user name to one of 5 avatar background colors. */
 const AVATAR_PALETTE = [
   "bg-[#D9DFF5]",
   "bg-[#FCD34D]",
@@ -39,6 +56,8 @@ const AVATAR_PALETTE = [
   "bg-[#FFDAD6]",
   "bg-[#DCFCE7]",
 ];
+
+const PAGE_SIZE = 8;
 
 function avatarBg(name: string): string {
   const hash = [...name].reduce((acc, ch) => acc + ch.charCodeAt(0), 0);
@@ -54,12 +73,12 @@ function initials(name: string): string {
 }
 
 function formatDate(value?: string): string {
-  console.log(value);
-  if (!value) return "Time unavailable";
+  if (!value || value === "-") return "—";
 
   const date = new Date(value);
-  console.log(date);
-  if (Number.isNaN(date.getTime())) return value;
+
+  if (Number.isNaN(date.getTime())) return "—";
+
   return new Intl.DateTimeFormat("en", {
     month: "short",
     day: "numeric",
@@ -67,6 +86,19 @@ function formatDate(value?: string): string {
     minute: "2-digit",
     timeZone: "Asia/Kolkata",
   }).format(date);
+}
+
+function StatusBadge({ status }: { status: ActivityStatus }) {
+  const style = STATUS_STYLES[status];
+
+  return (
+    <span
+      className={`inline-flex items-center gap-1 rounded-full px-3 py-1 text-sm font-medium ${style.pill}`}
+    >
+      <span className={`h-2 w-2 rounded-full ${style.dot}`} />
+      {status}
+    </span>
+  );
 }
 
 function SkeletonRows() {
@@ -77,28 +109,11 @@ function SkeletonRows() {
           key={i}
           className="border-t border-[#D0C6AE] h-[81px] animate-pulse"
         >
-          <td className="px-6 py-5">
-            <div className="flex items-center gap-4">
-              <div className="w-8 h-12 rounded bg-[#E7E8E9]" />
-              <div className="h-3 w-32 rounded bg-[#E7E8E9]" />
-            </div>
-          </td>
-          <td className="px-6 py-5">
-            <div className="flex items-center gap-2">
-              <div className="w-6 h-6 rounded-full bg-[#E7E8E9]" />
-              <div className="h-3 w-24 rounded bg-[#E7E8E9]" />
-            </div>
-          </td>
-          <td className="px-6 py-5">
-            <div className="h-3 w-20 rounded bg-[#E7E8E9]" />
-          </td>
-          <td className="px-6 py-5">
-            <div className="h-5 w-16 rounded-full bg-[#E7E8E9]" />
-          </td>
-          <td className="px-6 py-5">
-            <div className="h-3 w-20 rounded bg-[#E7E8E9]" />
-          </td>
-          <td className="px-6 py-5" />
+          {Array.from({ length: 6 }).map((_, idx) => (
+            <td key={idx} className="px-6 py-5">
+              <div className="h-4 rounded bg-[#E7E8E9]" />
+            </td>
+          ))}
         </tr>
       ))}
     </>
@@ -113,18 +128,17 @@ function EmptyState() {
           No activity found
         </p>
         <p className="text-xs text-[#575E70] mt-1">
-          Try a different date range or check back later.
+          Try another search or date range.
         </p>
       </td>
     </tr>
   );
 }
 
-const PAGE_SIZE = 10;
-
 export default function Track() {
   const [range, setRange] = useState<Range>("30d");
   const [page, setPage] = useState(1);
+  const [search, setSearch] = useState("");
 
   const [fetchActivities, { data: rows = [], isLoading, isFetching }] =
     useLazyGetRecentActivitiesQuery();
@@ -135,15 +149,52 @@ export default function Track() {
   }, [range, fetchActivities]);
 
   const loading = isLoading || isFetching;
-  const totalPages = Math.max(1, Math.ceil(rows.length / PAGE_SIZE));
-  const pageRows: ActivityRow[] = rows.slice(
-    (page - 1) * PAGE_SIZE,
-    page * PAGE_SIZE,
-  );
+
+  const filteredRows = useMemo(() => {
+    const query = search.toLowerCase().trim();
+
+    if (!query) return rows;
+
+    return rows.filter((row) =>
+      [row.title, row.user, row.status].some((field) =>
+        field.toLowerCase().includes(query),
+      ),
+    );
+  }, [rows, search]);
+
+  const totalPages = Math.ceil(filteredRows.length / PAGE_SIZE);
+
+  const startIndex = (page - 1) * PAGE_SIZE;
+  const endIndex = startIndex + PAGE_SIZE;
+
+  const pageRows = filteredRows.slice(startIndex, endIndex);
+
+  const exportCSV = () => {
+    const csv = Papa.unparse(
+      filteredRows.map((row) => ({
+        Title: row.title,
+        User: row.user,
+        Status: row.status,
+        Date: formatDate(row.date),
+        DueDate: formatDate(row.due_date),
+      })),
+    );
+
+    const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+
+    link.href = url;
+    link.download = "recent-activity.csv";
+    link.click();
+
+    URL.revokeObjectURL(url);
+  };
 
   return (
     <div className="flex flex-col gap-4 p-8 mx-auto w-full">
-      {/* Page heading */}
+      {/* Header */}
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-xl font-semibold text-[#191C1D]">
@@ -154,25 +205,26 @@ export default function Track() {
           </p>
         </div>
 
-        <button className="flex items-center gap-2 px-4 py-2 rounded-lg border border-[#D0C6AE] bg-white text-xs font-bold text-[#191C1D] hover:bg-[#F3F4F5] transition">
+        <button
+          onClick={exportCSV}
+          className="flex items-center gap-2 px-4 py-2 rounded-lg border border-[#D0C6AE] bg-white text-xs font-bold text-[#191C1D] hover:bg-[#F3F4F5]"
+        >
           ↓ Export CSV
         </button>
       </div>
 
-      {/* Card */}
       <div className="flex flex-col w-full bg-white border border-[#D0C6AE] rounded-xl overflow-hidden">
-        {/* Card header: range tabs + row count */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-[#D0C6AE] bg-[#FAFAF8]">
-          {/* Range selector */}
+        {/* Filters */}
+        <div className="flex items-center justify-between px-6 py-4 border-b border-[#D0C6AE] bg-[#FAFAF8] gap-4">
           <div className="flex items-center gap-1 p-1 bg-[#F3F4F5] rounded-lg">
             {RANGE_OPTIONS.map((opt) => (
               <button
                 key={opt.value}
                 onClick={() => setRange(opt.value)}
-                className={`px-3 py-1.5 rounded-md text-xs font-semibold tracking-[0.4px] transition ${
+                className={`px-3 py-1.5 rounded-md text-xs font-semibold ${
                   range === opt.value
-                    ? "bg-white shadow-sm text-[#191C1D] border border-[#D0C6AE]"
-                    : "text-[#575E70] hover:text-[#191C1D]"
+                    ? "bg-white border border-[#D0C6AE]"
+                    : "text-[#575E70]"
                 }`}
               >
                 {opt.label}
@@ -180,12 +232,20 @@ export default function Track() {
             ))}
           </div>
 
-          {/* Live row count */}
-          <span className="text-xs font-semibold tracking-[0.6px] text-[#575E70]">
-            {loading
-              ? "Loading…"
-              : `${rows.length} event${rows.length !== 1 ? "s" : ""}`}
-          </span>
+          {/* Search */}
+          <div className="flex items-center gap-2 rounded-lg border border-[#D0C6AE] px-3 py-2 min-w-[280px] bg-white">
+            <Search size={16} className="text-[#575E70]" />
+            <input
+              type="text"
+              placeholder="Search title, user, status..."
+              value={search}
+              onChange={(e) => {
+                setSearch(e.target.value);
+                setPage(1);
+              }}
+              className="w-full outline-none text-sm"
+            />
+          </div>
         </div>
 
         {/* Table */}
@@ -197,8 +257,8 @@ export default function Track() {
                   (h, i) => (
                     <th
                       key={i}
-                      className={`px-6 py-4 text-xs font-semibold uppercase tracking-[0.6px] text-[#4D4635] whitespace-nowrap ${
-                        i === 5 ? "text-right w-10" : "text-left"
+                      className={`px-6 py-4 text-xs font-semibold uppercase ${
+                        i === 5 ? "text-right" : "text-left"
                       }`}
                     >
                       {h}
@@ -214,76 +274,42 @@ export default function Track() {
               ) : pageRows.length === 0 ? (
                 <EmptyState />
               ) : (
-                pageRows.map((row, i) => {
-                  const style =
-                    STATUS_STYLES[row.status] ?? STATUS_STYLES["Borrowed"];
+                pageRows.map((row) => {
                   const bg = avatarBg(row.user);
-                  const init = initials(row.user);
-                  const isOverdue = row.status === "Overdue";
 
                   return (
-                    <tr
-                      key={`${row.id}-${i}`}
-                      className="border-t border-[#D0C6AE] h-[76px] hover:bg-[#FAFAF8] transition-colors group"
-                    >
-                      {/* Book */}
+                    <tr key={row.id} className="border-t border-[#D0C6AE]">
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-3">
-                          <div className="w-8 h-12 rounded bg-[#E7E8E9] shadow-sm flex-shrink-0">
-                              <img src={placeholderImageUrl(row.image_url)} alt={row.title} className="w-full h-full object-cover rounded" />
-                          </div>
-                          <span className="font-bold text-sm text-[#191C1D] leading-snug">
-                            {row.title}
-                          </span>
-                        </div>
-                      </td>
-
-                      {/* User */}
-                      <td className="px-6 py-4">
-                        <div className="flex items-center gap-2 whitespace-nowrap">
-                          <span
-                            className={`w-7 h-7 rounded-full flex-shrink-0 flex items-center justify-center text-[10px] font-bold text-[#191C1D] ${bg}`}
-                          >
-                            {init}
-                          </span>
-                          <span className="text-sm text-[#191C1D]">
-                            {row.user}
-                          </span>
-                        </div>
-                      </td>
-
-                      {/* Issued date */}
-                      <td className="px-6 py-4 text-sm text-[#575E70] whitespace-nowrap">
-                        {formatDate(row.date)}
-                      </td>
-
-                      {/* Status */}
-                      <td className="px-6 py-4">
-                        <span
-                          className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold whitespace-nowrap ${style.pill}`}
-                        >
-                          <span
-                            className={`w-1.5 h-1.5 rounded-full ${style.dot}`}
+                          <img
+                            src={placeholderImageUrl(row.image_url)}
+                            alt={row.title}
+                            className="w-8 h-12 rounded object-cover"
                           />
-                          {row.status}
-                        </span>
+                          <span className="font-semibold">{row.title}</span>
+                        </div>
                       </td>
 
-                      {/* Due date */}
-                      <td
-                        className={`px-6 py-4 text-sm whitespace-nowrap font-medium ${
-                          isOverdue ? "text-[#B91C1C]" : "text-[#575E70]"
-                        }`}
-                      >
-                        {formatDate(row.due_date) ?? "—"}
+                      <td className="px-6 py-4">
+                        <div className="flex items-center gap-2">
+                          <span
+                            className={`w-7 h-7 rounded-full flex items-center justify-center text-[10px] font-bold ${bg}`}
+                          >
+                            {initials(row.user)}
+                          </span>
+                          {row.user}
+                        </div>
                       </td>
 
-                      {/* Row actions */}
-                      <td className="px-6 py-4 text-right">
-                        <button className="opacity-0 group-hover:opacity-100 transition-opacity text-[#575E70] hover:text-[#191C1D] text-lg leading-none">
-                          ⋮
-                        </button>
+                      <td className="px-6 py-4">{formatDate(row.date)}</td>
+
+                      <td className="px-6 py-4">
+                        <StatusBadge status={row.status} />
                       </td>
+
+                      <td className="px-6 py-4">{formatDate(row.due_date)}</td>
+
+                      <td />
                     </tr>
                   );
                 })
@@ -292,85 +318,50 @@ export default function Track() {
           </table>
         </div>
 
-        {/* Footer / Pagination */}
-        <div className="flex items-center justify-between px-6 py-4 bg-[#F3F4F5] border-t border-[#D0C6AE]">
-          <span className="text-xs font-semibold tracking-[0.6px] text-[#4D4635]">
-            {rows.length === 0
-              ? "No entries"
-              : `Showing ${(page - 1) * PAGE_SIZE + 1}–${Math.min(page * PAGE_SIZE, rows.length)} of ${rows.length}`}
-          </span>
+        {/* Pagination */}
+        {filteredRows.length > 0 && (
+          <div className="flex items-center justify-between border-t border-[#D0C6AE]/40 px-6 py-4">
+            <span>
+              Showing {startIndex + 1}–{Math.min(endIndex, filteredRows.length)}{" "}
+              of {filteredRows.length} events
+            </span>
 
-          <div className="flex items-center gap-1">
-            <PaginationButton
-              label="← Prev"
-              disabled={page === 1 || loading}
-              onClick={() => setPage((p) => p - 1)}
-            />
+            <div className="flex gap-2">
+              <button
+                onClick={() => setPage((prev) => prev - 1)}
+                disabled={page === 1}
+                className="rounded-lg border px-3 py-1"
+              >
+                Prev
+              </button>
 
-            {Array.from({ length: totalPages }, (_, i) => i + 1)
-              .filter(
-                (p) => p === 1 || p === totalPages || Math.abs(p - page) <= 1,
-              )
-              .reduce<(number | "…")[]>((acc, p, idx, arr) => {
-                if (idx > 0 && p - (arr[idx - 1] as number) > 1) acc.push("…");
-                acc.push(p);
-                return acc;
-              }, [])
-              .map((p, i) =>
-                p === "…" ? (
-                  <span
-                    key={`ellipsis-${i}`}
-                    className="px-1 text-xs text-[#575E70]"
+              {Array.from({ length: totalPages }, (_, i) => i + 1).map(
+                (current) => (
+                  <button
+                    key={current}
+                    onClick={() => setPage(current)}
+                    className={`h-8 w-8 rounded-lg ${
+                      page === current
+                        ? "bg-[#191C1D] text-[#FCD34D]"
+                        : "border"
+                    }`}
                   >
-                    …
-                  </span>
-                ) : (
-                  <PaginationButton
-                    key={p}
-                    label={String(p)}
-                    active={p === page}
-                    disabled={loading}
-                    onClick={() => setPage(p as number)}
-                  />
+                    {current}
+                  </button>
                 ),
               )}
 
-            <PaginationButton
-              label="Next →"
-              disabled={page === totalPages || loading}
-              onClick={() => setPage((p) => p + 1)}
-            />
+              <button
+                onClick={() => setPage((prev) => prev + 1)}
+                disabled={page === totalPages}
+                className="rounded-lg border px-3 py-1"
+              >
+                Next
+              </button>
+            </div>
           </div>
-        </div>
+        )}
       </div>
     </div>
-  );
-}
-
-function PaginationButton({
-  label,
-  active,
-  disabled,
-  onClick,
-}: {
-  label: string;
-  active?: boolean;
-  disabled?: boolean;
-  onClick: () => void;
-}) {
-  return (
-    <button
-      onClick={onClick}
-      disabled={disabled}
-      className={`px-3 py-1 rounded text-xs font-semibold border transition min-w-[32px] ${
-        active
-          ? "bg-[#191C1D] text-white border-[#191C1D]"
-          : disabled
-            ? "border-[#D0C6AE] text-[#9A9A9A] cursor-not-allowed"
-            : "border-[#D0C6AE] text-[#191C1D] bg-white hover:bg-[#F3F4F5]"
-      }`}
-    >
-      {label}
-    </button>
   );
 }

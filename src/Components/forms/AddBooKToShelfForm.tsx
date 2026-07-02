@@ -94,7 +94,7 @@ export function BookPicker({
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent className="w-full bg-white">
+      <DialogContent className="w-[40vw] max-w-none h-[70vh] overflow-y-auto bg-white">
         <DialogHeader>
           <DialogTitle>Select Book</DialogTitle>
         </DialogHeader>
@@ -103,7 +103,7 @@ export function BookPicker({
           placeholder="Search books..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="rounded-lg border p-3"
+          className="rounded-lg border p-3 h-10 w-full"
         />
 
         <div className="max-h-[500px] space-y-3 overflow-y-auto">
@@ -144,7 +144,7 @@ export function ShelfPicker({
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent className="max-w-2xl bg-white">
+      <DialogContent className="max-w-4xl bg-white">
         <DialogHeader>
           <DialogTitle>Select Shelf</DialogTitle>
         </DialogHeader>
@@ -156,30 +156,24 @@ export function ShelfPicker({
           className="rounded-lg border p-3"
         />
 
-        <div className="max-h-[500px] space-y-3 overflow-y-auto">
-          {filtered.map((shelf) => (
-            <ShelfCard
-              key={shelf.id}
-              shelf={shelf}
-              onSelect={(shelf) => {
-                onSelect(shelf);
-                onClose();
-              }}
-            />
-          ))}
+        <div className="max-h-[500px] overflow-y-auto">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {filtered.map((shelf) => (
+              <ShelfCard
+                key={shelf.id}
+                shelf={shelf}
+                onSelect={(shelf) => {
+                  onSelect(shelf);
+                  onClose();
+                }}
+              />
+            ))}
+          </div>
         </div>
       </DialogContent>
     </Dialog>
   );
 }
-
-type Props = {
-  // Fully-resolved records, if the caller already has them (rare).
-  bookToShelfList?: BookToShelfRecord[];
-  // Raw CSV-imported assignments (isbn / shelf_id / quantity) that need to
-  // be resolved against the live Book/Shelf data fetched below.
-  initialAssignments?: BookToShelfPayload[];
-};
 
 /** Keeps only records that actually resolved to a real book + shelf. */
 function sanitizeRecords(list: unknown): BookToShelfRecord[] {
@@ -190,9 +184,16 @@ function sanitizeRecords(list: unknown): BookToShelfRecord[] {
   );
 }
 
+type Props = {
+  bookToShelfList?: BookToShelfRecord[];
+  initialAssignments?: BookToShelfPayload[];
+  onSuccess?: () => void; // add this
+};
+
 export function AddBookToShelfForm({
   bookToShelfList = [],
   initialAssignments = [],
+  onSuccess,
 }: Props) {
   const { data: inventoryBooks } = useGetBooksQuery();
   const { data: inventoryShelves } = useGetShelvesQuery();
@@ -339,14 +340,7 @@ export function AddBookToShelfForm({
           variant: "success",
         });
         setBookToShelfRecords([]);
-      })
-      .catch((error) => {
-        console.error("Error adding books to shelves:", error);
-        toast({
-          title: "Upload failed",
-          description: "Failed to add books to shelves. Please try again.",
-          variant: "error",
-        });
+        onSuccess?.();
       });
   }
 

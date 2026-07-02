@@ -18,6 +18,8 @@ import Chatbot from "@/components/chatbot/Chatbot";
 import ISBNScanner from "@/components/scanner/ISBNScanner";
 import { clearAuth } from "@/lib/auth";
 import { useToast } from "@/Components/ui/Toast";
+import {useUserQuery} from "@/api-service/user/user.api";
+import {useLazyGetBookByISBNQuery} from "@/api-service/books/books.api";
 import {
   useLazyGetUsersNotificationsQuery,
   useResolveNotificationMutation,
@@ -169,6 +171,7 @@ export default function Layout() {
   const [showProfileBanner, setShowProfileBanner] = useState(false);
   const [openChatbot, setOpenChatbot] = useState(false);
   const [username, setUsername] = useState("User");
+  const {data: userData} = useUserQuery();
   const [resolveNotification, { isLoading: isResolving }] =
     useResolveNotificationMutation();
   const [
@@ -180,13 +183,18 @@ export default function Layout() {
   const previousNotificationCount = useRef(0);
   const { toast } = useToast();
 
-  const [fetchBook] = useLazyGetBookbyOpenLibraryAPIQuery();
+  const [fetchBook] = useLazyGetBookByISBNQuery();
+   if(userData){
+        console.log("userData", userData);
+        localStorage.setItem("name", userData.name);
+      }
   useEffect(() => {
     const storedUsername =
       localStorage.getItem("username") ||
       localStorage.getItem("userName") ||
       localStorage.getItem("email") ||
       "User";
+     
 
     const displayName = storedUsername.includes("@")
       ? storedUsername.split("@")[0]
@@ -239,6 +247,7 @@ export default function Layout() {
 
   function handleLogout() {
     clearAuth();
+    localStorage.clear();
     navigate("/login", { replace: true });
   }
 
@@ -301,6 +310,7 @@ export default function Layout() {
           description: `Found ${data.title || "book details"} for ISBN ${isbn}.`,
           variant: "success",
         });
+        navigate(`/catalog/books/${data.id}`); // Navigate to the book details page
         return;
       }
 
