@@ -1,4 +1,5 @@
 import { useLazyGetRecentActivitiesQuery } from "@/api-service/admin/admin.api";
+import { placeholderImageUrl } from "@/api-service/books/types";
 import { useEffect, useState } from "react";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -6,6 +7,7 @@ import { useEffect, useState } from "react";
 type ActivityStatus = "Issued" | "Borrowed" | "Overdue" | "Returned";
 
 interface ActivityRow {
+  image_url: string | null;
   id: number;
   title: string;
   user: string;
@@ -227,7 +229,9 @@ export default function Track() {
                       {/* Book */}
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-3">
-                          <div className="w-8 h-12 rounded bg-[#E7E8E9] shadow-sm flex-shrink-0" />
+                          <div className="w-8 h-12 rounded bg-[#E7E8E9] shadow-sm flex-shrink-0">
+                              <img src={placeholderImageUrl(row.image_url)} alt={row.title} className="w-full h-full object-cover rounded" />
+                          </div>
                           <span className="font-bold text-sm text-[#191C1D] leading-snug">
                             {row.title}
                           </span>

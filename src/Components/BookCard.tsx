@@ -233,3 +233,82 @@ function BookDetailsCard(book: Book) {
   );
 }
 export { BookDetailsCard };
+interface RequestedBookCardProps {
+  request: {
+    id: number;
+    status: string;
+    book: Book;
+  };
+}
+
+function RequestedBookCard({ request }: RequestedBookCardProps) {
+  const navigate = useNavigate();
+  const { book, status } = request;
+
+  function handleClick(event: MouseEvent<HTMLDivElement>) {
+    const target = event.target as HTMLElement;
+
+    if (target.closest("button")) return;
+
+    navigate(`/catalog/books/${book.id}`);
+  }
+
+  const statusStyles: Record<string, string> = {
+    pending: "bg-yellow-100 text-yellow-700",
+    approved: "bg-green-100 text-green-700",
+    rejected: "bg-red-100 text-red-700",
+    borrowed: "bg-red-100 text-red-700",
+  };
+
+  const badgeClass =
+    statusStyles[status.toLowerCase()] ?? "bg-[#E7E8E9] text-[#575E70]";
+
+  return (
+    <div
+      key={request.id}
+      onClick={handleClick}
+      role="button"
+      tabIndex={0}
+      className="cursor-pointer flex flex-col h-120 w-full items-center rounded-2xl justify-center border-2 border-neutral-200 hover:bg-white duration-200 relative"
+    >
+      <div className="flex flex-col h-[90%] w-[90%] items-start justify-between">
+        {/* Image section */}
+        <div className="relative h-[85%] w-full">
+          <img
+            src={book.image_url}
+            alt={book.title}
+            className="w-full h-full object-cover rounded-2xl"
+          />
+
+          {/* Status badge */}
+          <span
+            className={`absolute left-3 top-3 rounded-lg px-3 py-1 text-xs font-bold shadow ${badgeClass}`}
+          >
+            {status}
+          </span>
+        </div>
+
+        {/* Info section */}
+        <div className="w-full flex justify-between items-center">
+          <div>
+            <h3 className="text-lg font-bold mt-2 text-clip line-clamp-1">
+              {book.title}
+            </h3>
+
+            <p className="text-tertiary line-clamp-1">{book.author}</p>
+
+            <p className="text-xs text-muted-foreground mt-1">
+              Requested #{request.id}
+            </p>
+          </div>
+
+          <p className="text-md text-muted-foreground">
+            {book.rating ? `⭐ ${book.rating.toFixed(1)}` : ""}
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export { RequestedBookCard };

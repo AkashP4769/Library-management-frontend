@@ -6,7 +6,11 @@ import "tailwindcss";
 import { useState } from "react";
 import Footer from "@/components/Footer";
 import { Link, useNavigate } from "react-router";
-import { useLoginMutation } from "@/api-service/login/login.api";
+import {
+  useGetUserDetailsQuery,
+  useLazyGetUserDetailsQuery,
+  useLoginMutation,
+} from "@/api-service/login/login.api";
 import { useLazyGetUsersNotificationsQuery } from "@/api-service/notifications/notifications.api";
 
 export default function LoginPage() {
@@ -15,9 +19,10 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [login] = useLoginMutation();
+  const [getUserDetails] = useLazyGetUserDetailsQuery();
   const navigate = useNavigate();
 
-  const handleLogin = async () => {
+  const handleLogin = async (loginType: "employee" | "admin") => {
     if (email.length == 0 || password.length == 0) {
       alert("Please enter valid email and password");
       return;
@@ -34,23 +39,34 @@ export default function LoginPage() {
 
       const access_token = response.access_token;
       const refresh_token = response.refresh_token;
-      const userName =
-        response?.user?.name ||
-        response?.user?.username ||
-        response?.name ||
-        response?.username ||
-        (payload.email ? payload.email.split("@")[0] : "User");
 
-      if (access_token && refresh_token) {
-        console.log(
-          "access_token & refresh token",
-          access_token && refresh_token,
+      if (!access_token || !refresh_token) {
+        alert("Login failed. Please check your credentials.");
+        return;
+      }
+
+      const role = response.role;
+      if (role !== loginType) {
+        alert(
+          `You are trying to log in as ${loginType}, but your role is ${role}. Please use the correct login.`,
         );
-        localStorage.setItem("access_token", access_token);
-        localStorage.setItem("refresh_token", refresh_token);
-        localStorage.setItem("username", userName);
-        localStorage.setItem("email", payload.email);
+        return;
+      }
+
+      localStorage.setItem("access_token", access_token);
+      localStorage.setItem("refresh_token", refresh_token);
+      localStorage.setItem("user_id", response.user_id.toString());
+      localStorage.setItem("email", response.email);
+      localStorage.setItem("name", response.name);
+      localStorage.setItem("contact_number", response.contact_number);
+      localStorage.setItem("role", response.role);
+
+      if (response.role === "admin") {
+        navigate("/admin", { replace: true });
+      } else if (response.role === "employee") {
         navigate("/", { replace: true });
+      } else {
+        alert("Invalid role. Please contact support.");
       }
     } catch (error) {
       console.error("Login failed:", error);
@@ -62,7 +78,7 @@ export default function LoginPage() {
     <div className="w-screen h-screen">
       <div className="flex flex-row">
         <div className="relative w-1/2 h-full">
-          <img src={bg_image} className="h-[100vh] w-full object-cover" />
+          <img src={bg_image} className="h-screen  w-full object-cover" />
 
           {/* Top left text */}
           <div className="absolute top-14 left-10 flex items-center gap-2 text-white">
@@ -75,10 +91,11 @@ export default function LoginPage() {
           {/* Center text */}
           <div className="absolute inset-0 flex flex-col items-center justify-center text-white px-8">
             <div className="items-left">
-              <h2 className="text-2xl text-amber-300 font-bold leading-normal text-left">
-                Preserving Knowledge, Empowering <br /> Discovery.
+              <h2 className="text-5xl text-amber-300 font-bold leading-normal text-left">
+                Preserving Knowledge,
+                <br /> Empowering Discovery.
               </h2>
-              <p className="text-lg mt-7 text-white/80 text-left">
+              <p className="text-xl mt-7 text-white text-left">
                 Welcome back to the world's most advanced library <br />{" "}
                 management ecosystem. Sign in to manage your collection <br />{" "}
                 with scholarly precision.
@@ -145,8 +162,10 @@ export default function LoginPage() {
             </div>
             <button
               type="submit"
-              className="w-full h-[50px] bg-amber-300 text-[#141b2b] rounded font-semibold"
-              onClick={() => handleLogin()}
+              className="w-full h-[50px] bg-amber-300 hover:bg-amber-400 duration-200 text-[#141b2b] rounded font-semibold"
+              onClick={() =>
+                handleLogin(role === "Admin" ? "admin" : "employee")
+              }
             >
               Log In as {role === "Admin" ? "Admin" : "Employee"} -{">"}
             </button>

@@ -1,4 +1,7 @@
-import BookCard, { BorrowedBookCard } from "@/Components/BookCard";
+import BookCard, {
+  BorrowedBookCard,
+  RequestedBookCard,
+} from "@/Components/BookCard";
 import { Link } from "react-router";
 import "./MyReads.css";
 import { books } from "@/models/book";
@@ -15,6 +18,7 @@ import {
   useGetBooksQuery,
   useGetWishlistQuery,
   useReturnBorrowedBookMutation,
+  useGetRequestedBooksByUserQuery,
 } from "@/api-service/books/books.api";
 import type Book from "@/models/book";
 import { transformBorrowedBookToBook } from "@/api-service/books/types";
@@ -33,7 +37,8 @@ export default function MyReads() {
   const { data: fetchshelves } = useGetShelvesQuery();
   const { toast } = useToast();
   const { data: userReviews = [] } = useGetUserReviewsQuery();
-  const requestedBooks = books.slice(2, 3);
+  const { data: requestedBooks, isLoading: isRequestedBooksLoading } =
+    useGetRequestedBooksByUserQuery();
   const { data: user } = useUserQuery();
   const [showReturnPanel, setShowReturnPanel] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
@@ -67,7 +72,7 @@ export default function MyReads() {
       const filteredBooks = borrowedBooksInformation.filter(
         (book) => book.status === "BORROWED",
       );
-      setBorrowedBooks(transformBorrowedBookToBook(filteredBooks));
+      setBorrowedBooks(transformBorrowedBookToBook(filteredBooks, false));
     }
   }, [borrowedBooksInformation]);
 
@@ -77,7 +82,7 @@ export default function MyReads() {
       const filteredBooks = borrowedBooksInformation.filter(
         (book) => book.status === "RETURNED",
       );
-      setMyBooks(transformBorrowedBookToBook(filteredBooks));
+      setMyBooks(transformBorrowedBookToBook(filteredBooks, true));
     }
   }, [borrowedBooksInformation]);
 
@@ -390,10 +395,18 @@ export default function MyReads() {
         </div>
 
         <div className="grid grid-cols-5 gap-6">
-          {requestedBooks.length ? (
+          {isRequestedBooksLoading ? (
+            <p>Loading requested books...</p>
+          ) : requestedBooks && requestedBooks.length ? (
             requestedBooks.map((book) => (
               <Link key={book.id} to={`/catalog/books/${book.id}`}>
-                <BookCard {...book} />
+                <RequestedBookCard
+                  request={{
+                    id: book.id,
+                    status: book.status,
+                    book: { ...book },
+                  }}
+                />
               </Link>
             ))
           ) : (

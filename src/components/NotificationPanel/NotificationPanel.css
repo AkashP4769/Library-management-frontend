@@ -31,7 +31,7 @@
 
 .notification-unread {
   background-color: rgba(252, 211, 77, 0.08);
-  border-left: 3px solid #fcd34d;
+  border-left: 3px solid #cda41f;
   cursor: pointer;
 }
 .notification-read {

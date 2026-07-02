@@ -41,4 +41,4 @@ export const loginApi = libraryBaseApi.injectEndpoints({
   }),
 });
 
-export const { useLoginMutation, useSignupMutation, useGetUserDetailsQuery } = loginApi;
+export const { useLoginMutation, useSignupMutation, useGetUserDetailsQuery, useLazyGetUserDetailsQuery } = loginApi;

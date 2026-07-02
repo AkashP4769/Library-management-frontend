@@ -16,6 +16,11 @@ export default interface Book {
   updatedAt: string;
 }
 
+export interface BorrowedBook extends Book {
+  book_id: number;
+  status: string;
+}
+
 export const books = [
   {
     id: 1,
@@ -26,7 +31,8 @@ export const books = [
     publisher: "Scribner",
     language: "English",
     description: "A classic American novel set in the Jazz Age.",
-    image_url: "http://localhost:8000/uploads/8a7d397e-9725-43f4-ab24-4eca644dcbf9.webp",
+    image_url:
+      "http://localhost:8000/uploads/8a7d397e-9725-43f4-ab24-4eca644dcbf9.webp",
     rating: 4.5,
     createdAt: "2023-01-01T00:00:00Z",
     updatedAt: "2023-01-01T00:00:00Z",
@@ -40,7 +46,8 @@ export const books = [
     publisher: "J.B. Lippincott & Co.",
     language: "English",
     description: "A gripping tale of racial injustice and childhood innocence.",
-    image_url: "http://localhost:8000/uploads/a13083a8-9e0d-4472-b32c-1d0a1e85e133.jpg",
+    image_url:
+      "http://localhost:8000/uploads/a13083a8-9e0d-4472-b32c-1d0a1e85e133.jpg",
     rating: 4.8,
     createdAt: "2023-01-01T00:00:00Z",
     updatedAt: "2023-01-01T00:00:00Z",

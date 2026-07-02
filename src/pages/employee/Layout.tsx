@@ -11,7 +11,7 @@ import Bell from "@assets/icons/Bell.png";
 import BarcodeIcon from "@assets/icons/Barcode.png";
 import SettingsIcon from "@assets/icons/sidebar_setting.svg";
 import LogoutIcon from "@assets/icons/sidebar_logout.svg";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { MouseEvent } from "react";
 import { useLazyGetBookbyOpenLibraryAPIQuery } from "@/api-service/books/books.api";
 import Chatbot from "@/components/chatbot/Chatbot";
@@ -25,40 +25,6 @@ import {
 } from "@/api-service/notifications/notifications.api";
 import NotificationsPanel from "@/components/NotificationPanel/NotificationPanel";
 
-// const userNotifications = [
-//   {
-//     id: 1,
-//     receiver_id: 12,
-//     sender_id: 14,
-//     book_copy_id: 5,
-//     message: "sample_message",
-//     notification_type: "DUE_DATE_REMINDER",
-//   },
-//   {
-//     id: 2,
-//     receiver_id: 13,
-//     sender_id: 14,
-//     book_copy_id: 6,
-//     message: "sample_message",
-//     notification_type: "REQUEST_BOOK",
-//   },
-//   {
-//     id: 3,
-//     receiver_id: null,
-//     sender_id: null,
-//     book_copy_id: null,
-//     message: "Welcome to the Library",
-//     notification_type: "ADMIN_NOTIFICATION",
-//   },
-//   {
-//     id: 4,
-//     receiver_id: null,
-//     sender_id: 3,
-//     book_copy_id: 4,
-//     message: "string",
-//     notification_type: "IN_STOCK_NOTIFICATION",
-//   },
-// ];
 function getNotificationContent(notification: {
   notification_type: string;
   sender?: {
@@ -213,6 +179,7 @@ export default function Layout() {
   ] = useLazyGetUsersNotificationsQuery();
   const navigate = useNavigate();
   const location = useLocation();
+  const previousNotificationCount = useRef(0);
   const { toast } = useToast();
 
   const [fetchBook] = useLazyGetBookbyOpenLibraryAPIQuery();
@@ -256,6 +223,20 @@ export default function Layout() {
   useEffect(() => {
     if (localStorage.getItem("access_token")) {
       getUsersNotifications();
+      if (!userNotifications) return;
+
+      const currentCount = userNotifications.length;
+      const previousCount = previousNotificationCount.current;
+
+      if (currentCount > previousCount && previousCount !== 0) {
+        const newCount = currentCount - previousCount;
+
+        toast({
+          title: "New Notification",
+          description: `You have ${newCount} new notification(s).`,
+          variant: "info",
+        });
+      }
     }
   }, [getUsersNotifications]);
 
@@ -345,6 +326,14 @@ export default function Layout() {
       });
       console.error("Error fetching scanned ISBN:", error);
     }
+  };
+
+  const handleMarkOneRead = (notificationId: number) => {
+    resolveNotification({ notificationId, status: "SEEN" })
+      .unwrap()
+      .then(() => {
+        getUsersNotifications();
+      });
   };
 
   return (
@@ -511,8 +500,8 @@ export default function Layout() {
                 onClose={() => setShowNotifications(false)}
                 onAccept={(id) => acceptRequest(id)}
                 onReject={(id) => rejectRequest(id)}
-                // onMarkAllRead={() => markAllRead()} // wire to your mutation
-                // onMarkOneRead={(id) => markOneRead(id)} // wire to your mutation
+                onMarkOneRead={(id) => handleMarkOneRead(id)}
+                // onMarkAllRead={() => markAllRead()}
               />
             )}
           </div>

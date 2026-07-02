@@ -14,6 +14,7 @@ export type CirculationTrend = {
 
 export type RecentActivity = {
   id: number;
+  image_url: string | null;
   title: string;
   user: string;
   date: string;

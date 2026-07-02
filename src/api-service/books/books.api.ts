@@ -2,9 +2,21 @@ import type Shelf from "@/models/shelf";
 import libraryBaseApi from "../api";
 import { BASE_URL } from "../api";
 import type BookResponse from "./types";
-import type { BookToShelfPayload, BorrowBookPayload, BorrowedBook, CreateBookPayload, InventoryBookItem } from "./types";
+import type {
+  BookToShelfPayload,
+  BorrowBookPayload,
+  BorrowedBook,
+  CreateBookPayload,
+  InventoryBookItem,
+  RequestedBook,
+} from "./types";
 import type { BookAPIResponse } from "./types";
-import { bookResponseToBook, responseToInventoryBookItem, transformBorrowedBookResponse } from "./types";
+import {
+  bookResponseToBook,
+  responseToInventoryBookItem,
+  transformBorrowedBookResponse,
+  transformRequestedBookResponse,
+} from "./types";
 import type { BorrowedBookResponse } from "./types";
 import type Book from "@/models/book";
 import type ShelfResponse from "../shelf/types";
@@ -69,6 +81,16 @@ export const booksApi = libraryBaseApi.injectEndpoints({
       }),
       invalidatesTags: ["Books"],
     }),
+    getRequestedBooksByUser: builder.query<RequestedBook[], void>({
+      query: () => ({
+        url: BASE_URL + `/books/requests`,
+        method: "GET",
+      }),
+      providesTags: ["RequestedBooks", "Books"],
+      transformResponse: (response: RequestedBook[]) => {
+        return transformRequestedBookResponse(response);
+      },
+    }),
 
     getBook: builder.query<Book, number>({
       query: (id) => ({
@@ -117,9 +139,11 @@ export const booksApi = libraryBaseApi.injectEndpoints({
         method: "GET",
       }),
       providesTags: ["Books"],
-      transformResponse: (response: {inventory: [], total: number}) => {
-        return response.inventory.map((item) => responseToInventoryBookItem(item));
-      }
+      transformResponse: (response: { inventory: []; total: number }) => {
+        return response.inventory.map((item) =>
+          responseToInventoryBookItem(item),
+        );
+      },
     }),
 
     getBookByGenre: builder.query<Book[], { genre: String; id: Number }>({
@@ -153,22 +177,25 @@ export const booksApi = libraryBaseApi.injectEndpoints({
         body: payload,
       }),
       invalidatesTags: ["BorrowedBooks", "Books"],
-      
     }),
 
     getBorrowedBooksByUser: builder.query<BorrowedBook[], void>({
       query: () => ({
-        url: BASE_URL + `/borrowed-books/details-by-user`,  
+        url: BASE_URL + `/borrowed-books/details-by-user`,
         method: "GET",
       }),
       providesTags: ["BorrowedBooks", "Books"],
       transformResponse: (response: { borrowed_books: BorrowedBook[] }) => {
-        return response.borrowed_books.map((bookResponse) => transformBorrowedBookResponse(bookResponse));
+        return response.borrowed_books.map((bookResponse) =>
+          transformBorrowedBookResponse(bookResponse),
+        );
       },
-
     }),
 
-    returnBorrowedBook: builder.mutation<void, { borrowId: number; shelfId: number }>({
+    returnBorrowedBook: builder.mutation<
+      void,
+      { borrowId: number; shelfId: number }
+    >({
       query: ({ borrowId, shelfId }) => ({
         url: BASE_URL + `/borrowed-books/${borrowId}/return/${shelfId}`,
         method: "POST",
@@ -182,7 +209,8 @@ export const booksApi = libraryBaseApi.injectEndpoints({
         method: "GET",
       }),
       providesTags: ["Wishlist"],
-      transformResponse: (response: unknown) => transformWishlistResponse(response),
+      transformResponse: (response: unknown) =>
+        transformWishlistResponse(response),
     }),
 
     addToWishlist: builder.mutation<void, number>({
@@ -204,9 +232,20 @@ export const booksApi = libraryBaseApi.injectEndpoints({
   }),
 });
 
-export const { useCreateBookMutation, useGetBookQuery, useGetBooksQuery, useAddBookToShelfMutation, 
-  useLazyGetBookbyOpenLibraryAPIQuery, 
-  useGetInventoryBooksQuery, useGetBookByGenreQuery, useGetShelvesOfBookQuery, 
-  useBorrowBookMutation, useGetBorrowedBooksByUserQuery, useReturnBorrowedBookMutation,
-  useGetWishlistQuery, useAddToWishlistMutation, useRemoveFromWishlistMutation,
+export const {
+  useCreateBookMutation,
+  useGetBookQuery,
+  useGetBooksQuery,
+  useAddBookToShelfMutation,
+  useLazyGetBookbyOpenLibraryAPIQuery,
+  useGetInventoryBooksQuery,
+  useGetBookByGenreQuery,
+  useGetShelvesOfBookQuery,
+  useBorrowBookMutation,
+  useGetBorrowedBooksByUserQuery,
+  useReturnBorrowedBookMutation,
+  useGetRequestedBooksByUserQuery,
+  useGetWishlistQuery,
+  useAddToWishlistMutation,
+  useRemoveFromWishlistMutation,
 } = booksApi;
