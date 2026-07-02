@@ -114,7 +114,7 @@ export const booksApi = libraryBaseApi.injectEndpoints({
         return response;
       },
     }),
-    getBookByISBN:builder.query({
+    getBookByISBN: builder.query({
       query: (isbn) => ({
         url: BASE_URL + `/books/isbn/${isbn}`,
         method: "GET",
@@ -123,9 +123,8 @@ export const booksApi = libraryBaseApi.injectEndpoints({
         return response;
       },
     }),
-  
 
-    getBooks: builder.query<Book[], FilterParamsType>({
+    getBooks: builder.query<Book[], FilterParamsType | void>({
       query: ({ q, author, genre, language }) => ({
         url: BASE_URL + "/books",
         method: "GET",

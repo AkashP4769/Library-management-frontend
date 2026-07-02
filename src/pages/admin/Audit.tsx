@@ -25,6 +25,7 @@ const ACTION_OPTIONS = [
   { label: "Create", value: "create" },
   { label: "Update", value: "update" },
   { label: "Return", value: "return" },
+  { label: "Delete", value: "delete" },
 ] as const;
 
 type Range = (typeof RANGE_OPTIONS)[number]["value"];
@@ -37,7 +38,7 @@ type NormalizedAuditLog = {
   entity: string;
   target: string;
   status: string;
-  severity: "success" | "warning" | "failed" | "neutral";
+  severity: "success" | "warning" | "failed" | "deleted" | "neutral";
   time: string;
   createdAt: string;
   details: string;
@@ -67,6 +68,13 @@ function getSeverity(log: AuditLogItem): NormalizedAuditLog["severity"] {
   const source =
     `${log.status ?? ""} ${log.severity ?? ""} ${log.action_type ?? ""}`.toLowerCase();
 
+  if (
+    source.includes("delete") ||
+    source.includes("removed") ||
+    source.includes("archive")
+  ) {
+    return "deleted";
+  }
   if (source.includes("fail") || source.includes("error")) return "failed";
   if (source.includes("warn") || source.includes("overdue")) return "warning";
   if (
@@ -101,7 +109,6 @@ function normalizeLog(log: AuditLogItem, index: number): NormalizedAuditLog {
   const action = log.action_type ?? log.action ?? log.event;
   const actor = log.actor ?? log.user;
   const status = log.status ?? log.severity;
-  console.log(log);
   const detailsFromMetadata =
     typeof log.metadata?.details === "string" ? log.metadata.details : "";
   const oldStatus =
@@ -114,9 +121,8 @@ function normalizeLog(log: AuditLogItem, index: number): NormalizedAuditLog {
       : "";
 
   return {
-    
     id: String(log.id ?? `${action ?? "audit"}-${index}`),
-    actor: actor || ` ${log.actor_user_name ?? "System"}`,
+    actor: actor || log.actor_user_name || "System",
     action: toSentence(action),
     entity: log.entity_type
       ? toSentence(log.entity_type)
@@ -125,7 +131,12 @@ function normalizeLog(log: AuditLogItem, index: number): NormalizedAuditLog {
         : "Record",
     target:
       log.target || (log.actor_user_name ? `ID ${log.entity_id}` : "Library system"),
-    status: status ? toSentence(status) : "Recorded",
+    status:
+      getSeverity(log) === "deleted"
+        ? "Record"
+        : status
+          ? toSentence(status)
+          : "Recorded",
     severity: getSeverity(log),
     time: formatAuditTime(log.created_at ?? log.timestamp ?? log.date),
     createdAt: log.created_at ?? log.timestamp ?? log.date ?? "",
@@ -221,7 +232,7 @@ export default function AuditPage() {
     useLazyGetAuditLogsQuery();
 
   useEffect(() => {
-    fetchAuditLogs({ range });
+    fetchAuditLogs({ range, status: "all" });
   }, [fetchAuditLogs, range]);
 
   const normalizedLogs = useMemo(
@@ -241,7 +252,7 @@ export default function AuditPage() {
   );
 
   const successCount = normalizedLogs.filter(
-    (log) => log.severity === "success",
+    (log) => log.severity === "success" || log.severity === "deleted",
   ).length;
   const warningCount = normalizedLogs.filter(
     (log) => log.severity === "warning",
@@ -262,7 +273,7 @@ export default function AuditPage() {
 
         <button
           className="audit-refresh-button"
-          onClick={() => fetchAuditLogs({ range })}
+          onClick={() => fetchAuditLogs({ range, status: "all" })}
           disabled={loading}
           type="button"
         >

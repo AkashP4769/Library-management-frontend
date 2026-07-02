@@ -42,7 +42,7 @@ export const adminApi = libraryBaseApi.injectEndpoints({
         method: "GET",
         params: {
           range,
-          ...(status && status !== "all" ? { status } : {}),
+          ...(status ? { status } : {}),
           ...(search ? { search } : {}),
         },
       }),

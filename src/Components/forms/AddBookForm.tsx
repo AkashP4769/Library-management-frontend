@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { TextInput } from '@/Components/inputs/TextInput';
+import { TextInput } from "@/Components/inputs/TextInput";
 import { TextAreaInput } from "@/Components/inputs/TextAreaInput";
 import { useCreateBookMutation } from "@/api-service/books/books.api";
 import type { CreateBookPayload } from "@/api-service/books/types";
@@ -7,81 +7,80 @@ import BarcodeIcon from "@/assets/icons/Barcode.png";
 import ISBNScanner from "@components/scanner/ISBNScanner";
 import { useLazyGetBookbyOpenLibraryAPIQuery } from "@/api-service/books/books.api";
 import { useToast } from "@/Components/ui/Toast";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
-export function AddBookForm() {
-  const [createBook] = useCreateBookMutation();
-  const [fetchBook] = useLazyGetBookbyOpenLibraryAPIQuery();
+const EMPTY_BOOK: CreateBookPayload = {
+  isbn: "",
+  title: "",
+  author: "",
+  genre: "",
+  publisher: "",
+  language: "",
+  description: "",
+  image: null,
+};
+
+type Props = {
+  onSuccess?: () => void;
+};
+
+async function imageUrlToFile(url: string) {
+  const response = await fetch(url);
+  const blob = await response.blob();
+  return new File([blob], "cover.jpg", { type: blob.type });
+}
+
+export function AddBookForm({ onSuccess }: Props) {
+  const [createBook, { isLoading: isCreating }] = useCreateBookMutation();
+  const [fetchBook, { isFetching: isLookingUp }] =
+    useLazyGetBookbyOpenLibraryAPIQuery();
   const { toast } = useToast();
-  const [book, setBook] = useState<CreateBookPayload>({
-    isbn: "",
-    title: "",
-    author: "",
-    genre: "",
-    publisher: "",
-    language: "",
-    description: "",
-    image: null,
-  });
 
+  const [book, setBook] = useState<CreateBookPayload>(EMPTY_BOOK);
   const [preview, setPreview] = useState<string | null>(null);
-  const [showScanner, setshowScanner] = useState(false)
+  const [showScanner, setShowScanner] = useState(false);
+
   const handleChange = (
-    e: React.ChangeEvent<
-      HTMLInputElement | HTMLTextAreaElement
-    >
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
   ) => {
     const { name, value } = e.target;
-
-    setBook((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+    setBook((prev) => ({ ...prev, [name]: value }));
   };
-  async function imageUrlToFile(url: string) {
-    const response = await fetch(url);
 
-    const blob = await response.blob();
-
-    return new File(
-        [blob],
-        "cover.jpg",
-        { type: blob.type }
-    );
-}
-  const handleImageChange = (
-      e: React.ChangeEvent<HTMLInputElement>
-  ) => {
-      const file = e.target.files?.[0];
-
-      if (!file) return;
-
-      setBook((prev) => ({
-          ...prev,
-          image: file,
-      }));
-
-      setPreview(URL.createObjectURL(file));
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setBook((prev) => ({ ...prev, image: file }));
+    setPreview(URL.createObjectURL(file));
   };
+
+  const resetForm = () => {
+    setBook(EMPTY_BOOK);
+    setPreview(null);
+  };
+
   const handleScan = async (isbn: string) => {
     console.log(isbn);
-    setshowScanner(false);
+    setShowScanner(false);
     try {
       const data = await fetchBook(isbn).unwrap();
       let file: File | null = null;
       console.log(data);
-      
-      if (data){
-        const cover_url =
-        data.cover_urls?.[1] ??
-        data.cover_urls?.[0] ??
-        null;
 
-        if(cover_url){
-           file = await imageUrlToFile(cover_url);
-           setPreview(URL.createObjectURL(file));
+      if (data) {
+        const cover_url = data.cover_urls?.[1] ?? data.cover_urls?.[0] ?? null;
+
+        if (cover_url) {
+          file = await imageUrlToFile(cover_url);
+          setPreview(URL.createObjectURL(file));
         }
 
-        setBook(prev => ({
+        setBook((prev) => ({
           ...prev,
           isbn,
           title: data.title ?? "",
@@ -106,7 +105,7 @@ export function AddBookForm() {
         variant: "error",
       });
     } catch (error) {
-      setshowScanner(false);
+      setShowScanner(false);
       toast({
         title: "Scanner lookup failed",
         description: "Please check the ISBN or enter the details manually.",
@@ -120,7 +119,6 @@ export function AddBookForm() {
     e.preventDefault();
 
     const formData = new FormData();
-
     formData.append("isbn", book.isbn);
     formData.append("title", book.title);
     formData.append("author", book.author);
@@ -128,21 +126,18 @@ export function AddBookForm() {
     formData.append("publisher", book.publisher);
     formData.append("language", book.language);
     formData.append("description", book.description);
-
-    if (book.image) {
-        formData.append("image", book.image);
-    }
-
-    console.log(book);
+    if (book.image) formData.append("image", book.image);
 
     createBook(formData as unknown as CreateBookPayload)
       .unwrap()
       .then(() => {
         toast({
           title: "Book created",
-          description: "Book submission received. Check the status shortly.",
+          description: `"${book.title}" was added to the library.`,
           variant: "success",
         });
+        resetForm();
+        onSuccess?.();
       })
       .catch((error) => {
         toast({
@@ -152,29 +147,22 @@ export function AddBookForm() {
         });
         console.error("Error creating book:", error);
       });
-
   };
 
   return (
-    <div className="w-full p-6 rounded-xl bg-white shadow-sm ">
-      <div className="flex justify-between">
-        <h2 className="mb-6 w-full text-2xl font-bold">
-          Add New Book
-        </h2>
+    <>
+      <div className="flex justify-end">
         <button
           type="button"
-          onClick={()=>{setshowScanner(true)}}
-          className="flex items-center gap-2 rounded-lg w-48 justify-center py-2 font-medium bg-tertiary-container hover:bg-neutral-200 text-black transition hover:bg-primary-hover"
+          onClick={() => setShowScanner(true)}
+          className="flex w-48 items-center justify-center gap-2 rounded-lg bg-tertiary-container py-2 font-medium text-black transition hover:bg-tertiary-hover"
         >
-          <img src={BarcodeIcon} alt="Barcode icon" />
+          <img src={BarcodeIcon} alt="" className="h-5 w-5" />
           <span>Scan ISBN</span>
         </button>
       </div>
-     
-      <form
-        onSubmit={handleSubmit}
-        className="space-y-5 w-full self-center"
-      >
+
+      <form onSubmit={handleSubmit} className="w-full space-y-5 self-center">
         <div className="grid gap-5 md:grid-cols-3">
           <TextInput
             label="ISBN"
@@ -183,7 +171,6 @@ export function AddBookForm() {
             onChange={handleChange}
             required
           />
-
           <TextInput
             label="Title"
             name="title"
@@ -191,7 +178,6 @@ export function AddBookForm() {
             onChange={handleChange}
             required
           />
-
           <TextInput
             label="Author"
             name="author"
@@ -199,21 +185,18 @@ export function AddBookForm() {
             onChange={handleChange}
             required
           />
-
           <TextInput
             label="Genre"
             name="genre"
             value={book.genre}
             onChange={handleChange}
           />
-
           <TextInput
             label="Publisher"
             name="publisher"
             value={book.publisher}
             onChange={handleChange}
           />
-
           <TextInput
             label="Language"
             name="language"
@@ -222,7 +205,7 @@ export function AddBookForm() {
           />
         </div>
 
-        <div className="grid h-80 grid-cols-2 gap-5 items-stretch">
+        <div className="grid grid-cols-2 gap-5">
           <TextAreaInput
             label="Description"
             name="description"
@@ -230,87 +213,92 @@ export function AddBookForm() {
             rows={6}
             onChange={handleChange}
           />
-
-          <BookImagePreview preview={preview} handleImageChange={handleImageChange} />
+          <BookImagePreview
+            preview={preview}
+            handleImageChange={handleImageChange}
+          />
         </div>
 
-        <div className="flex justify-end">
+        <div className="flex justify-end border-t border-[#D0C6AE]/40 pt-4">
           <button
             type="submit"
-            className="
-              rounded-lg bg-primary-container
-              hover:bg-amber-400
-              duration-200
-              px-6 py-2
-              font-medium text-black
-              transition
-              hover:bg-primary-hover
-            "
+            disabled={isCreating}
+            className="rounded-lg bg-primary-container px-6 py-2 font-medium text-black transition hover:bg-primary-hover disabled:cursor-not-allowed disabled:opacity-60"
           >
-            Create Book
+            {isCreating ? "Creating…" : "Create Book"}
           </button>
         </div>
       </form>
-       {showScanner && (
-                    <div className="scanner-overlay">
-                      <div className="scanner-modal">
-                        <div className="scanner-modal-header">
-                          <div>
-                            <h2 className="scanner-modal-title">Scan ISBN</h2>
-                            <p className="scanner-modal-copy">Place the barcode inside the frame.</p>
-                          </div>
-                          <span className="scanner-status">
-                            <span className="scanner-status-dot" />
-                            Camera active
-                          </span>
-                        </div>
-                        <div className="scanner-body">
-                          <ISBNScanner onScan={handleScan} />
-                          <p className="scanner-hint">Hold steady while Lumina reads the ISBN.</p>
-                        </div>
-                        <div className="scanner-modal-actions">
-                          <button className="scanner-close-button" onClick={() => setshowScanner(false)}>Close</button>
-                        </div>
-                      </div>
-                    </div>
-                  )}
-    </div>
+
+      <Dialog open={showScanner} onOpenChange={setShowScanner}>
+        <DialogContent className="max-w-md bg-white">
+          <DialogHeader>
+            <div className="flex items-center justify-between">
+              <div>
+                <DialogTitle>Scan ISBN</DialogTitle>
+                <p className="text-sm text-[#575E70]">
+                  Place the barcode inside the frame.
+                </p>
+              </div>
+              <span className="flex items-center gap-1.5 rounded-full bg-emerald-50 px-2.5 py-1 text-xs font-medium text-emerald-700">
+                <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
+                Camera active
+              </span>
+            </div>
+          </DialogHeader>
+
+          <div className="space-y-3">
+            <ISBNScanner onScan={handleScan} />
+            <p className="text-center text-sm text-[#575E70]">
+              {isLookingUp
+                ? "Looking up ISBN…"
+                : "Hold steady while the camera reads the barcode."}
+            </p>
+          </div>
+        </DialogContent>
+      </Dialog>
+    </>
   );
 }
 
-function BookImagePreview({ preview, handleImageChange }: { preview: string | null; handleImageChange: (e: React.ChangeEvent<HTMLInputElement>) => void }) {
+function BookImagePreview({
+  preview,
+  handleImageChange,
+}: {
+  preview: string | null;
+  handleImageChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+}) {
   return (
-    <div className="flex flex-col h-full gap-2">
-      <label className="text-sm ml-2 font-medium">
-          Book Cover
+    <div className="flex flex-col gap-2">
+      <label className="ml-1 text-sm font-medium text-[#191C1D]">
+        Book Cover
       </label>
 
-      <div className="flex flex-1 items-center justify-start gap-6 rounded-lg  border-neutral-300">
-          <div className="h-full w-40 overflow-hidden rounded-lg border bg-gray-100">
-              {preview ? (
-                  <img
-                      src={preview}
-                      alt="Preview"
-                      className="h-full w-full object-cover"
-                  />
-              ) : (
-                  <div className="flex h-full items-center justify-center text-sm text-gray-400">
-                      No Image
-                  </div>
-              )}
-          </div>
+      <div className="flex flex-1 items-center gap-6 rounded-lg">
+        <div className="h-40 w-32 overflow-hidden rounded-lg border border-[#D0C6AE]/50 bg-neutral-50">
+          {preview ? (
+            <img
+              src={preview}
+              alt="Preview"
+              className="h-full w-full object-cover"
+            />
+          ) : (
+            <div className="flex h-full items-center justify-center text-sm text-neutral-400">
+              No image
+            </div>
+          )}
+        </div>
 
-          <label className="cursor-pointer rounded-lg border px-4 py-2 hover:bg-gray-50">
-              Select Image
-
-              <input
-                  type="file"
-                  accept="image/*"
-                  className="hidden"
-                  onChange={handleImageChange}
-              />
-          </label>
+        <label className="cursor-pointer rounded-lg border border-[#D0C6AE] px-4 py-2 text-sm font-medium text-[#191C1D] transition hover:bg-[#D0C6AE]/20">
+          Select image
+          <input
+            type="file"
+            accept="image/*"
+            className="hidden"
+            onChange={handleImageChange}
+          />
+        </label>
       </div>
-  </div>
-  )
+    </div>
+  );
 }

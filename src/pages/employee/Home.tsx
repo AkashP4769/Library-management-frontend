@@ -13,12 +13,9 @@ import {
 } from "@/api-service/books/types";
 import { Link } from "react-router";
 
-
-
 export default function HomePage() {
   const [filterParams, setFilterParams] = useState<FilterParamsType>({
     q: undefined,
-
   });
   const { data: fetchedBooks } = useGetBooksQuery(filterParams, {});
   const [myBooks, setMyBooks] = useState<Book[]>([]);
@@ -75,11 +72,11 @@ export default function HomePage() {
         ${showMyBooks ? "max-h-[5000px]" : "max-h-[500px]"}
       `}
         >
-            {myBooks.length === 0 ? (
+          {myBooks.length === 0 ? (
             <p className="text-primary text-xl font-semibold">No books found</p>
           ) : (
             myBooks.map((book) => (
-              <Link key={book.id} to={`/catalog/books/${book.id}`}>
+              <Link key={book.book_id} to={`/catalog/books/${book.id}`}>
                 <BookCard {...book} />
               </Link>
             ))

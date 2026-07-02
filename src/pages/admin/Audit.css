@@ -333,6 +333,11 @@
   color: #b91c1c;
 }
 
+.audit-status-deleted {
+  background: #fee2e2;
+  color: #b91c1c;
+}
+
 .audit-status-neutral {
   background: #e9e8e9;
   color: var(--color-on-surface-variant);
