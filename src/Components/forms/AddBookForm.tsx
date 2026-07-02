@@ -64,11 +64,12 @@ export function AddBookForm() {
   };
   const handleScan = async (isbn: string) => {
     console.log(isbn);
+    setshowScanner(false);
     try {
       const data = await fetchBook(isbn).unwrap();
       let file: File | null = null;
       console.log(data);
-      setshowScanner(false);
+      
       if (data){
         const cover_url =
         data.cover_urls?.[1] ??

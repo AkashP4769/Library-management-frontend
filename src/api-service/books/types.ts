@@ -23,6 +23,15 @@ export interface BookAPIResponse {
   language: string | null;
   cover_urls: (string | null)[] | null;
 }
+export interface LocalBookApiResponse {
+    isbn: string;
+    title: string;
+    author: string;
+    genre: string;
+    publisher: string;
+    language: string;
+    id: number;
+}
 export type CreateBookPayload = {
   isbn: string;
   title: string;
