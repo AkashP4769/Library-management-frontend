@@ -9,12 +9,19 @@ import {
 import {
   transformBorrowedBookToBook,
   type BorrowedBook,
+  type FilterParamsType,
 } from "@/api-service/books/types";
 import { Link } from "react-router";
 
+
+
 export default function HomePage() {
-  const { data: fetchedBooks } = useGetBooksQuery();
-  const [myBooks, setMyBooks] = useState<BorrowedBook[]>([]);
+  const [filterParams, setFilterParams] = useState<FilterParamsType>({
+    q: undefined,
+
+  });
+  const { data: fetchedBooks } = useGetBooksQuery(filterParams, {});
+  const [myBooks, setMyBooks] = useState<Book[]>([]);
   const [exploreBooks, setExploreBooks] = useState<Book[]>([]);
   const { data: borrowedBooksInformation = [] } =
     useGetBorrowedBooksByUserQuery();
@@ -68,11 +75,11 @@ export default function HomePage() {
         ${showMyBooks ? "max-h-[5000px]" : "max-h-[500px]"}
       `}
         >
-          {myBooks.length === 0 ? (
+            {myBooks.length === 0 ? (
             <p className="text-primary text-xl font-semibold">No books found</p>
           ) : (
             myBooks.map((book) => (
-              <Link key={book.book_id} to={`/catalog/books/${book.id}`}>
+              <Link key={book.id} to={`/catalog/books/${book.id}`}>
                 <BookCard {...book} />
               </Link>
             ))
