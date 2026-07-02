@@ -347,40 +347,45 @@ export default function MyReads() {
           )}
         </div>
         {showReturnPanel && (
-          <div className="mt-5  rounded-2xl border border-neutral-200 bg-white p-6 shadow-lg">
-            <h2 className="text-xl font-semibold mb-4">
-              Select a shelf to return the book
-            </h2>
+  <div className="mt-5 rounded-2xl border border-neutral-200 bg-white p-6 shadow-lg">
+    <div className="mb-5">
+      <h2 className="text-lg font-semibold text-neutral-900">
+        Select a shelf to return the book
+      </h2>
+      <p className="mt-1 text-sm text-neutral-500">
+        Choose the shelf where you're placing this copy.
+      </p>
+    </div>
 
-            <div className="flex flex-wrap gap-3">
-              {fetchshelves.map((shelf) => (
-                <SmallShelfCard
-                  key={shelf.id}
-                  shelf={shelf}
-                  selected={selectedShelfId === shelf.id}
-                  onClickShelf={() => setSelectedShelfId(shelf.id)}
-                />
-              ))}
-            </div>
+    <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4">
+      {fetchshelves.map((shelf) => (
+        <SmallShelfCard
+          key={shelf.id}
+          shelf={shelf}
+          selected={selectedShelfId === shelf.id}
+          onClickShelf={() => setSelectedShelfId(shelf.id)}
+        />
+      ))}
+    </div>
 
-            <div className="flex justify-end gap-3">
-              <button
-                onClick={() => setShowReturnPanel(false)}
-                className="rounded-lg border border-neutral-300 px-4 py-2 hover:bg-gray-100"
-              >
-                Cancel
-              </button>
+    <div className="mt-6 flex justify-end gap-3 border-t border-neutral-100 pt-5">
+      <button
+        onClick={() => setShowReturnPanel(false)}
+        className="rounded-lg border border-neutral-300 px-4 py-2 text-sm font-medium text-neutral-700 hover:bg-neutral-100"
+      >
+        Cancel
+      </button>
 
-              <button
-                disabled={!selectedShelfId}
-                onClick={handleConfirmReturn}
-                className="rounded-lg bg-primary px-4 py-2 text-white disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                Return
-              </button>
-            </div>
-          </div>
-        )}
+      <button
+        disabled={!selectedShelfId}
+        onClick={handleConfirmReturn}
+        className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-white hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
+      >
+        Return
+      </button>
+    </div>
+  </div>
+)}
       </section>
 
       {/* Requested */}

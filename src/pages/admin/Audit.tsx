@@ -101,6 +101,7 @@ function normalizeLog(log: AuditLogItem, index: number): NormalizedAuditLog {
   const action = log.action_type ?? log.action ?? log.event;
   const actor = log.actor ?? log.user;
   const status = log.status ?? log.severity;
+  console.log(log);
   const detailsFromMetadata =
     typeof log.metadata?.details === "string" ? log.metadata.details : "";
   const oldStatus =
@@ -113,8 +114,9 @@ function normalizeLog(log: AuditLogItem, index: number): NormalizedAuditLog {
       : "";
 
   return {
+    
     id: String(log.id ?? `${action ?? "audit"}-${index}`),
-    actor: actor || `User ${log.actor_user_id ?? "System"}`,
+    actor: actor || ` ${log.actor_user_name ?? "System"}`,
     action: toSentence(action),
     entity: log.entity_type
       ? toSentence(log.entity_type)
@@ -122,7 +124,7 @@ function normalizeLog(log: AuditLogItem, index: number): NormalizedAuditLog {
         ? toSentence(log.entity)
         : "Record",
     target:
-      log.target || (log.entity_id ? `ID ${log.entity_id}` : "Library system"),
+      log.target || (log.actor_user_name ? `ID ${log.entity_id}` : "Library system"),
     status: status ? toSentence(status) : "Recorded",
     severity: getSeverity(log),
     time: formatAuditTime(log.created_at ?? log.timestamp ?? log.date),

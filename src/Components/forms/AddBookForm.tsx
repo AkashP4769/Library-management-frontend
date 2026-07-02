@@ -79,6 +79,12 @@ export function AddBookForm({ onSuccess }: Props) {
         });
         return;
       }
+      
+      if (data){
+        const cover_url =
+        data.cover_urls?.[1] ??
+        data.cover_urls?.[0] ??
+        null;
 
       if (data) {
         const cover_url = data.cover_urls?.[1] ?? data.cover_urls?.[0] ?? null;

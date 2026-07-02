@@ -34,6 +34,7 @@ export type ShelfSageItem = {
 export type AuditLogItem = {
   id?: string | number;
   actor_user_id?: string | number;
+  actor_user_name?:string;
   actor?: string;
   user?: string;
   action_type?: string;
