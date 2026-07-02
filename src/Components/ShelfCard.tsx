@@ -51,26 +51,25 @@ function SmallShelfCard({
   return (
     <button
       onClick={onClickShelf}
-      className={`flex h-15 w-90  justify-center rounded-2xl 
-        transition-all border 
-        ${
-          selected
-            ? "border-primary bg-primary/20"
-            : "border-neutral-200 bg-white hover:border-primary"
-        }`}
+      className={`flex w-full items-center gap-3 rounded-2xl border p-3 text-left transition-all ${
+        selected
+          ? "border-primary bg-primary/10 ring-2 ring-primary/20"
+          : "border-neutral-200 bg-white hover:border-primary"
+      }`}
     >
-      <div className="flex justify-between gap-2">
+      <div className="h-12 w-12 shrink-0 overflow-hidden rounded-lg">
         <img
           src={shelf.image_url}
           alt={shelf.shelf_code}
-          className=" h-full w-3/5 object-cover rounded-l-2xl"
+          className="h-full w-full object-cover"
         />
-        <div className="w-[50%]">
-          <h3 className="text-lg font-bold mt-2 text-ellipsis">
-            {shelf.shelf_code}
-          </h3>
-          <p className="text-tertiary">{shelf.office_location}</p>
-        </div>
+      </div>
+
+      <div className="flex min-w-0 flex-col">
+        <h3 className="truncate text-base font-bold">{shelf.shelf_code}</h3>
+        <p className="truncate text-sm text-tertiary">
+          {shelf.office_location}
+        </p>
       </div>
     </button>
   );
