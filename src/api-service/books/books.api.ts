@@ -8,6 +8,7 @@ import type {
   BorrowedBook,
   CreateBookPayload,
   InventoryBookItem,
+  LocalBookApiResponse,
   RequestedBook,
 } from "./types";
 import type { BookAPIResponse } from "./types";
@@ -112,6 +113,16 @@ export const booksApi = libraryBaseApi.injectEndpoints({
         return response;
       },
     }),
+    getBookByISBN:builder.query({
+      query: (isbn) => ({
+        url: BASE_URL + `/books/isbn/${isbn}`,
+        method: "GET",
+      }),
+      transformResponse: (response: LocalBookApiResponse) => {
+        return response;
+      },
+    }),
+  
 
     getBooks: builder.query<Book[], void>({
       query: () => ({
@@ -237,6 +248,7 @@ export const {
   useGetBookQuery,
   useGetBooksQuery,
   useAddBookToShelfMutation,
+  useLazyGetBookByISBNQuery,
   useLazyGetBookbyOpenLibraryAPIQuery,
   useGetInventoryBooksQuery,
   useGetBookByGenreQuery,

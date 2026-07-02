@@ -19,6 +19,7 @@ import ISBNScanner from "@/components/scanner/ISBNScanner";
 import { clearAuth } from "@/lib/auth";
 import { useToast } from "@/Components/ui/Toast";
 import {useUserQuery} from "@/api-service/user/user.api";
+import {useLazyGetBookByISBNQuery} from "@/api-service/books/books.api";
 import {
   useLazyGetUsersNotificationsQuery,
   useResolveNotificationMutation,
@@ -182,7 +183,7 @@ export default function Layout() {
   const previousNotificationCount = useRef(0);
   const { toast } = useToast();
 
-  const [fetchBook] = useLazyGetBookbyOpenLibraryAPIQuery();
+  const [fetchBook] = useLazyGetBookByISBNQuery();
    if(userData){
         console.log("userData", userData);
         localStorage.setItem("name", userData.name);
@@ -309,6 +310,7 @@ export default function Layout() {
           description: `Found ${data.title || "book details"} for ISBN ${isbn}.`,
           variant: "success",
         });
+        navigate(`/catalog/books/${data.id}`); // Navigate to the book details page
         return;
       }
 
