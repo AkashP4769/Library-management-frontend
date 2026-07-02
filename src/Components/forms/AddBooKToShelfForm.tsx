@@ -195,7 +195,7 @@ export function AddBookToShelfForm({
   initialAssignments = [],
   onSuccess,
 }: Props) {
-  const { data: inventoryBooks } = useGetBooksQuery();
+  const { data: inventoryBooks } = useGetBooksQuery({});
   const { data: inventoryShelves } = useGetShelvesQuery();
   const { toast } = useToast();
 

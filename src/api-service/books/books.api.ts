@@ -124,7 +124,7 @@ export const booksApi = libraryBaseApi.injectEndpoints({
       },
     }),
 
-    getBooks: builder.query<Book[], FilterParamsType>({
+    getBooks: builder.query<Book[], FilterParamsType | void>({
       query: ({ q, author, genre, language }) => ({
         url: BASE_URL + "/books",
         method: "GET",

@@ -67,24 +67,10 @@ export function AddBookForm({ onSuccess }: Props) {
   const handleScan = async (isbn: string) => {
     console.log(isbn);
     setShowScanner(false);
-    let file: File | null = null;
     try {
       const data = await fetchBook(isbn).unwrap();
+      let file: File | null = null;
       console.log(data);
-      if (!data) {
-        toast({
-          title: "No book found",
-          description: `ISBN ${isbn} did not return book details.`,
-          variant: "error",
-        });
-        return;
-      }
-      
-      if (data){
-        const cover_url =
-        data.cover_urls?.[1] ??
-        data.cover_urls?.[0] ??
-        null;
 
       if (data) {
         const cover_url = data.cover_urls?.[1] ?? data.cover_urls?.[0] ?? null;
@@ -105,36 +91,19 @@ export function AddBookForm({ onSuccess }: Props) {
           image: file,
         }));
 
-        let file: File | null = null;
-        const coverUrl = data.cover_urls?.[1] ?? data.cover_urls?.[0] ?? null;
-
-        if (coverUrl) {
-          try {
-            file = await imageUrlToFile(coverUrl);
-            setPreview(URL.createObjectURL(file));
-          } catch (imageError) {
-            console.error("Error fetching cover image:", imageError);
-            // Book details are still usable even if the cover fails to load.
-          }
-        }
-
-        setBook((prev) => ({
-          ...prev,
-          isbn,
-          title: data.title ?? "",
-          author: data.author ?? "",
-          publisher: data.publisher ?? "",
-          language: data.language ?? "",
-          description: "",
-          image: file,
-        }));
-
         toast({
           title: "ISBN scanned",
           description: "Book details were filled from Open Library.",
           variant: "success",
         });
+        return;
       }
+
+      toast({
+        title: "No book found",
+        description: `ISBN ${isbn} did not return book details.`,
+        variant: "error",
+      });
     } catch (error) {
       setShowScanner(false);
       toast({
