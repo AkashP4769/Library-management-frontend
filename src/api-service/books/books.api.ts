@@ -7,6 +7,7 @@ import type {
   BorrowBookPayload,
   BorrowedBook,
   CreateBookPayload,
+  FilterParamsType,
   InventoryBookItem,
   LocalBookApiResponse,
   RequestedBook,
@@ -124,10 +125,11 @@ export const booksApi = libraryBaseApi.injectEndpoints({
     }),
   
 
-    getBooks: builder.query<Book[], void>({
-      query: () => ({
+    getBooks: builder.query<Book[], FilterParamsType>({
+      query: ({ q, author, genre, language }) => ({
         url: BASE_URL + "/books",
         method: "GET",
+        params: { q, author, genre, language },
       }),
       providesTags: ["Books"],
       transformResponse: (response: BookResponse[]) => {
